@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#000000">
+
+  <link href="css/_signup.css" rel="stylesheet">
+  <link href="css/_index.css" rel="stylesheet">
+  <link href="css/_footer.css" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <link rel="shortcut icon" href="assets/brand/sygnet.svg">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="index.css" rel="stylesheet">
+
+  <script src="https://kit.fontawesome.com/8947a72909.js"></script>
+
+  <title>Rebook</title>
+</head>
+<body>
+<div class="app">
+  <div class="app-top-box sticky-top">
+    <header class="app-header">
+      <div class="container-fluid" style="padding-left:40px">
+        <div class="row">
+          <div class="col-md-5 app-branding">
+            <img src="/assets/brand/sygnet.svg" alt="" style="width:40px;height:40px;margin-right:20px"/>
+            <a th:href="@{/signup}" class="app-title">Rebook</a>
+          </div>
+          <div class="col-md-5">
+            <nav class="app-nav">
+              <ul>
+                <li>
+                  <a th:href="@{/login}">Login</a>
+                </li>
+                <li>
+                  <a th:href="@{/signup}" th:class="${navActive}">Signup</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="col-md-2"></div>
+        </div>
+      </div>
+    </header>
+  </div>
+  <div class="app-body">
+    <div th:if="${param.success}">
+      <div class="alert alert-info">You've successfully registered
+        to our awesome app!</div>
+    </div>
+    <div class="signup-container" style="top: 45%;">
+      <div class="signup-content">
+        <h1 class="signup-title">Sign Up to Real Estate Social</h1>
+        <div class="or-separator">
+          <span class="or-text">Rebook</span>
+        </div>
+        <p th:text="${message}" class="error" style="color:red;">
+        <form action="#" th:action="@{/signup}" th:object="${userDto}" method="post">
+        <p class="error-message" th:if="${#fields.hasGlobalErrors()}" style="color:red;"
+           th:each="error : ${#fields.errors('global')}" th:text="${error}">Validation error</p>
+<!--        fullName-->
+          <div class="form-group" th:classappend="${#fields.hasErrors('fullName')}? 'has-error':''">
+            <label for="fullName" class="control-label">Full Name</label>
+            <input id="fullName" class="form-control" type="text" style="font-size:16px"
+                   th:field="*{fullName}" required/>
+            <p class="error-message"
+               th:each="error : ${#fields.errors('fullName')}"
+               th:text="${error}">Validation error</p>
+          </div>
+<!--        email-->
+          <div class="form-group" th:classappend="${#fields.hasErrors('email')}? 'has-error':''">
+            <label for="email" class="control-label">Email</label>
+            <input id="email" class="form-control" type="email" style="font-size:16px"
+                   th:field="*{email}" required/>
+            <p class="error-message"
+               th:each="error : ${#fields.errors('email')}"
+               th:text="${error}">Validation error</p>
+          </div>
+<!--      password-->
+          <div class="form-group" th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
+            <label for="password" class="control-label">Password</label>
+            <input id="password" class="form-control" type="password" style="font-size:16px"
+                  th:field="*{password}" required/>
+            <p class="error-message"
+               th:each="error : ${#fields.errors('password')}"
+               th:text="${error}">Validation error</p>
+          </div>
+<!--        confirm password-->
+          <div class="form-group" th:classappend="${#fields.hasErrors('confirmPassword')}? 'has-error':''">
+            <label for="confirmPassword" class="control-label">Confirm password</label>
+            <input id="confirmPassword" class="form-control" style="font-size:16px"
+                  type="password" th:field="*{confirmPassword}" required/>
+            <p class="error-message"
+               th:each="error : ${#fields.errors('confirmPassword')}"
+               th:text="${error}">Validation error</p>
+          </div>
+<!--        terms-->
+          <div class="form-group" th:classappend="${#fields.hasErrors('terms')}? 'has-error':''">
+            <input id="terms" type="checkbox" th:field="*{terms}" style="font-size:16px"/>
+            <label class="control-label" for="terms" style="font-size:16px"> I agree with the
+              <a href="#" style="font-size:16px">terms and conditions</a> for Registration.
+            </label>
+            <p class="error-message" th:each="error : ${#fields.errors('terms')}" th:text="${error}"
+               style="color: red">Validation error</p>
+          </div>
+          <div class="form-group">
+            <button type="submit" style="font-size:16px"
+                    class="btn btn-block btn-info">Sign Up
+            </button>
+          </div>
+        </form>
+        <span class="login-link" style="font-size:15px">Already have an account?
+            <a th:href="@{/login}" style="font-size:15px"> Login now!</a>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="footer pt-3 pb-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-6">
+          <nav class="footer-nav">
+            <ul>
+              <li>
+                <a>ABOUT US</a>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <a>TERMS</a>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <a>PRIVACY</a>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <a>LANGUAGE</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-6 text-right">
+          <div class="py-3" style="font-size: 16px;font-weight: 600;color: #999">© 2019 Copyright:
+            <a href="https://mdbootstrap.com/education/bootstrap/"
+               class="corp" style="color: #999"> Rebook.com.vn</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</html>

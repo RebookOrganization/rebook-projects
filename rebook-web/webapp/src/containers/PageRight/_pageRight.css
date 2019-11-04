@@ -1,0 +1,20 @@
+.btn-detail {
+  background-color: #f1f1f1;
+  height: 40px;
+  line-height: 0;
+}
+
+.btn-detail:hover {
+  background-color: #ddd;
+  color: #152944;
+  border: none;
+}
+
+.sticky-page-right {
+  position: fixed;
+  bottom: 100px;
+  width: 23%;
+  /*width: min-content;*/
+  /*min-width: 365px;*/
+  z-index: 100;
+}

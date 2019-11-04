@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#000000">
+
+  <link href="css/_login.css" rel="stylesheet">
+  <link href="css/_index.css" rel="stylesheet">
+  <link href="css/_footer.css" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <link rel="shortcut icon" href="assets/brand/sygnet.svg">
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous">
+  <link href="index.css" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="vendors/css/font-awesome.min.css" rel="stylesheet">
+  <link href="vendors/css/simple-line-icons.min.css" rel="stylesheet">
+
+  <script src="https://kit.fontawesome.com/8947a72909.js"></script>
+
+  <title>Rebook</title>
+</head>
+<body>
+<div class="app">
+  <div class="app-top-box sticky-top">
+    <header class="app-header">
+      <div class="container-fluid" style="padding-left:40px">
+        <div class="row">
+          <div class="col-md-5 app-branding">
+            <img src="/assets/brand/sygnet.svg" alt=""
+                 style="width:40px;height:40px;margin-right:20px"/>
+            <a th:href="@{/login}" class="app-title">Rebook</a>
+          </div>
+          <div class="col-md-5">
+            <nav class="app-nav">
+              <ul>
+                <li>
+                  <a th:href="@{/login}" th:class="${navActive}">Login</a>
+                </li>
+                <li>
+                  <a th:href="@{/signup}">Signup</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="col-md-2"></div>
+        </div>
+      </div>
+    </header>
+  </div>
+  <div class="app-body">
+    <div class="login-container">
+      <div class="login-content">
+        <h1 class="login-title">Login to Real Estate Social</h1>
+        <div class="or-separator">
+          <span class="or-text">Rebook</span>
+        </div>
+        <p th:if="${param.error}" class="error" style="color:red;">Invalid email or password</p>
+        <p th:if="${param.logout}" class="success" style="color:#4dbd74;">You have been logged
+          out</p>
+        <p th:text="${verifyFail}" class="error" style="color:red;">
+        <p th:text="${registerSuccess}" class="success" style="color:#4dbd74;">
+        <form action="#" th:action="@{/login}" method="post">
+
+          <div class="form-group" >
+            <label for="email" class="control-label">Email</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="icon-user"></i></span>
+              </div>
+              <input id="email" name="email" class="form-control" type="email" style="font-size:16px" required/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password" class="control-label">Password</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="icon-lock"></i></span>
+              </div>
+              <input id="password" name="password" class="form-control" type="password" style="font-size:16px" required/>
+            </div>
+          </div>
+        <div class="row" style="margin-top: 10px; margin-bottom: 10px">
+          <div class="col-6">
+            <button type="submit" style="max-height: 40px;width: 150px" class="btn btn-info px-4">Login</button>
+          </div>
+          <div class="col-6 text-right">
+            <a type="button" th:href="@{/forgot-password}" class="btn btn-link px-0">Forgot password?</a>
+          </div>
+        </div>
+        </form>
+        <span class="signup-link" style="font-size:15px">Register New user?
+            <a th:href="@{/signup}" style="font-size:15px"> Sign up now!</a>
+        </span>
+      </div>
+      <div class="row justify-content-center" style="margin: 10px 0">
+        <a href="https://play.google.com/store/apps/details" target="_blank" rel="noopener"
+           class="d-block" style="margin-right: 8px">
+          <img alt="Get it on Google Play" style="width: 150px"
+               src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" class="play-store-badge">
+        </a>
+        <a href="https://itunes.apple.com/us/app" target="_blank" rel="noopener" class="d-block">
+          <img alt="Download on the App Store" style="margin-top: 8px"
+               src="https://cdn.viblo.asia/_nuxt/img/2928664.svg"
+               class="app-store-badge">
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer pt-3 pb-4">
+    <div class="container">
+    <div class="row">
+      <div class="col-6">
+        <nav class="footer-nav">
+          <ul>
+            <li>
+              <a>ABOUT US</a>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <a>TERMS</a>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <a>PRIVACY</a>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <a>LANGUAGE</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="col-6 text-right">
+        <div class="py-3" style="font-size: 16px;font-weight: 600;color: #999">© 2019 Copyright:
+          <a href="https://mdbootstrap.com/education/bootstrap/"
+             class="corp" style="color: #999"> Rebook.com.vn</a>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</html>

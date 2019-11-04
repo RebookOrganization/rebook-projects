@@ -1,0 +1,126 @@
+.app-top-box {
+  background-color: #156296;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  height: 54px;
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid;
+}
+
+.app-title {
+  line-height: 54px;
+  vertical-align: middle;
+  font-size: 18px;
+  font-weight: 500;
+  /*color: #152944;*/
+  color: white;
+}
+
+.app-branding {
+  /*float: left;*/
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.app-nav {
+  float: right;
+}
+
+.app-nav ul {
+  list-style-position: inside;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+.app-nav ul li {
+  list-style-type: none;
+  display: inline-block;
+  font-weight: 500;
+}
+
+
+.app-nav ul li a {
+  display: inline-block;
+  line-height: 54px;
+  vertical-align: middle;
+  padding: 0 15px;
+  color: white;
+  font-weight: 500;
+}
+
+.app-nav ul li a:hover {
+  background-color: #0F5484; /*#3B70C5*/
+}
+
+.app-nav ul li a.active {
+  border-bottom: 2px solid white;
+  /*line-height: 57px;*/
+}
+
+.app-nav ul li a.active:hover {
+  background-color: #0F5484; /*#3B70C5*/
+}
+
+.signup-container {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.signup-content {
+  background: #fff;
+  box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
+  border-radius: 2px;
+  width: 600px;
+  display: inline-block;
+  margin-top: 30px;
+  vertical-align: middle;
+  position: relative;
+  padding: 35px;
+}
+
+.social-btn {
+  margin-bottom: 15px;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.social-btn img {
+  height: 32px;
+  float: left;
+  margin-top: 10px;
+}
+
+.social-btn.google {
+  margin-top: 7px;
+}
+
+.social-btn.facebook img {
+  height: 24px;
+  margin-left: 3px;
+}
+
+.social-btn.github img {
+  height: 24px;
+  margin-left: 3px;
+}
+
+.login-link {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+}
+
+.signup-title {
+  font-size: 1.5em;
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: rgba(0, 0, 0, 0.65);
+}

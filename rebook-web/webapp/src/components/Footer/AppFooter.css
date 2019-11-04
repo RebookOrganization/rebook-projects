@@ -1,0 +1,17 @@
+footer {
+  background: linear-gradient(160deg,#2d84eb,#8259ef);
+  margin-top: 40px !important;
+}
+
+.footer-copyright {
+  /*background-color: rgba(0,0,0,.2) !important;*/
+  color: rgba(255,255,255,.6) !important;
+}
+
+.corp {
+  color: white;
+}
+
+.btn-sign {
+  margin-left: 3px !important;
+}

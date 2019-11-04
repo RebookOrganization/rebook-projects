@@ -1,0 +1,179 @@
+.app-header {
+    display: flex;
+    align-items: center;
+    height: 54px;
+    position: relative;
+    z-index: 1;
+    border-bottom: 1px solid;
+    /*background-color: white;*/
+    /*margin-bottom: 10px;*/
+}
+
+/*.vl {*/
+/*    border: 0.5px solid;*/
+/*    height: 30px;*/
+/*    max-width: 0;*/
+/*}*/
+
+.app-title {
+    line-height: 54px;
+    vertical-align: middle;
+    font-size: 18px;
+    font-weight: 500;
+    /*color: #152944;*/
+    color: white;
+}
+/*.app-title:hover {*/
+/*    color: #4b4f56;*/
+/*}*/
+
+.app-branding {
+    /*float: left;*/
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+
+.app-options {
+    /*float: right;*/
+}
+
+.app-nav {
+    float: right;
+}
+
+.app-nav ul {
+    list-style-position: inside;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+}
+
+.app-nav ul li {
+    list-style-type: none;
+    display: inline-block;
+    font-weight: 500;
+    /*border-right: 1px solid rgba(0, 0, 0, 0.1);*/
+    /*margin-left: 5px;*/
+    /*margin-right: 5px;*/
+}
+
+/*.app-nav ul li:hover {*/
+/*    !*color: #4b4f56;*!*/
+/*    background-color: #205081; !*#3B70C5*!*/
+/*    height: 40px;*/
+/*    line-height: 40px;*/
+/*    border-radius: 5px;*/
+
+/*}*/
+
+.li-profile:hover {
+    background-color: #0F5484; /*#3B70C5*/
+    padding-left: 15px;
+}
+
+.app-nav ul li a {
+    display: inline-block;
+    line-height: 54px;
+    vertical-align: middle;
+    padding: 0 10px;
+    color: white;
+    font-weight: 500;
+}
+
+.app-nav ul li .message {
+    display: inline-block;
+    line-height: 54px;
+    vertical-align: middle;
+    padding: 0 15px;
+    color: white;
+    font-weight: 500;
+}
+
+.app-nav ul li .message .btn.active {
+    background-color: #0F5484;
+}
+
+.app-nav ul li .message:hover {
+    display: inline-block;
+    line-height: 54px;
+    vertical-align: middle;
+    padding: 0 15px;
+    color: white;
+    font-weight: 500;
+}
+
+.app-nav ul li .message a:hover {
+    color: white;
+    font-weight: 500;
+    background-color: #63c2de;
+}
+
+
+.app-nav ul li a:hover {
+    background-color: #0F5484; /*#3B70C5*/
+}
+
+.app-nav ul li a.active {
+    border-bottom: 2px solid white;
+    /*line-height: 57px;*/
+}
+
+.app-nav ul li a.active:hover {
+    background-color: #0F5484; /*#3B70C5*/
+}
+
+.search {
+    position: relative;
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+    margin-left: 20px;
+}
+
+.search input {
+    width: 250px;
+    height: 32px;
+/*rgba(0,0,0,0.2)*/
+    background: white;
+    border: 1px solid;
+    border-radius: 3px;
+    color: rgba(0,0,0,0.2);
+    text-indent: 32px;
+    box-shadow: none;
+    outline: none;
+}
+.search input:focus {
+    width: 250px;
+    height: 32px;
+    /*rgba(0,0,0,0.2)*/
+    background: white;
+    border: 1px solid;
+    border-radius: 3px;
+    color: rgba(0,0,0,0.2);
+    text-indent: 32px;
+    box-shadow: none;
+    outline: none;
+}
+.search .fa-search {
+    position: absolute;
+    top: 10px;
+    left: 220px;
+}
+
+.btn-profile {
+    width: 32px;
+    height: 32px;
+    border-radius: 25px;
+}
+.icon-profile {
+    width: 32px;
+    height: 32px;
+    border-radius: 25px;
+}
+
+.dropdown-menu-center {
+    left: 50% !important;
+    right: auto !important;
+    /*text-align: center !important;*/
+    transform: translate(-50%, 52px) !important;
+}
