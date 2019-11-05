@@ -16,8 +16,8 @@ export function uploadMultiImages(formData) {
   return httpUploadFile("api/uploadMultipleFiles", formData);
 }
 
- export function createNewsPostItem(requestParam) {
-  return httpPost("api/news/create-post", requestParam);
+export function createNewsPostItem(requestParam) {
+  return httpPost("/create-post", requestParam);
 }
 
 export function likeNews(likeRequest) {
