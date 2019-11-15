@@ -62,6 +62,7 @@
         <p th:if="${param.error}" class="error" style="color:red;">Invalid email or password</p>
         <p th:if="${param.logout}" class="success" style="color:#4dbd74;">You have been logged
           out</p>
+        <p th:text="${verifySuccess}" class="success" style="color:#4dbd74;">
         <p th:text="${verifyFail}" class="error" style="color:red;">
         <p th:text="${registerSuccess}" class="success" style="color:#4dbd74;">
         <form action="#" th:action="@{/login}" method="post">

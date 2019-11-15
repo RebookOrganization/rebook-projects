@@ -1,12 +1,9 @@
 package com.web.controller;
 
-import com.web.bean.Request.LoginRequest;
-import com.web.bean.Request.SignUpRequest;
-import com.web.bean.Response.ApiResponse;
-import com.web.bean.Response.AuthResponse;
+import static com.web.WebMain.getCtx;
+
+import com.web.config.EnvConfig;
 import com.web.dto.UserRegistrationDTO;
-import com.web.exception.BadRequestException;
-import com.web.model.AuthProvider;
 import com.web.model.EmailVerifyToken;
 import com.web.model.Role;
 import com.web.model.User;
@@ -21,10 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,17 +29,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.validation.Valid;
-import java.net.URI;
 
 @CrossOrigin
 @Controller
@@ -103,10 +90,12 @@ public class AuthController {
             model.addAttribute("message", "Người dùng đã tồn tại.");
             model.addAttribute(userDto);
             bindingResult.rejectValue("email", null, "Người dùng đã tồn tại.");
+            model.addAttribute("navActive", "active");
             return "signup";
         }
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("navActive", "active");
             return "signup";
         }
 
@@ -133,6 +122,7 @@ public class AuthController {
         emailSenderService.sendEmail(mailMessage);
 
         model.addAttribute("registerSuccess", "Vui lòng check mail để đăng nhập vào hệ thống.");
+        model.addAttribute("navActive", "active");
         return "login";
 
     }
@@ -146,15 +136,20 @@ public class AuthController {
             if (user.isPresent()) {
                 user.get().setEmailVerified(true);
                 userRepository.save(user.get());
-                model.addAttribute("verifySuccess", "Tài khoản đã được xác thực.");
-                return "index";
+                model.addAttribute("navActive", "active");
+                model.addAttribute("verifySuccess",
+                    "Tài khoản đã được xác thực. Vui lòng đăng nhập lại.");
+                return "login";
             }
-
-            model.addAttribute("verifyFail", "Không tìm thấy người dùng.");
+            model.addAttribute("verifyFail",
+                "Không tìm thấy người dùng. Xác thực thất bại.");
+            model.addAttribute("navActive", "active");
             return "login";
         }
         else {
-            model.addAttribute("verifyFail", "Không tìm thấy token.");
+            model.addAttribute("verifyFail",
+                "Không tìm thấy token. Xác thực thất bại.");
+            model.addAttribute("navActive", "active");
             return "login";
         }
     }
@@ -168,5 +163,10 @@ public class AuthController {
         return "redirect:/login";
     }
 
+    @ModelAttribute
+    public void addAttributes(Model model) {
+        EnvConfig envConfig = getCtx().getBean(EnvConfig.class);
+        model.addAttribute("envConfig", envConfig);
+    }
 
 }

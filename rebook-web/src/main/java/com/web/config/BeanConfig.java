@@ -23,4 +23,11 @@ public class BeanConfig {
     return websiteConfig;
   }
 
+  @Bean
+  public EnvConfig setEnvConfig() {
+    EnvConfig envConfig = new EnvConfig();
+    envConfig.setEnv("dev");
+    return envConfig;
+  }
+
 }

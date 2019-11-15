@@ -19,7 +19,8 @@ public class ConsumerService {
   @Autowired
   private CrawlerService crawlerService;
 
-  @KafkaListener(topics = "advice-topic", clientIdPrefix = "json", groupId = "tpd-loggers1",
+  @KafkaListener(topics = "${kafka.topic}", clientIdPrefix = "json",
+      groupId = "${kafka.consumer.group-id}",
       containerFactory = "kafkaListenerContainerFactory")
   public void listenAsObject(ConsumerRecord<String, Object> consumerRecord,
       @Payload String payload) throws IOException {

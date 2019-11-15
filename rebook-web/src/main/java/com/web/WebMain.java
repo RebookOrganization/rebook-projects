@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,8 +31,14 @@ public class WebMain {
 
 	public static boolean IS_DEV_ENV = true;
 
+	private static ApplicationContext ctx;
+
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(WebMain.class, args);
+		ctx = SpringApplication.run(WebMain.class, args);
+	}
+
+	public static ApplicationContext getCtx() {
+		return ctx;
 	}
 
 }

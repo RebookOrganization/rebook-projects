@@ -19,23 +19,28 @@ public class KafkaConsumerConfig {
   @Autowired
   private KafkaProperties kafkaProperties;
 
-  @Value("${bootstrap_server}")
-  private String bootstrap_server;
+  @Value("${kafka.bootstrap_server}")
+  private String bootstrapServer;
+
+  @Value("${kafka.consumer.group-id}")
+  private String groupId;
 
   @Bean
   private Map<String, Object> consumerConfigs() {
     Map<String, Object> props = new HashMap<>(kafkaProperties.buildConsumerProperties());
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrap_server);
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, "tpd-loggers1");
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 180000);
+    props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
     return props;
   }
 
   @Bean
   public ConsumerFactory<String, Object> consumerFactory() {
-    final JsonDeserializer jsonDeserializer = new JsonDeserializer();
+    final JsonDeserializer<Object> jsonDeserializer = new JsonDeserializer<>();
     jsonDeserializer.addTrustedPackages("*");
     return new DefaultKafkaConsumerFactory<>(
         kafkaProperties.buildConsumerProperties(), new StringDeserializer(), jsonDeserializer
