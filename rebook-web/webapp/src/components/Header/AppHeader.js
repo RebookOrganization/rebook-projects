@@ -350,9 +350,11 @@ class AppHeader extends Component {
                                 aria-expanded="false">
                           <img className={"responsive"}
                                src="/icon/alarm.svg"
-                               style={{width:'34px',height:'30px'}} alt={""}/>
+                               style={{width:'29px',height:'25px'}} alt={""}/>
                         </button>
-                        <div className="dropdown-menu dropdown-menu-center">
+                        <div className="dropdown-menu dropdown-menu-center"
+                             style={{width:'400px'}}
+                        >
                           <a className="dropdown-item">
                             <i className="far fa-save"/> Lưu bài viết
                           </a>

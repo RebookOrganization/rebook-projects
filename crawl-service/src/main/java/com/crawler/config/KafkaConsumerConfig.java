@@ -33,7 +33,7 @@ public class KafkaConsumerConfig {
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 180000);
+    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 540000);
     props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
     return props;
   }

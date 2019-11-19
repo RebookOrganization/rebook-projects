@@ -8,7 +8,7 @@
 <!--    http://www.qos.ch/shop/products/professionalSupport         -->
 <!--                          value="/lstData/log/${appname}"          -->
 <configuration>
- 	<property name="logdir" value="./log" />
+ 	<property name="logdir" value="./crawl-service/log" />
  	<property name="logfilename" value="system.log" />
   	<appender name="logfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->

@@ -83,12 +83,11 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         String descriptMain = Jsoup.parse(description.replaceAll("<div[^>]*>", "\n")).text();
 
-        NewsItem newsItem = new NewsItem();
-        newsItem.setTitle(title);
-
         //check trùng url tại đây.
         if (NewsItemIndex.newsItem != null && !NewsItemIndex.newsItem.getUrl().equals(url))
         {
+          NewsItem newsItem = new NewsItem();
+          newsItem.setTitle(title);
           newsItem.setTrans_type("BatDongSan.com.vn");
           newsItem.setUrl(url);
           newsItem.setSummary(descriptMain);
@@ -117,7 +116,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 
             // check TfIdf tại đây.
             compareTfIdf = new TfIdfMain().compareText(NewsItemIndex.newsItem.getDescription(), desc);
-            if (compareTfIdf >= 0.45) {
+            logger.info("crawlerBatDongSan News duplicate index score: {}", compareTfIdf);
+            if (compareTfIdf >= 1.0) {
               newsItem.setDescription(desc);
 
               if (productDetail.getElementById(ROOM_NUMBER) != null) {
@@ -273,6 +273,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
   private void indexNewsItem() {
     NewsItemIndex.newsItem = cacheDataService.findLastRow(currentPartition);
+    logger.info("NewsItemIndex.newsItem - {}", NewsItemIndex.newsItem);
   }
 
   @Override
@@ -313,6 +314,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
           // check TfIdf tại đây.
           compareTfIdf = new TfIdfMain().compareText(NewsItemIndex.newsItem.getDescription(), descript);
+          logger.info("crawlerDiaOcOnline News duplicate index score: {}", compareTfIdf);
           if (compareTfIdf >= 0.45) {
             newsItem.setTitle(title);
             newsItem.setPubDate(pubDate);

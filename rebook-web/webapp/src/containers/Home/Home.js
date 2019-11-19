@@ -35,6 +35,7 @@ import { withCookies } from 'react-cookie';
 import InfiniteScroll from "react-infinite-scroller";
 import AppHeader from "../../components/Header/AppHeader";
 import {withRouter} from "react-router-dom";
+import RecommendSlider from "./Slider/RecommendSlider";
 
 class Home extends Component {
   constructor(props) {
@@ -726,6 +727,8 @@ class Home extends Component {
                     )
                     : null
                 }
+
+                <RecommendSlider/>
 
                 {
                   this.state.loading ? <LoadingIndicator/>

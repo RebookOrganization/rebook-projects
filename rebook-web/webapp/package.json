@@ -8,6 +8,7 @@
     "bootstrap-social": "^5.1.1",
     "classnames": "^2.2.6",
     "helmet": "^3.21.1",
+    "jquery": "^3.3.1",
     "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-addons-shallow-compare": "^15.6.2",
@@ -22,7 +23,9 @@
     "react-s-alert": "^1.4.1",
     "react-scripts": "1.1.5",
     "react-select": "^3.0.8",
+    "react-slick": "^0.25.2",
     "reactstrap": "^8.0.0",
+    "slick-carousel": "^1.8.1",
     "sockjs-client": "^1.4.0",
     "stompjs": "^2.3.3"
   },
