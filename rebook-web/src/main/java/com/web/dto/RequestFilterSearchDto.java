@@ -2,6 +2,7 @@ package com.web.dto;
 
 public class RequestFilterSearchDto {
 
+  private String address;
   private String content;
   private String price;
   private String area;
@@ -9,6 +10,14 @@ public class RequestFilterSearchDto {
   private String provinceCity;
   private String transType;
   private String directHouse;
+
+  public String getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) {
+    this.address = address;
+  }
 
   public String getContent() { return content; }
 

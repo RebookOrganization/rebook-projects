@@ -46,9 +46,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    if (WebMain.IS_DEV_ENV) {
+//    if (WebMain.IS_DEV_ENV) {
       http.cors();
-    }
+//    }
 
     http
         .csrf().disable()
@@ -91,7 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     if (WebMain.IS_DEV_ENV) {
       CorsConfiguration corsConfiguration = new CorsConfiguration();
-      corsConfiguration.addAllowedOrigin("http://localhost:3000");
+      corsConfiguration.addAllowedOrigin("*");
       corsConfiguration.addAllowedHeader("*");
       corsConfiguration.addAllowedMethod("*");
       corsConfiguration.setAllowCredentials(true);

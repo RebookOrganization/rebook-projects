@@ -8,8 +8,8 @@ export function getCurrentUser() {
   return httpGet("api/auth/me");
 }
 
-export function getAllNewsItem() {
-  return httpGet(API_NEWS + "/all-news")
+export function getAllNewsItem(offset) {
+  return httpGet(API_NEWS + "/all-news?offset=" + offset)
 }
 
 export function uploadMultiImages(formData) {
@@ -17,7 +17,7 @@ export function uploadMultiImages(formData) {
 }
 
 export function createNewsPostItem(requestParam) {
-  return httpPost("/create-post", requestParam);
+  return httpPost(API_NEWS + "/create-post", requestParam);
 }
 
 export function likeNews(likeRequest) {

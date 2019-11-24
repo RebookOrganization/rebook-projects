@@ -71,7 +71,7 @@ public class FileStorageService {
     }
   }
 
-  private Resource loadFileAsResource(String fileName) {
+  public Resource loadFileAsResource(String fileName) {
     try {
       Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
       Resource resource = new UrlResource(filePath.toUri());
@@ -93,7 +93,7 @@ public class FileStorageService {
     String username = currentUser.getUsername();
 
     String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-        .path("/downloadFile/")
+        .path("/api/downloadFile/")
         .path(fileName)
         .toUriString();
 

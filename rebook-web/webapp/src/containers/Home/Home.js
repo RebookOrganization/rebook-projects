@@ -20,9 +20,6 @@ import {
   searchNewsByAddress,
   searchNewsByUser, uploadMultiImages
 } from "../../api/userCallApi";
-import {
-  commentNews, likeNews, shareNews
-} from "../../api/userCallApi";
 import ImageUploader from 'react-images-upload';
 import moment from "moment";
 import LoadingIndicator from "../../components/Loading/LoadingIndicator";
@@ -32,10 +29,11 @@ import LaddaButton, {EXPAND_LEFT} from "react-ladda";
 import 'ladda/dist/ladda-themeless.min.css';
 import Aside from "../Aside/Aside";
 import { withCookies } from 'react-cookie';
-import InfiniteScroll from "react-infinite-scroller";
 import AppHeader from "../../components/Header/AppHeader";
 import {withRouter} from "react-router-dom";
 import RecommendSlider from "./Slider/RecommendSlider";
+
+const initOffset = 0;
 
 class Home extends Component {
   constructor(props) {
@@ -86,9 +84,6 @@ class Home extends Component {
       resultSearchUser: null,
       loading: false,
 
-      modalImage: false,
-      imgUrl: "",
-
       loadingPost: false,
       collapsePost: false,
 
@@ -105,19 +100,6 @@ class Home extends Component {
     this.setState({collapsePost: !this.state.collapsePost})
   };
 
-  toggleModalImage = (imgUrl) => {
-    if (imgUrl !== null || imgUrl !== "") {
-      this.setState({
-        modalImage: !this.state.modalImage,
-        imgUrl: imgUrl
-      })
-    } else {
-      this.setState({
-        modalImage: !this.state.modalImage,
-      })
-    }
-  };
-
   toggleModalCreatedPost = () => {
     this.setState({
       modalCreatedPost: !this.state.modalCreatedPost
@@ -126,15 +108,16 @@ class Home extends Component {
 
   componentDidMount() {
     this.setState({loading: true});
-    getAllNewsItem().then(res => {
+
+    getAllNewsItem(initOffset).then(res => {
       this.setState({
         allNewsItem: res.data.result
       })
     }).catch(() => {
       Alert.warning("Không thể lấy tất cả tin tức.");
-    }).finally(() => this.setState({loading: false}));
+    })
+    .finally(() => this.setState({loading: false}));
 
-    //
     window.addEventListener("resize", this.resize.bind(this));
     this.resize();
   }
@@ -224,23 +207,6 @@ class Home extends Component {
     this.setState({[event.target.name]: event.target.value})
   };
 
-  handleSharePost = (newsId) => {
-    const {currentUser} = this.state;
-
-    const requestParams = {
-      isShare: !this.state.isShare,
-      userId: currentUser ? currentUser.userId : '',
-      newsItemId: newsId ? newsId : '',
-    };
-    //Api Share Post
-    shareNews(requestParams).then(res => {
-      this.setState({
-        sharePosted: res.result
-      })
-    })
-
-  };
-
   handlePostNewsItem = () => {
     this.setState({loadingPost: true});
     const {
@@ -256,59 +222,61 @@ class Home extends Component {
 
     let listUpload = null;
     console.log("formData: " + JSON.stringify(formData));
-    if (formData && formData.length) {
-      uploadMultiImages(formData).then(res => {
-        if (res) {
-          listUpload = res.data;
-        }
-      }).catch(err => {
-        console.log(err)
-      })
-    }
-    console.log("listUpload: " + JSON.stringify(listUpload));
-    if (address && summary) {
-      const requestParams = {
-        user_id: currentUser ? currentUser.userId : '1',
-        prop_address: address,
-        desc: summary,
-        listUpload: listUpload ? listUpload : [],
-        ownerName: contactName ? contactName : '',
-        ownerPhone: contactPhone ? contactPhone : '',
-        ownerAddress: contactAddress ? contactAddress : '',
-        title: '',
-        price: '',
-        area: '',
-        direct_house: direct ? direct : '',
-        floor_number: floors ? floors : '',
-        room_number: rooms ? rooms : '',
-        toilet_number: toilets ? toilets : '',
-        interior: furniture ? furniture : '',
-        pubDate: moment().format("DD/MM/YYYY"),
-        project_name: projectName ? projectName : '',
-        project_owner: projectOwner ? projectOwner : '',
-        project_size: projectSize ? projectSize : ''
-      };
 
-      createNewsPostItem(requestParams).then(res => {
-        if (res && parseInt(res.data.returnCode) === 1) {
-          Alert.success('Đăng bài thành công.');
-          this.setState({
-            createNewsPost: res.data.result
-          });
-        } else {
+    uploadMultiImages(formData).then(res => {
+      listUpload = res.data;
+      console.log("listUpload: " + JSON.stringify(listUpload));
+      if (address && summary) {
+        const requestParams = {
+          user_id: currentUser ? currentUser.userId : '1',
+          prop_address: address,
+          desc: summary,
+          listUpload: listUpload ? listUpload : [],
+          ownerName: contactName ? contactName : '',
+          ownerPhone: contactPhone ? contactPhone : '',
+          ownerAddress: contactAddress ? contactAddress : '',
+          title: '',
+          price: '',
+          area: '',
+          direct_house: direct ? direct : '',
+          floor_number: floors ? floors : '',
+          room_number: rooms ? rooms : '',
+          toilet_number: toilets ? toilets : '',
+          interior: furniture ? furniture : '',
+          pubDate: moment().format("DD/MM/YYYY"),
+          project_name: projectName ? projectName : '',
+          project_owner: projectOwner ? projectOwner : '',
+          project_size: projectSize ? projectSize : ''
+        };
+
+        console.log("createNewsPostItem: "+JSON.stringify(requestParams));
+
+        createNewsPostItem(requestParams).then(res => {
+          if (res && parseInt(res.data.returnCode) === 1) {
+            Alert.success('Đăng bài thành công.');
+            this.setState({
+              createNewsPost: res.data.result
+            });
+          } else {
+            Alert.warning("Không có phản hồi. Vui lòng thử lại.")
+          }
+        }).catch(err => {
+          console.log(err);
           Alert.error("Không có phản hồi. Vui lòng thử lại.")
-        }
-      }).catch(err => {
-        console.log(err);
-        Alert.error("Không có phản hồi. Vui lòng thử lại.")
-      }).finally(() =>
-          this.setState({loadingPost: false})
-      );
+        }).finally(() =>
+            this.setState({loadingPost: false})
+        );
 
-    } else {
-      Alert.error("Bạn chưa nhập địa chỉ bất động sản hoặc thông tin chung bất động sản.");
-      this.setState({loadingPost: false})
-    }
+      }
+      else {
+        Alert.error("Bạn chưa nhập địa chỉ bất động sản hoặc thông tin chung bất động sản.");
+        this.setState({loadingPost: false})
+      }
+    })
+    .catch(err => {
+      Alert.warning("Upload images fail.");
+      console.log(err)
+    })
 
   };
 
@@ -383,25 +351,6 @@ class Home extends Component {
     })
   };
 
-  showItems() {
-    let items = [];
-    for (let i = 0; i < this.state.items; i++) {
-      items.push(<li key={i} style={{marginBottom:'200px'}}> Item {i} </li>);
-    }
-    return items;
-  };
-
-  loadMore() {
-    if (this.state.items === 200) {
-      this.setState({ hasMoreItems: false});
-    }
-    else {
-      setTimeout(() => {
-        this.setState({ items: this.state.items + 20});
-      }, 2000);
-    }
-  };
-
   render() {
     const {
       renderMoreButton, renderInputAddress, renderFloorInput, renderRoomInput, renderToiletInput,
@@ -416,14 +365,6 @@ class Home extends Component {
     let inputContact;
     let inputProject;
 
-    const inputStyle = {
-      textIdent: '32px',
-      fontSize: '16px',
-      marginBottom: '5px',
-      border: '1px solid #32CD32',
-      borderRadius: '30px'
-    };
-
     if (renderInputContact) {
       inputContact =
           <div>
@@ -432,13 +373,13 @@ class Home extends Component {
             <div className={"row"} style={{padding:'0 10px'}}>
               <div className="col col-md-6">
                 <Input name="contactName" type="text"
-                       style={inputStyle}
+                       className={"inputStyle"}
                        onChange={this.handleChangeInput}
                        placeholder="Vui lòng nhập tên người liên hệ..."/>
               </div>
               <div className="col col-md-6">
                 <Input name="contactPhone" type="text"
-                       style={inputStyle}
+                       className={"inputStyle"}
                        onChange={this.handleChangeInput}
                        placeholder="Vui lòng nhập số điện thoại người liên hệ..."/>
               </div>
@@ -446,7 +387,7 @@ class Home extends Component {
             <div className={"row"} style={{padding:'0 10px'}}>
               <div className={"col"}>
                 <Input name="contactAddress" type="text"
-                       style={inputStyle}
+                       className={"inputStyle"}
                        onChange={this.handleChangeInput}
                        placeholder="Vui lòng nhập địa chỉ người liên hệ..."/>
               </div>
@@ -464,13 +405,13 @@ class Home extends Component {
             <div className={"row"} style={{padding:'0 10px'}}>
               <div className={"col col-md-6"}>
                 <Input name="projectName" type="text"
-                       style={inputStyle}
+                       className={"inputStyle"}
                        onChange={this.handleChangeInput}
                        placeholder="Vui lòng nhập tên dự án..."/>
               </div>
               <div className={"col col-md-6"}>
                 <Input name="projectOwner" type="text"
-                       style={inputStyle}
+                       className={"inputStyle"}
                        onChange={this.handleChangeInput}
                        placeholder="Vui lòng nhập chủ dự án..."/>
               </div>
@@ -478,7 +419,7 @@ class Home extends Component {
             <div className={"row"} style={{padding:'0 10px'}}>
               <div className={"col"}>
                 <Input name="projectSize" type="text"
-                       style={inputStyle}
+                       className={"inputStyle"}
                        onChange={this.handleChangeInput}
                        placeholder="Vui lòng nhập quy mô dự án..."/>
               </div>
@@ -494,7 +435,7 @@ class Home extends Component {
             <hr/>
             <h6>Địa chỉ</h6>
             <Input name="address" type="text"
-                   style={inputStyle}
+                   className={"inputStyle"}
                    onChange={this.handleChangeInput}
                    placeholder="Vui lòng nhập địa chỉ..."/>
           </div>
@@ -507,7 +448,7 @@ class Home extends Component {
           <div>
             <hr/>
             <h6>Nội thất</h6>
-            <Input name="furniture" type="text" style={inputStyle}
+            <Input name="furniture" type="text" className={"inputStyle"}
                    onChange={this.handleChangeInput}
                    placeholder="Vui lòng nhập nội dung nội thất..."/>
           </div>
@@ -520,7 +461,7 @@ class Home extends Component {
           <div>
             <hr/>
             <h6>Số tầng</h6>
-            <Input name="floors" type="text" style={inputStyle}
+            <Input name="floors" type="text" className={"inputStyle"}
                    onChange={this.handleChangeInput}
                    placeholder="Vui lòng nhập số tầng nhà..."/>
           </div>
@@ -533,7 +474,7 @@ class Home extends Component {
           <div>
             <hr/>
             <h6>Số phòng</h6>
-            <Input name="rooms" type="text" style={inputStyle}
+            <Input name="rooms" type="text" className={"inputStyle"}
                    onChange={this.handleChangeInput}
                    placeholder="Vui lòng nhập số phòng ngủ..."/>
           </div>
@@ -546,7 +487,7 @@ class Home extends Component {
           <div>
             <hr/>
             <h6>Số toilet</h6>
-            <Input name="toilets" type="text" style={inputStyle}
+            <Input name="toilets" type="text" className={"inputStyle"}
                    onChange={this.handleChangeInput}
                    placeholder="Vui lòng nhập số toilet..."/>
           </div>
@@ -561,7 +502,7 @@ class Home extends Component {
             <hr/>
             <h6>Hướng nhà</h6>
             <Input name="direct" type="text"
-                   style={inputStyle}
+                   className={"inputStyle"}
                    onChange={this.handleChangeInput}
                    placeholder="Vui lòng nhập hướng nhà..."/>
           </div>
@@ -734,8 +675,6 @@ class Home extends Component {
                   this.state.loading ? <LoadingIndicator/>
                       : <ListCardItem allNewsItem={this.state.allNewsItem}
                                       currentUser={currentUser}
-                                      handleSharePost={this.handleSharePost}
-                                      toggleModalImage={this.toggleModalImage}
                       />
                 }
 
@@ -758,16 +697,6 @@ class Home extends Component {
           </div>
         </div>
         <div className="app-footer"/>
-
-        <Modal isOpen={this.state.modalImage}
-               toggle={() => this.toggleModalImage()}
-               centered={true}
-               className={'modal-lg modal-lg-custom' + this.props.className}
-        >
-          <img src={this.state.imgUrl}
-               style={{width: '100%', height: '100%'}}
-               alt="images"/>
-        </Modal>
 
         <Modal isOpen={this.state.modalCreatedPost}
                toggle={() => this.toggleModalCreatedPost()}

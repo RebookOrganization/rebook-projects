@@ -5,8 +5,10 @@ import com.web.bean.Request.LikeRequest;
 import com.web.bean.Request.PostNewsRequest;
 import com.web.bean.Request.ShareRequest;
 import com.web.bean.Response.CommonResponse;
+import com.web.dto.RequestFilterSearchDto;
 import com.web.model.ContactOwner;
 import com.web.repository.ContactOwnerRepository;
+import com.web.service.ApiService;
 import com.web.service.NewsItemService;
 import com.web.service.UserService;
 import com.web.service.impl.NewsItemServiceImpl;
@@ -37,8 +39,8 @@ public class NewsController {
 
     @GetMapping(value = "/all-news")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public CommonResponse getAllNewsItem() throws IOException {
-        return newsItemService.getAllNewsItem();
+    public CommonResponse getAllNewsItem(@RequestParam int offset) throws IOException {
+        return newsItemService.getAllNewsItem(offset);
     }
 
     @GetMapping(value = "/search-by-address")
@@ -51,6 +53,11 @@ public class NewsController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public CommonResponse searchNewsByUser(String username) throws Exception {
         return userService.searchNewsByUser(username);
+    }
+
+    @PostMapping(value = "/es-search")
+    public CommonResponse esSearchNewsApi(RequestFilterSearchDto request) throws Exception {
+        return newsItemService.esSearchNewsApi(request);
     }
 
     @PostMapping(value = "/create-post")

@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
       return new CommonResponse<>(this.returnCode, this.returnMessage,
           new LikeResponse(listLike, likeAmount));
     } catch (Exception e) {
-      logger.error("Service likeNewsFeed exception - {}", e);
+      logger.error("Service likeNewsFeed exception - {}", e.getMessage());
       return new CommonResponse.Fail("Service likeNewsFeed exception.");
     }
   }
@@ -196,7 +196,7 @@ public class UserServiceImpl implements UserService {
 
       return new CommonResponse<>(this.returnCode, this.returnMessage, listComment);
     } catch (Exception e) {
-      logger.error("Service commentNewsFeed exception - {}", e);
+      logger.error("Service commentNewsFeed exception - {}", e.getMessage());
       return new CommonResponse.Fail("Service commentNewsFeed exception.");
     }
   }
@@ -318,23 +318,6 @@ public class UserServiceImpl implements UserService {
       logger.error("System error when search with address: " + ex, ex);
       return new Fail("System error when search with address");
     }
-  }
-
-  private UploadFileResponse uploadImage(MultipartFile file) {
-    String fileName = fileStorageService.storeFile(file);
-
-    String imageURI = ServletUriComponentsBuilder.fromCurrentContextPath()
-        .path("/downloadFile/")
-        .path(fileName)
-        .toUriString();
-
-    return new UploadFileResponse(fileName, imageURI, file.getContentType(), file.getSize());
-  }
-
-  private List<UploadFileResponse> uploadMultiImages(MultipartFile[] files) {
-    return Arrays.stream(files)
-        .map(this::uploadImage)
-        .collect(Collectors.toList());
   }
 
   @Override

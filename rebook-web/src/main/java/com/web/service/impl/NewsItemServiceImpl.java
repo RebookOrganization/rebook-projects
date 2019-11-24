@@ -5,8 +5,10 @@ import com.web.bean.Response.CommonResponse.Fail;
 import com.web.bean.Response.NewsResponseDTO;
 import com.web.cache.CacheDataService;
 import com.web.cache.NewsItemIndex;
+import com.web.dto.RequestFilterSearchDto;
 import com.web.model.*;
 import com.web.repository.*;
+import com.web.service.ApiService;
 import com.web.service.NewsItemService;
 import com.web.utils.DateTimeUtils;
 import java.util.Map;
@@ -50,31 +52,46 @@ public class NewsItemServiceImpl implements NewsItemService {
   private PropertyProjectRepository propertyProjectRepository;
 
   @Autowired
+  private UserSearchLogRepository userSearchLogRepository;
+
+  @Autowired
   CacheDataService cacheDataService;
 
   private int returnCode = 1;
   private String returnMessage = "success";
-
   private static Integer currentPartition = DateTimeUtils.getPartition();
 
+  private ApiService apiService;
+
+  @Autowired
+  public NewsItemServiceImpl(ApiService apiService) {
+    this.apiService = apiService;
+  }
+
   @Override
-  public CommonResponse getAllNewsItem() {
+  public CommonResponse getAllNewsItem(int offset) {
     try {
       Map<String, NewsItem> newsMap = NewsItemIndex.newsItemMap;
       List<NewsResponseDTO> newsResponseDTOList = new ArrayList<>();
 
-      if (!newsMap.isEmpty() && newsMap.size() >= 20) {
-        for (Map.Entry<String, NewsItem> entry : newsMap.entrySet()) {
-          NewsItem newsItem = entry.getValue();
-          if (newsItem != null) {
-            newsResponseDTOList.add(mapNewsToNewsResponseDTO(newsItem));
-          }
-        }
+      List<NewsResponseDTO> esResponse = apiService.esNewsScrollApi(offset);
+      if (esResponse != null && !esResponse.isEmpty()) {
+        newsResponseDTOList.addAll(esResponse);
       }
       else {
-        List<NewsItem> newsItemList = newsRepository.findNewsByPartition(currentPartition);
-        for (NewsItem newsItem : newsItemList) {
-          newsResponseDTOList.add(mapNewsToNewsResponseDTO(newsItem));
+        if (!newsMap.isEmpty() && newsMap.size() >= 20) {
+          for (Map.Entry<String, NewsItem> entry : newsMap.entrySet()) {
+            NewsItem newsItem = entry.getValue();
+            if (newsItem != null) {
+              newsResponseDTOList.add(mapNewsToNewsResponseDTO(newsItem));
+            }
+          }
+        }
+        else {
+          List<NewsItem> newsItemList = newsRepository.findNewsByPartition(currentPartition);
+          for (NewsItem newsItem : newsItemList) {
+            newsResponseDTOList.add(mapNewsToNewsResponseDTO(newsItem));
+          }
         }
       }
 
@@ -105,6 +122,28 @@ public class NewsItemServiceImpl implements NewsItemService {
       ex.printStackTrace();
       logger.error("NewsItemServiceImpl getAllNewsByUser Exception: ", ex);
       return new Fail("Lấy thông tin bài viết của user thất bại.");
+    }
+  }
+
+  @Override
+  public CommonResponse esSearchNewsApi(RequestFilterSearchDto request) throws IOException {
+    try {
+      //save log of user search
+      UserSearchLog userSearchLog = new UserSearchLog();
+      userSearchLog.setAddress(request.getAddress());
+      userSearchLog.setArea(request.getArea());
+      userSearchLog.setContent(request.getContent());
+      userSearchLog.setPrice(request.getPrice());
+      userSearchLog.setCity(request.getProvinceCity());
+      userSearchLogRepository.save(userSearchLog);
+
+      List<NewsResponseDTO> newsResponseDTOList = apiService.esSearchNewsApi(request);
+      return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTOList);
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+      logger.error("NewsItemServiceImpl getAllNewsByUser Exception: ", ex);
+      return new Fail("Tìm kiếm thông tin bài viết của user thất bại.");
     }
   }
 

@@ -6,7 +6,7 @@ import java.util.List;
 public class PostNewsRequest {
 
   private String title;
-  List<UploadFileResponse> listUpload;
+  private List<UploadFileResponse> listUpload;
   private String price;
   private String area;
   private String desc;

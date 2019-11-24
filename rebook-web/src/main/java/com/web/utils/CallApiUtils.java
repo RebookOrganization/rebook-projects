@@ -22,7 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class CallApiUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(CallApiUtils.class);
-  private static final int TIME_OUT = 3000;
+  private static final int TIME_OUT = 60000;
 
   public HttpComponentsClientHttpRequestFactory getClientHttpRequestFactory() {
     HttpComponentsClientHttpRequestFactory clientHttpRequestFactory

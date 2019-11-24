@@ -8,6 +8,9 @@ public class UploadFileResponse {
   private String fileType;
   private long size;
 
+  public UploadFileResponse() {
+  }
+
   public UploadFileResponse(String username, String fileName, String fileDownloadUri, String fileType, long size) {
     this.username = username;
     this.fileName = fileName;

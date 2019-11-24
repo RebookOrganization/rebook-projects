@@ -1,0 +1,22 @@
+.styleText {
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 1.58;
+  font-family: inherit;
+  margin-bottom: 10px;
+  padding-right: 5px;
+}
+
+.styleTitle {
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 1.58;
+  font-family: inherit;
+  margin-bottom: 10px
+}
+
+.styleIcon {
+  width: 21px;
+  height: 21px;
+  margin-right: 2px
+}

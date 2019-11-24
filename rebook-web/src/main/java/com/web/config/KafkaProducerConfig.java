@@ -25,7 +25,7 @@ public class KafkaProducerConfig {
   @Value("advice-topic")
   private String topicName;
 
-  @Value("${bootstrap_server}")
+  @Value("${kafka.bootstrap_server}")
   private String bootstrap_server;
 
   // Producer configuration

@@ -204,39 +204,6 @@ class PageRight extends Component {
               </button>
             </CardBody>
           </Card>
-          <Card>
-            <CardImg top width="100%"
-                     src="http://image.english.vov.vn/h500/uploaded/tmt2b47lhgly8uzveukg/2017_10_10/h_1_VEWM.jpg"
-                     alt="Card image cap"/>
-            <CardBody>
-              <CardText><strong>Recommend for you</strong></CardText>
-              <button className={"pull-right"}>
-                <i className="fa fa-plus"/> Chi tiết
-              </button>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardImg top width="100%"
-                     src="http://image.english.vov.vn/h500/uploaded/tmt2b47lhgly8uzveukg/2017_10_10/h_1_VEWM.jpg"
-                     alt="Card image cap"/>
-            <CardBody>
-              <CardText><strong>Recommend for you</strong></CardText>
-              <button className={"pull-right"}>
-                <i className="fa fa-plus"/> Chi tiết
-              </button>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardImg top width="100%"
-                     src="http://image.english.vov.vn/h500/uploaded/tmt2b47lhgly8uzveukg/2017_10_10/h_1_VEWM.jpg"
-                     alt="Card image cap"/>
-            <CardBody>
-              <CardText><strong>Recommend for you</strong></CardText>
-              <button className={"pull-right"}>
-                <i className="fa fa-plus"/> Chi tiết
-              </button>
-            </CardBody>
-          </Card>
           <Card
               style={{display: 'flex', flexDirection: 'row', padding: '10px'}}>
             <CardText style={{marginRight: '20px'}}>Tiếng Việt.</CardText>
