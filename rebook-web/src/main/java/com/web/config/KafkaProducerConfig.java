@@ -22,7 +22,7 @@ public class KafkaProducerConfig {
   @Autowired
   private KafkaProperties kafkaProperties;
 
-  @Value("advice-topic")
+  @Value("${kafka.tpd.topic-name}")
   private String topicName;
 
   @Value("${kafka.bootstrap_server}")
