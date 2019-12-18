@@ -1,5 +1,13 @@
 import React, {Component} from 'react';
-import {Button, Card, CardImg, CardTitle, Input, Spinner} from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardImg,
+  CardTitle,
+  Input,
+  Spinner
+} from "reactstrap";
 import ButtonGroup from "reactstrap/es/ButtonGroup";
 import shallowCompare from 'react-addons-shallow-compare';
 import ImageGallery from 'react-image-gallery';
@@ -180,12 +188,14 @@ class ListCardItem extends Component{
     const {allNewsItem, newsDetail, textOfReadMore, currentUser, indexNews,
       renderComment, activeLike, activeShare} = this.state;
     const loader =
-        <div>
-          <Spinner type="grow" color="info" />
-          <Spinner type="grow" color="info" />
-          <Spinner type="grow" color="info" />
-          <Spinner type="grow" color="info" />
-        </div>;
+        <Card>
+          <CardBody style={{alignItems:'center', justifyContent:'center'}}>
+            <Spinner type="grow" color="info" />
+            <Spinner type="grow" color="info" />
+            <Spinner type="grow" color="info" />
+            <Spinner type="grow" color="info" />
+          </CardBody>
+        </Card>;
 
     return (
       <InfiniteScroll pageStart={0}

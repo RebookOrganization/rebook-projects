@@ -130,10 +130,10 @@ public class NewsItemServiceImpl implements NewsItemService {
     try {
       //save log of user search
       UserSearchLog userSearchLog = new UserSearchLog();
-      userSearchLog.setAddress(request.getAddress());
-      userSearchLog.setArea(request.getArea());
+      userSearchLog.setAddress(request.getContent());
+      userSearchLog.setArea(request.getAreaTo());
       userSearchLog.setContent(request.getContent());
-      userSearchLog.setPrice(request.getPrice());
+      userSearchLog.setPrice(request.getPriceTo());
       userSearchLog.setCity(request.getProvinceCity());
       userSearchLogRepository.save(userSearchLog);
 

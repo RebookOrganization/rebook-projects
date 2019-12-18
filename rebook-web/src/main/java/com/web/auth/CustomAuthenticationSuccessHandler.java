@@ -24,7 +24,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
   private static final Logger logger = LoggerFactory
       .getLogger(CustomAuthenticationSuccessHandler.class);
 
-  public static final String HOME_REBOOK = "/home";
+  public static final String HOME_REBOOK = "/index";
 
   private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -52,14 +52,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
       logger.info(e.getMessage(), e);
     }
 
-//    handleRedirect(referer, httpServletRequest, httpServletResponse);
+    handleRedirect(referer, httpServletRequest, httpServletResponse);
   }
 
-//  private void handleRedirect(String referer, HttpServletRequest request,
-//      HttpServletResponse response) throws IOException {
-//    if (StringUtils.isNotEmpty(referer)) {
-//      redirectStrategy.sendRedirect(request, response, "/index");
-//    }
-//  }
+  private void handleRedirect(String referer, HttpServletRequest request,
+      HttpServletResponse response) throws IOException {
+    if (StringUtils.isNotEmpty(referer)) {
+      redirectStrategy.sendRedirect(request, response, referer);
+    }
+  }
 
 }

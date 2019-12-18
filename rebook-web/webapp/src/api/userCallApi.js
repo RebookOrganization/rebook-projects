@@ -53,3 +53,7 @@ export function searchNewsByUser(username) {
 export function getAllNewsByUser(userID) {
   return httpGet(API_NEWS + "/user-news?userID=" + userID);
 }
+
+export function elasticSearchNews(request) {
+  return httpPost(API_NEWS + "/es-search", request);
+}

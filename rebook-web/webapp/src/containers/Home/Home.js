@@ -32,6 +32,12 @@ import { withCookies } from 'react-cookie';
 import AppHeader from "../../components/Header/AppHeader";
 import {withRouter} from "react-router-dom";
 import RecommendSlider from "./Slider/RecommendSlider";
+import {
+  loadEnumArea, loadEnumDirectHouse,
+  loadEnumDistrict, loadEnumPrice,
+  loadEnumProvince, loadEnumRentType, loadEnumSaleType
+} from "../../api/requestFilterSearchApi";
+import AppSearch from "../../components/AppSearch/AppSearch";
 
 const initOffset = 0;
 
@@ -80,8 +86,6 @@ class Home extends Component {
       inputSearchType: 0,
       onScroll: false,
 
-      resultSearchAddress: null,
-      resultSearchUser: null,
       loading: false,
 
       loadingPost: false,
@@ -92,6 +96,15 @@ class Home extends Component {
       items: 20,
       hasMoreItems: true,
       hideNav: false,
+
+      isSearch: false,
+      optionProvince: null,
+      optionDistrict: null,
+      optionRentType: null,
+      optionSaleType: null,
+      optionPrice: null,
+      optionArea: null,
+      optionDirectHouse: null,
     };
 
   }
@@ -103,6 +116,43 @@ class Home extends Component {
   toggleModalCreatedPost = () => {
     this.setState({
       modalCreatedPost: !this.state.modalCreatedPost
+    })
+  };
+
+  toggleModalSearch = () => {
+    this.setState({
+      isSearch: !this.state.isSearch
+    }, () => {
+      this.state.isSearch ?
+          this.handleLoadEnum() : null
+    })
+  };
+
+  handleLoadEnum = () => {
+    this.setState({loading: true});
+    let provinceCity = loadEnumProvince();
+    let district = loadEnumDistrict();
+    let rentType = loadEnumRentType();
+    let saleType = loadEnumSaleType();
+    let priceOption = loadEnumPrice();
+    let areaOption = loadEnumArea();
+    let directHouse = loadEnumDirectHouse();
+
+    Promise.all([provinceCity, district, rentType, saleType,
+      priceOption, areaOption, directHouse]).then(res => {
+      console.log("res: "+ JSON.stringify(res));
+      this.setState({
+        optionProvince: res[0].data,
+        optionDistrict: res[1].data,
+        optionRentType: res[2].data,
+        optionSaleType: res[3].data,
+        optionPrice: res[4].data,
+        optionArea: res[5].data,
+        optionDirectHouse: res[6].data,
+      })
+    }).catch(e => console.log(e))
+    .finally(()=> {
+      this.setState({loading: false})
     })
   };
 
@@ -280,62 +330,14 @@ class Home extends Component {
 
   };
 
-  callBackFromPageRight = (allNewsItem, loading) => {
+  callBackFromAppSearch = (allNewsItem, loading) => {
     if (allNewsItem) {
-      console.log("allNewsItem: " + allNewsItem);
+      console.log("allNewsItem: " + JSON.stringify(allNewsItem));
       this.setState({
         allNewsItem: allNewsItem,
         loading: loading
       })
     }
-  };
-
-  handleSearchByFiler = () => {
-    const {inputSearch, inputSearchType} = this.state;
-
-    this.setState({loading: true});
-
-    console.log("input search type: " + inputSearchType);
-    if (parseInt(inputSearchType) === 0) {
-      Alert.error("Vui lòng chọn loại tìm kiếm.")
-    } else if (parseInt(inputSearchType) === 1) {
-      let address = inputSearch ? inputSearch : Alert.error(
-          "Vui lòng nhập thông tin.");
-
-      console.log("address: " + address);
-      if (address !== null || address !== '') {
-
-        //Api SearchByAddress
-        searchNewsByAddress(address).then(res => {
-          this.setState({
-            resultSearchAddress: res.result,
-            allNewsItem: res.result,
-            loading: false
-          })
-        }).catch((e) => {
-          console.log(e);
-          this.setState({loading: false})
-        });
-      }
-    } else {
-      const requestParams = {
-        username: inputSearch ? inputSearch : Alert.error(
-            "Vui lòng nhập thông tin.")
-      };
-      console.log("requestParam: " + JSON.stringify(requestParams));
-
-      //Api SearchByUser
-      searchNewsByUser(requestParams).then(res => {
-        this.setState({
-          resultSearchUser: res.result,
-          loading: false
-        })
-      }).catch(err => {
-        console.log(err);
-        this.setState({loading: false})
-      })
-    }
-
   };
 
   handleCloseAllInput = () => {
@@ -543,7 +545,9 @@ class Home extends Component {
       <div className="app">
         <div className="app-top-box sticky-top">
           <AppHeader authenticated={this.state.authenticated}
-                     currentUser={this.state.currentUser}/>
+                     currentUser={this.state.currentUser}
+                     toggleModalSearch={this.toggleModalSearch}
+          />
         </div>
         <div className="app-body" id="app-body">
           <div className="container-fluid"
@@ -681,7 +685,7 @@ class Home extends Component {
               </div>
 
               <div className="col col-md-3" style={{paddingRight: '20px'}}>
-                <PageRight callBackFromPageRight={this.callBackFromPageRight}/>
+                <PageRight/>
               </div>
 
               {
@@ -808,8 +812,21 @@ class Home extends Component {
           </ModalBody>
         </Modal>
 
+        <AppSearch toggleModalSearch={this.toggleModalSearch}
+                   callBackFromAppSearch={this.callBackFromAppSearch}
+                   isSearch={this.state.isSearch}
+                   optionProvince={this.state.optionProvince}
+                   optionDistrict={this.state.optionDistrict}
+                   optionRentType={this.state.optionRentType}
+                   optionSaleType={this.state.optionSaleType}
+                   optionPrice={this.state.optionPrice}
+                   optionArea={this.state.optionArea}
+                   optionDirectHouse={this.state.optionDirectHouse}
+        />
+
         <Alert stack={{limit: 3}}
                timeout={3000}
+               style={{zIndex:'9999'}}
                position='top-right' effect='slide' offset={65}/>
       </div>
 

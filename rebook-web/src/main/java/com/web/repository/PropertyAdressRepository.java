@@ -29,4 +29,5 @@ public interface PropertyAdressRepository extends JpaRepository<PropertyAddress,
 
   @Query(value = "select * from property_address?1 as t where t.id = ?2", nativeQuery = true)
   Optional<PropertyAddress> findById(int partition, Long id);
+
 }

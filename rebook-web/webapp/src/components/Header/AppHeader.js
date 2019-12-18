@@ -19,52 +19,49 @@ class AppHeader extends Component {
       currentUser: this.props.currentUser ? this.props.currentUser : null,
       isSearch: false,
       loading: false,
-      optionProvince: null,
-      optionDistrict: null,
-      optionRentType: null,
-      optionSaleType: null,
-      optionPrice: null,
-      optionArea: null,
-      optionDirectHouse: null,
+      // optionProvince: null,
+      // optionDistrict: null,
+      // optionRentType: null,
+      // optionSaleType: null,
+      // optionPrice: null,
+      // optionArea: null,
+      // optionDirectHouse: null,
       items: 15
     }
   }
 
-  handleLoadEnum = () => {
-    this.setState({loading: true});
-    let provinceCity = loadEnumProvince();
-    let district = loadEnumDistrict();
-    let rentType = loadEnumRentType();
-    let saleType = loadEnumSaleType();
-    let priceOption = loadEnumPrice();
-    let areaOption = loadEnumArea();
-    let directHouse = loadEnumDirectHouse();
-
-    Promise.all([provinceCity, district, rentType, saleType,
-      priceOption, areaOption, directHouse]).then(res => {
-      console.log("res: "+ JSON.stringify(res));
-      this.setState({
-        optionProvince: res[0].data,
-        optionDistrict: res[1].data,
-        optionRentType: res[2].data,
-        optionSaleType: res[3].data,
-        optionPrice: res[4].data,
-        optionArea: res[5].data,
-        optionDirectHouse: res[6].data,
-      })
-    }).catch(e => console.log(e))
-    .finally(()=> {
-      this.setState({loading: false})
-    })
-  };
+  // handleLoadEnum = () => {
+  //   this.setState({loading: true});
+  //   let provinceCity = loadEnumProvince();
+  //   let district = loadEnumDistrict();
+  //   let rentType = loadEnumRentType();
+  //   let saleType = loadEnumSaleType();
+  //   let priceOption = loadEnumPrice();
+  //   let areaOption = loadEnumArea();
+  //   let directHouse = loadEnumDirectHouse();
+  //
+  //   Promise.all([provinceCity, district, rentType, saleType,
+  //     priceOption, areaOption, directHouse]).then(res => {
+  //     console.log("res: "+ JSON.stringify(res));
+  //     this.setState({
+  //       optionProvince: res[0].data,
+  //       optionDistrict: res[1].data,
+  //       optionRentType: res[2].data,
+  //       optionSaleType: res[3].data,
+  //       optionPrice: res[4].data,
+  //       optionArea: res[5].data,
+  //       optionDirectHouse: res[6].data,
+  //     })
+  //   }).catch(e => console.log(e))
+  //   .finally(()=> {
+  //     this.setState({loading: false})
+  //   })
+  // };
 
   toggleModalSearch = () => {
-    this.setState({
-      isSearch: !this.state.isSearch
-    }, () => {
-      this.state.isSearch ?
-          this.handleLoadEnum() : null
-    })
+    if (typeof this.props.toggleModalSearch === 'function') {
+      return this.props.toggleModalSearch()
+    }
   };
 
   loadMore() {
@@ -238,16 +235,16 @@ class AppHeader extends Component {
             </div>
           </div>
 
-          <AppSearch toggleModalSearch={this.toggleModalSearch}
-                     isSearch={this.state.isSearch}
-                     optionProvince={optionProvince}
-                     optionDistrict={optionDistrict}
-                     optionRentType={optionRentType}
-                     optionSaleType={optionSaleType}
-                     optionPrice={optionPrice}
-                     optionArea={optionArea}
-                     optionDirectHouse={optionDirectHouse}
-          />
+          {/*<AppSearch toggleModalSearch={this.toggleModalSearch}*/}
+          {/*           isSearch={this.state.isSearch}*/}
+          {/*           optionProvince={optionProvince}*/}
+          {/*           optionDistrict={optionDistrict}*/}
+          {/*           optionRentType={optionRentType}*/}
+          {/*           optionSaleType={optionSaleType}*/}
+          {/*           optionPrice={optionPrice}*/}
+          {/*           optionArea={optionArea}*/}
+          {/*           optionDirectHouse={optionDirectHouse}*/}
+          {/*/>*/}
         </header>
     )
   }

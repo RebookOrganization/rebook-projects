@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Route, Redirect, Switch, BrowserRouter} from 'react-router-dom';
+import {Route, Redirect, Switch, BrowserRouter as Router} from 'react-router-dom';
 import AppHeader from '../../components/Header/AppHeader';
 import Home from '../Home/Home';
 import Profile from '../Profile/Profile';
@@ -48,7 +48,7 @@ class App extends Component {
 
     return (
         <CookiesProvider>
-          <BrowserRouter>
+          <Router>
             <Switch>
               <Route exact path={"/index"}
                      render={() => <Redirect to={"/home"}/>}/>
@@ -75,7 +75,7 @@ class App extends Component {
               />
               <Route component={NotFound}/>
             </Switch>
-          </BrowserRouter>
+          </Router>
         </CookiesProvider>
     )
   }

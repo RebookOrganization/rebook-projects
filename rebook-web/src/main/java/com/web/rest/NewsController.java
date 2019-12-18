@@ -6,14 +6,8 @@ import com.web.bean.Request.PostNewsRequest;
 import com.web.bean.Request.ShareRequest;
 import com.web.bean.Response.CommonResponse;
 import com.web.dto.RequestFilterSearchDto;
-import com.web.model.ContactOwner;
-import com.web.repository.ContactOwnerRepository;
-import com.web.service.ApiService;
 import com.web.service.NewsItemService;
 import com.web.service.UserService;
-import com.web.service.impl.NewsItemServiceImpl;
-import com.web.service.impl.UserServiceImpl;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +50,7 @@ public class NewsController {
     }
 
     @PostMapping(value = "/es-search")
-    public CommonResponse esSearchNewsApi(RequestFilterSearchDto request) throws Exception {
+    public CommonResponse esSearchNewsApi(@RequestBody RequestFilterSearchDto request) throws Exception {
         return newsItemService.esSearchNewsApi(request);
     }
 

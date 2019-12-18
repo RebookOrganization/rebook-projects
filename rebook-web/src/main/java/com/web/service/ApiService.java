@@ -53,13 +53,16 @@ public class ApiService {
 
     JSONObject object = new JSONObject();
     object.put("content", request.getContent());
-    object.put("price", request.getPrice());
-    object.put("area", request.getArea());
+    object.put("priceFrom", request.getPriceFrom());
+    object.put("priceTo", request.getPriceTo());
+    object.put("areaFrom", request.getAreaFrom());
+    object.put("areaTo", request.getAreaTo());
     object.put("district", request.getDistrict());
     object.put("provinceCity", request.getProvinceCity());
     object.put("transType", request.getTransType());
     object.put("directHouse", request.getDirectHouse());
 
+    logger.info("ApiService esSearchNewsApi request: {}", GsonUtils.toJsonString(object));
     try {
       esResponse = callApiUtils.sendPostJson(object, url);
       logger.info("ApiService esSearchNewsApi response: {}", esResponse);

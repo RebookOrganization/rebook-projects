@@ -35,22 +35,9 @@ public class NewsItem implements Serializable {
 
     private String description;
     private String city;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn
-//    @JsonIgnore
     private Long propertyAddressId;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn
-//    @JsonIgnore
     private Long propertyProjectId;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "contact_owner_id")
-//    @JsonIgnore
     private Long contactOwnerId;
-
     private String direct_of_house;
     private String frontEnd;
     private String room_number;

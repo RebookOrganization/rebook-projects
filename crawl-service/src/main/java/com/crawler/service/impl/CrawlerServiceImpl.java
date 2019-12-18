@@ -117,7 +117,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             // check TfIdf tại đây.
             compareTfIdf = new TfIdfMain().compareText(NewsItemIndex.newsItem.getDescription(), desc);
             logger.info("crawlerBatDongSan News duplicate index score: {}", compareTfIdf);
-            if (compareTfIdf >= 1.0) {
+            if (compareTfIdf >= 0.9) {
               newsItem.setDescription(desc);
 
               if (productDetail.getElementById(ROOM_NUMBER) != null) {

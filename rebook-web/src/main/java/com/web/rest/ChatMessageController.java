@@ -18,8 +18,7 @@ public class ChatMessageController {
   @RequestMapping(value = "/getMessage", method = RequestMethod.GET)
 //    @PreAuthorize("hasAnyRole('EXCUTIVE_MANAGER', 'MANAGER', 'WORKER')")
   public List<ChatMessage> getMessage() {
-    List<ChatMessage> messages = cacheDataService.findAllMessages();
-    return messages;
+    return cacheDataService.findAllMessages();
   }
 
 }

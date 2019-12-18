@@ -7,7 +7,6 @@ import javax.persistence.Id;
 
 @Entity
 public class UserSearchLog implements java.io.Serializable {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

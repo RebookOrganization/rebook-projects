@@ -24,7 +24,7 @@ import ReactAvatarEditor from 'react-avatar-editor';
 import { withCookies } from 'react-cookie';
 import LoadingIndicator from "../../components/Loading/LoadingIndicator";
 import AppHeader from "../../components/Header/AppHeader";
-import {withRouter} from "react-router-dom";
+import {NavLink, withRouter} from "react-router-dom";
 
 class Profile extends Component {
   constructor(props) {
@@ -81,7 +81,7 @@ class Profile extends Component {
   }
 
   componentWillUnmount() {
-    // window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('scroll', this.handleScroll);
     window.removeEventListener("resize", this.resize.bind(this));
   }
 
@@ -136,7 +136,7 @@ class Profile extends Component {
       let images = [];
       imageList.map(i => {
         images.push({
-          original: i.imageUrl,
+          original: i.imageUrl.replace("/resize/200x200", ""),
           thumbnail: i.imageUrl,
         })
       });
@@ -235,6 +235,10 @@ class Profile extends Component {
 
                     <h6 style={{color:'#616770', paddingLeft:'10px'}}>Lối tắt</h6>
                     <div className="list-group list-group-mine" style={{marginBottom: '15px'}}>
+                      <NavLink tag={"a"} className="list-group-item" to={"/home"}>
+                        <img src="/icon/icons8-news.png" alt={""}/> Bảng tin
+                        <img src="/icon/menu-5.svg" style={{float:'right'}} alt={""}/>
+                      </NavLink>
                       <a className="list-group-item" href="#">
                         <img src="/icon/icons8-group.png" alt={""}/> Nhóm
                         <img src="/icon/menu-5.svg" style={{float:'right'}} alt={""}/>

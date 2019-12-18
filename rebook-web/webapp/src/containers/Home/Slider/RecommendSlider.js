@@ -30,7 +30,7 @@ class RecommendSlider extends Component {
             <div style={{margin:'0 5px'}}>
               <Card style={{backgroundColor:'#E9EBEE'}}>
                 <CardImg top width="100%"
-                         src="https://icdn.dantri.com.vn/thumb_w/640/2019/10/15/295620180519133750-d-416-1571122505106.jpg"
+                         src="https://image.theleader.vn/upload/ngocson/2018/1/9/phoi-canh-cua-chung-cu-hinode-city.png"
                          alt="Card image cap"/>
                 <CardBody>
                   <CardText><strong>Recommend for you</strong></CardText>
@@ -95,7 +95,7 @@ class RecommendSlider extends Component {
             <div style={{margin:'0 5px'}}>
               <Card style={{backgroundColor:'#E9EBEE'}}>
                 <CardImg top width="100%"
-                         src="https://img.vietnamfinance.vn/thumbs/700x0/upload/news/dinhtinh/2019/1/27/bat-dong-san-thang-ngau-reatimes-1543985111.jpg"
+                         src="https://media.ex-cdn.com/EXP/media.nhadautu.vn/files/phandinhchinh/2018/02/06/bat-dong-1104.jpg"
                          alt="Card image cap"/>
                 <CardBody>
                   <CardText><strong>Recommend for you</strong></CardText>

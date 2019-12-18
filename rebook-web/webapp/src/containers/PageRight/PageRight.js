@@ -10,7 +10,6 @@ import 'ladda/dist/ladda-themeless.min.css';
 import "./_pageRight.css";
 
 
-
 class PageRight extends Component {
   constructor(props) {
     super(props);
@@ -51,120 +50,120 @@ class PageRight extends Component {
     this.setState({collapseSearch: !this.state.collapseSearch})
   };
 
-  handleSearchByFiler = () => {
-    const {inputSearch, inputSearchType} = this.state;
-    this.setState({loading: true});
-
-    console.log("input search type: " + inputSearchType);
-    if (parseInt(inputSearchType) === 0) {
-      Alert.error("Vui lòng chọn loại tìm kiếm.");
-      this.setState({loading: false})
-    } else if (parseInt(inputSearchType) === 1) {
-      let address = inputSearch ? inputSearch : Alert.error(
-          "Vui lòng nhập thông tin.");
-
-      console.log("address: " + address);
-      if (address !== null || address !== '') {
-
-        //Api SearchByAddress
-        searchNewsByAddress(address).then(res => {
-          this.setState({
-            resultSearchAddress: res.result,
-            allNewsItem: res.result,
-            loading: false
-          }, () => {
-            this.props.callBackFromPageRight(this.state.allNewsItem,
-                this.state.loading);
-          })
-        }).catch((e) => {
-          console.log(e);
-          this.setState({loading: false});
-          Alert.warning("Không có kết quả trả về.")
-        });
-      }
-    } else {
-      const requestParams = {
-        username: inputSearch ? inputSearch : Alert.error(
-            "Vui lòng nhập thông tin.")
-      };
-      console.log("requestParam: " + JSON.stringify(requestParams));
-
-      //Api SearchByUser
-      searchNewsByUser(requestParams).then(res => {
-        this.setState({
-          resultSearchUser: res.result,
-        })
-      }).catch(err => {
-        console.log(err);
-        Alert.warning("Không có kết quả trả về.")
-      }).finally(() => {
-        this.setState({loading: false})
-      });
-    }
-  };
+  // handleSearchByFiler = () => {
+  //   const {inputSearch, inputSearchType} = this.state;
+  //   this.setState({loading: true});
+  //
+  //   console.log("input search type: " + inputSearchType);
+  //   if (parseInt(inputSearchType) === 0) {
+  //     Alert.error("Vui lòng chọn loại tìm kiếm.");
+  //     this.setState({loading: false})
+  //   } else if (parseInt(inputSearchType) === 1) {
+  //     let address = inputSearch ? inputSearch : Alert.error(
+  //         "Vui lòng nhập thông tin.");
+  //
+  //     console.log("address: " + address);
+  //     if (address !== null || address !== '') {
+  //
+  //       //Api SearchByAddress
+  //       searchNewsByAddress(address).then(res => {
+  //         this.setState({
+  //           resultSearchAddress: res.result,
+  //           allNewsItem: res.result,
+  //           loading: false
+  //         }, () => {
+  //           this.props.callBackFromPageRight(this.state.allNewsItem,
+  //               this.state.loading);
+  //         })
+  //       }).catch((e) => {
+  //         console.log(e);
+  //         this.setState({loading: false});
+  //         Alert.warning("Không có kết quả trả về.")
+  //       });
+  //     }
+  //   } else {
+  //     const requestParams = {
+  //       username: inputSearch ? inputSearch : Alert.error(
+  //           "Vui lòng nhập thông tin.")
+  //     };
+  //     console.log("requestParam: " + JSON.stringify(requestParams));
+  //
+  //     //Api SearchByUser
+  //     searchNewsByUser(requestParams).then(res => {
+  //       this.setState({
+  //         resultSearchUser: res.result,
+  //       })
+  //     }).catch(err => {
+  //       console.log(err);
+  //       Alert.warning("Không có kết quả trả về.")
+  //     }).finally(() => {
+  //       this.setState({loading: false})
+  //     });
+  //   }
+  // };
 
   render() {
     // className="sticky-top" style={{top: '60px', zIndex:'1'}}
     return (
         <div id={"page-right"}>
-          <Card>
-            <div style={{padding: '15px'}}>
-              <div className="search-box">
-                <span className="fa fa-search"/>
-                <input id="inputSearch"
-                       placeholder="Tìm kiếm nhanh địa chỉ"
-                       onClick={this.toggleCollapse}
-                       style={{
-                         textIdent: '32px',
-                         backgroundColor: '#f2f3f5',
-                         outline: 'none'
-                       }}
-                       value={this.state.inputSearch}
-                       onChange={(e) => this.setState(
-                           {inputSearch: e.target.value})}
-                />
-              </div>
-              <Collapse isOpen={this.state.collapseSearch}>
-                <hr style={{marginTop: "5px"}}/>
-                <Row>
-                  <Col md={12} style={{paddingLeft: '5px'}}>
-                    <select className="form-control"
-                            style={{
-                              height: '40px',
-                              fontSize: '16px',
-                              backgroundColor: '#f2f3f5',
-                              marginBottom: "5px"
-                            }}
-                            onChange={(e) => this.setState(
-                                {inputSearchType: e.target.value})}
-                    >
-                      <option value={0}>Chọn loại tìm kiếm</option>
-                      <option value={1}>Địa điểm bất động sản</option>
-                      <option value={2}>Loại giao dịch</option>
-                      <option value={3}>Người dùng rebook</option>
-                    </select>
-                  </Col>
-                </Row>
-                <hr/>
-                <Row style={{padding: '0 15px', justifyContent: 'flex-end'}}>
-                  <LaddaButton
-                      className="btn btn-info btn-ladda"
-                      loading={this.state.loading}
-                      onClick={() => this.handleSearchByFiler()}
-                      data-style={EXPAND_LEFT}
-                      style={{
-                        backgroundColor: '#008FE5',
-                        color: 'white',
-                        border: 'none',
-                        height: '40px',
-                        lineHeight: '0'
-                      }}>
-                    <i className="fas fa-search"/> Search
-                  </LaddaButton>
-                </Row>
-              </Collapse>
-            </div>
-          </Card>
+          {/*<Card>*/}
+          {/*  <div style={{padding: '15px'}}>*/}
+          {/*    <div className="search-box">*/}
+          {/*      <span className="fa fa-search"/>*/}
+          {/*      <input id="inputSearch"*/}
+          {/*             placeholder="Tìm kiếm nhanh địa chỉ"*/}
+          {/*             onClick={this.toggleCollapse}*/}
+          {/*             style={{*/}
+          {/*               textIdent: '32px',*/}
+          {/*               backgroundColor: '#f2f3f5',*/}
+          {/*               outline: 'none'*/}
+          {/*             }}*/}
+          {/*             value={this.state.inputSearch}*/}
+          {/*             onChange={(e) => this.setState(*/}
+          {/*                 {inputSearch: e.target.value})}*/}
+          {/*      />*/}
+          {/*    </div>*/}
+          {/*    <Collapse isOpen={this.state.collapseSearch}>*/}
+          {/*      <hr style={{marginTop: "5px"}}/>*/}
+          {/*      <Row>*/}
+          {/*        <Col md={12} style={{paddingLeft: '5px'}}>*/}
+          {/*          <select className="form-control"*/}
+          {/*                  style={{*/}
+          {/*                    height: '40px',*/}
+          {/*                    fontSize: '16px',*/}
+          {/*                    backgroundColor: '#f2f3f5',*/}
+          {/*                    marginBottom: "5px"*/}
+          {/*                  }}*/}
+          {/*                  onChange={(e) => this.setState(*/}
+          {/*                      {inputSearchType: e.target.value})}*/}
+          {/*          >*/}
+          {/*            <option value={0}>Chọn loại tìm kiếm</option>*/}
+          {/*            <option value={1}>Địa điểm bất động sản</option>*/}
+          {/*            <option value={2}>Loại giao dịch</option>*/}
+          {/*            <option value={3}>Người dùng rebook</option>*/}
+          {/*          </select>*/}
+          {/*        </Col>*/}
+          {/*      </Row>*/}
+          {/*      <hr/>*/}
+          {/*      <Row style={{padding: '0 15px', justifyContent: 'flex-end'}}>*/}
+          {/*        <LaddaButton*/}
+          {/*            className="btn btn-info btn-ladda"*/}
+          {/*            loading={this.state.loading}*/}
+          {/*            onClick={() => this.handleSearchByFiler()}*/}
+          {/*            data-style={EXPAND_LEFT}*/}
+          {/*            style={{*/}
+          {/*              backgroundColor: '#008FE5',*/}
+          {/*              color: 'white',*/}
+          {/*              border: 'none',*/}
+          {/*              height: '40px',*/}
+          {/*              lineHeight: '0'*/}
+          {/*            }}>*/}
+          {/*          <i className="fas fa-search"/> Search*/}
+          {/*        </LaddaButton>*/}
+          {/*      </Row>*/}
+          {/*    </Collapse>*/}
+          {/*  </div>*/}
+          {/*</Card>*/}
           <Card>
             <CardBody>
               <strong style={{color: '#4b4f56'}}>Bất động sản được gợi

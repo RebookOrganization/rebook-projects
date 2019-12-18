@@ -6,7 +6,9 @@ import {
   ModalHeader, Row, Col
 } from "reactstrap";
 import Select from 'react-select';
-import {searchNewsByAddress, searchNewsByUser} from "../../api/userCallApi";
+import {
+  elasticSearchNews,
+} from "../../api/userCallApi";
 import shallowCompare from 'react-addons-shallow-compare';
 import Alert from 'react-s-alert';
 
@@ -19,8 +21,6 @@ class AppSearch extends React.Component {
       inputSearch: '',
       inputSearchType: 0,
       loading: false,
-      resultSearchAddress: null,
-      resultSearchUser: null,
       allNewsItem: null,
       optionProvince: null,
       selectedProvince: 0,
@@ -36,7 +36,7 @@ class AppSearch extends React.Component {
       selectedArea: 0,
       optionDirectHouse: null,
       selectedDirectHouse: 0,
-
+      resultSearch: null,
     }
   }
 
@@ -81,55 +81,39 @@ class AppSearch extends React.Component {
   }
 
   handleSearchByFiler = () => {
-    const {inputSearch, inputSearchType} = this.state;
+    const {selectedProvince, selectedDistrict, selectedRentType, inputSearch,
+      selectedPrice, selectedArea, selectedDirectHouse} = this.state;
     this.setState({loading: true});
 
-    console.log("input search type: " + inputSearchType);
-    if (parseInt(inputSearchType) === 0) {
-      Alert.error("Vui lòng chọn loại tìm kiếm.");
-      this.setState({loading: false})
-    } else if (parseInt(inputSearchType) === 1) {
-      let address = inputSearch ? inputSearch : Alert.error(
-          "Vui lòng nhập thông tin.");
+    const request = {
+      content: inputSearch ? inputSearch : selectedDistrict.label,
+      priceFrom: selectedPrice ? selectedPrice.label : "",
+      priceTo: selectedPrice ? selectedPrice.label : "",
+      areaFrom: selectedArea ? selectedArea.label : "",
+      areaTo: selectedArea ? selectedArea.label : "",
+      district: selectedDistrict ? selectedDistrict.label : "",
+      provinceCity: selectedProvince ? selectedProvince.label : "",
+      transType: selectedRentType ? selectedRentType.label : "",
+      directHouse: selectedDirectHouse ? selectedDirectHouse.label : "",
+    };
 
-      console.log("address: " + address);
-      if (address !== null || address !== '') {
-
-        //Api SearchByAddress
-        searchNewsByAddress(address).then(res => {
-          this.setState({
-            resultSearchAddress: res.result,
-            allNewsItem: res.result,
-            loading: false
-          }, () => {
-            this.props.callBackFromPageRight(this.state.allNewsItem,
-                this.state.loading);
-          })
-        }).catch((e) => {
-          console.log(e);
-          this.setState({loading: false});
-          Alert.warning("Không có kết quả trả về.")
-        });
-      }
-    } else {
-      const requestParams = {
-        username: inputSearch ? inputSearch : Alert.error(
-            "Vui lòng nhập thông tin.")
-      };
-      console.log("requestParam: " + JSON.stringify(requestParams));
-
-      //Api SearchByUser
-      searchNewsByUser(requestParams).then(res => {
+    elasticSearchNews(request).then(res => {
+      if (res.data && res.data.result.length) {
         this.setState({
-          resultSearchUser: res.result,
-        })
-      }).catch(err => {
-        console.log(err);
-        Alert.warning("Không có kết quả trả về.")
-      }).finally(() => {
-        this.setState({loading: false})
-      });
-    }
+          resultSearch: res.data.result,
+          loading: false
+        }, () => this.props.callBackFromAppSearch(this.state.resultSearch,
+            this.state.loading))
+      }
+      else {
+        Alert.warning("Tìm kiếm không có kết quả");
+      }
+    })
+    .catch(()=>Alert.warning("Xảy ra lỗi khi tìm kiếm"))
+    .finally(()=>{
+      this.setState({loading: false});
+      this.toggleModalSearch();
+    })
   };
 
   render() {
@@ -198,7 +182,7 @@ class AppSearch extends React.Component {
           <Modal isOpen={this.state.isSearch}
                  toggle={()=>this.toggleModalSearch()}
                  className={'modal-lg modal-lg-custom' + this.props.className}
-                 style={{maxWidth: '90%'}}
+                 style={{maxWidth: '80%'}}
           >
             <ModalHeader toggle={()=>this.toggleModalSearch()}>
               <img src="/icon/icons8-search-2.png" alt={""}/> Tìm kiếm thông tin bất động sản
@@ -215,7 +199,7 @@ class AppSearch extends React.Component {
               </div>
               <hr/>
               <Row>
-                <Col md={4}>
+                <Col md={3}>
                   <h5>Loại tìm kiếm</h5>
                   <select className="form-control"
                           style={{height: '40px',fontSize:'16px',backgroundColor: '#f2f3f5',marginBottom:"5px"}}
@@ -228,7 +212,7 @@ class AppSearch extends React.Component {
                     <option value={3}>Người dùng rebook</option>
                   </select>
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                   <h5>Loại bất động sản: </h5>
                   <select className="form-control"
                           style={{height: '40px',fontSize:'16px',backgroundColor: '#f2f3f5',marginBottom:"5px"}}
@@ -238,7 +222,7 @@ class AppSearch extends React.Component {
                     <option value={2}>Kho bãi</option>
                   </select>
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                   <h5>Giá: </h5>
                   <Select value={selectedPrice}
                           onChange={(e)=> this.setState({selectedPrice: e})}
@@ -247,10 +231,7 @@ class AppSearch extends React.Component {
                           isClearable={true}
                   />
                 </Col>
-              </Row>
-              <hr/>
-              <Row>
-                <Col md={4}>
+                <Col md={3}>
                   <h5>Tỉnh/Thành phố</h5>
                   <Select value={this.state.selectedProvince}
                           onChange={(e)=> this.setState({selectedProvince: e})}
@@ -260,7 +241,10 @@ class AppSearch extends React.Component {
                           style={{fontSize:'16px'}}
                   />
                 </Col>
-                <Col md={4}>
+              </Row>
+              <hr/>
+              <Row>
+                <Col md={3}>
                   <h5>Mua bán: </h5>
                   <Select value={selectedSaleType}
                           onChange={(e)=> this.setState({selectedSaleType: e})}
@@ -269,7 +253,7 @@ class AppSearch extends React.Component {
                           isClearable={true}
                   />
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                   <h5>Cho thuê: </h5>
                   <Select value={selectedRentType}
                           onChange={(e)=> this.setState({selectedRentType: e})}
@@ -278,10 +262,7 @@ class AppSearch extends React.Component {
                           isClearable={true}
                   />
                 </Col>
-              </Row>
-              <hr/>
-              <Row>
-                <Col md={4}>
+                <Col md={3}>
                   <h5>Diện tích: </h5>
                   <Select value={selectedArea}
                           onChange={(e)=> this.setState({selectedArea: e})}
@@ -290,7 +271,7 @@ class AppSearch extends React.Component {
                           isClearable={true}
                   />
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                   <h5>Hướng nhà: </h5>
                   <Select value={selectedDirectHouse}
                           onChange={(e)=> this.setState({selectedDirectHouse: e})}
@@ -299,7 +280,10 @@ class AppSearch extends React.Component {
                           isClearable={true}
                   />
                 </Col>
-                <Col md={4}>
+              </Row>
+              <hr/>
+              <Row>
+                <Col md={3}>
                   <h5>Quận/Huyện: </h5>
                   <Select value={selectedDistrict}
                           onChange={(e)=> this.setState({selectedDistrict: e})}
