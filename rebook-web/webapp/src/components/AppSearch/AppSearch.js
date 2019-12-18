@@ -181,16 +181,16 @@ class AppSearch extends React.Component {
         <React.Fragment>
           <Modal isOpen={this.state.isSearch}
                  toggle={()=>this.toggleModalSearch()}
-                 className={'modal-lg modal-lg-custom' + this.props.className}
-                 style={{maxWidth: '80%'}}
+                 className={'modal-lg modal-lg-custom modal-info' + this.props.className}
+                 // style={{maxWidth: '60%'}}
           >
             <ModalHeader toggle={()=>this.toggleModalSearch()}>
-              <img src="/icon/icons8-search-2.png" alt={""}/> Tìm kiếm thông tin bất động sản
+              <img src="/icon/icons8-search-2.png" alt={""}/> Công cụ tìm kiếm
             </ModalHeader>
             <ModalBody style={{padding:'15px'}}>
               <div className="search-box" style={{marginBottom:"5px"}}>
                 <span className="fa fa-search"/>
-                <input id="inputSearch" placeholder="Nội dung tìm kiếm"
+                <input id="inputSearch" placeholder="Nhập địa điểm, vd: Sunrise City"
                        style={{textIdent:'32px',backgroundColor: '#f2f3f5',outline:'none'}}
                        value={this.state.inputSearch}
                        onChange={(e) => this.setState(
@@ -199,39 +199,30 @@ class AppSearch extends React.Component {
               </div>
               <hr/>
               <Row>
-                <Col md={3}>
-                  <h5>Loại tìm kiếm</h5>
-                  <select className="form-control"
-                          style={{height: '40px',fontSize:'16px',backgroundColor: '#f2f3f5',marginBottom:"5px"}}
-                          onChange={(e) => this.setState(
-                              {inputSearchType: e.target.value})}
-                  >
-                    <option value={0}>Chọn loại tìm kiếm</option>
-                    <option value={1}>Địa điểm bất động sản</option>
-                    <option value={2}>Loại giao dịch</option>
-                    <option value={3}>Người dùng rebook</option>
-                  </select>
-                </Col>
-                <Col md={3}>
-                  <h5>Loại bất động sản: </h5>
-                  <select className="form-control"
-                          style={{height: '40px',fontSize:'16px',backgroundColor: '#f2f3f5',marginBottom:"5px"}}
-                  >
-                    <option value={0}>Mua bán</option>
-                    <option value={1}>Cho thuê</option>
-                    <option value={2}>Kho bãi</option>
-                  </select>
-                </Col>
-                <Col md={3}>
-                  <h5>Giá: </h5>
-                  <Select value={selectedPrice}
-                          onChange={(e)=> this.setState({selectedPrice: e})}
-                          options={prices}
-                          isSearchable={true}
-                          isClearable={true}
-                  />
-                </Col>
-                <Col md={3}>
+                {/*<Col md={3}>*/}
+                {/*  <h5>Loại tìm kiếm</h5>*/}
+                {/*  <select className="form-control"*/}
+                {/*          style={{height: '40px',fontSize:'16px',backgroundColor: '#f2f3f5',marginBottom:"5px"}}*/}
+                {/*          onChange={(e) => this.setState(*/}
+                {/*              {inputSearchType: e.target.value})}*/}
+                {/*  >*/}
+                {/*    <option value={0}>Chọn loại tìm kiếm</option>*/}
+                {/*    <option value={1}>Địa điểm bất động sản</option>*/}
+                {/*    <option value={2}>Loại giao dịch</option>*/}
+                {/*    <option value={3}>Người dùng rebook</option>*/}
+                {/*  </select>*/}
+                {/*</Col>*/}
+                {/*<Col md={3}>*/}
+                {/*  <h5>Loại bất động sản: </h5>*/}
+                {/*  <select className="form-control"*/}
+                {/*          style={{height: '40px',fontSize:'16px',backgroundColor: '#f2f3f5',marginBottom:"5px"}}*/}
+                {/*  >*/}
+                {/*    <option value={0}>Mua bán</option>*/}
+                {/*    <option value={1}>Cho thuê</option>*/}
+                {/*    <option value={2}>Kho bãi</option>*/}
+                {/*  </select>*/}
+                {/*</Col>*/}
+                <Col md={6}>
                   <h5>Tỉnh/Thành phố</h5>
                   <Select value={this.state.selectedProvince}
                           onChange={(e)=> this.setState({selectedProvince: e})}
@@ -241,28 +232,37 @@ class AppSearch extends React.Component {
                           style={{fontSize:'16px'}}
                   />
                 </Col>
+                <Col md={6}>
+                  <h5>Quận/Huyện: </h5>
+                  <Select value={selectedDistrict}
+                          onChange={(e)=> this.setState({selectedDistrict: e})}
+                          options={district}
+                          isSearchable={true}
+                          isClearable={true}
+                  />
+                </Col>
               </Row>
               <hr/>
               <Row>
-                <Col md={3}>
-                  <h5>Mua bán: </h5>
-                  <Select value={selectedSaleType}
-                          onChange={(e)=> this.setState({selectedSaleType: e})}
-                          options={saleType}
-                          isSearchable={true}
-                          isClearable={true}
-                  />
-                </Col>
-                <Col md={3}>
-                  <h5>Cho thuê: </h5>
-                  <Select value={selectedRentType}
-                          onChange={(e)=> this.setState({selectedRentType: e})}
-                          options={rentType}
-                          isSearchable={true}
-                          isClearable={true}
-                  />
-                </Col>
-                <Col md={3}>
+                {/*<Col md={3}>*/}
+                {/*  <h5>Mua bán: </h5>*/}
+                {/*  <Select value={selectedSaleType}*/}
+                {/*          onChange={(e)=> this.setState({selectedSaleType: e})}*/}
+                {/*          options={saleType}*/}
+                {/*          isSearchable={true}*/}
+                {/*          isClearable={true}*/}
+                {/*  />*/}
+                {/*</Col>*/}
+                {/*<Col md={3}>*/}
+                {/*  <h5>Cho thuê: </h5>*/}
+                {/*  <Select value={selectedRentType}*/}
+                {/*          onChange={(e)=> this.setState({selectedRentType: e})}*/}
+                {/*          options={rentType}*/}
+                {/*          isSearchable={true}*/}
+                {/*          isClearable={true}*/}
+                {/*  />*/}
+                {/*</Col>*/}
+                <Col md={6}>
                   <h5>Diện tích: </h5>
                   <Select value={selectedArea}
                           onChange={(e)=> this.setState({selectedArea: e})}
@@ -271,11 +271,11 @@ class AppSearch extends React.Component {
                           isClearable={true}
                   />
                 </Col>
-                <Col md={3}>
-                  <h5>Hướng nhà: </h5>
-                  <Select value={selectedDirectHouse}
-                          onChange={(e)=> this.setState({selectedDirectHouse: e})}
-                          options={directHouse}
+                <Col md={6}>
+                  <h5>Giá: </h5>
+                  <Select value={selectedPrice}
+                          onChange={(e)=> this.setState({selectedPrice: e})}
+                          options={prices}
                           isSearchable={true}
                           isClearable={true}
                   />
@@ -283,11 +283,11 @@ class AppSearch extends React.Component {
               </Row>
               <hr/>
               <Row>
-                <Col md={3}>
-                  <h5>Quận/Huyện: </h5>
-                  <Select value={selectedDistrict}
-                          onChange={(e)=> this.setState({selectedDistrict: e})}
-                          options={district}
+                <Col md={6}>
+                  <h5>Hướng nhà: </h5>
+                  <Select value={selectedDirectHouse}
+                          onChange={(e)=> this.setState({selectedDirectHouse: e})}
+                          options={directHouse}
                           isSearchable={true}
                           isClearable={true}
                   />

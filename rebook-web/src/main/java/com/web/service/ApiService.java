@@ -10,6 +10,10 @@ import com.web.utils.HashUtils;
 import java.util.ArrayList;
 import java.util.List;
 import net.minidev.json.JSONObject;
+import net.ricecode.similarity.JaroWinklerStrategy;
+import net.ricecode.similarity.SimilarityStrategy;
+import net.ricecode.similarity.StringSimilarityService;
+import net.ricecode.similarity.StringSimilarityServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -75,6 +79,12 @@ public class ApiService {
     }
 
     return newsResponseDTOList;
+  }
+
+  public double stringSimilar(String s1, String s2) {
+    SimilarityStrategy strategy = new JaroWinklerStrategy();
+    StringSimilarityService service = new StringSimilarityServiceImpl(strategy);
+    return service.score(s1, s2);
   }
 
 }

@@ -17,12 +17,17 @@ import com.crawler.repository.PropertyAdressRepository;
 import com.crawler.repository.PropertyProjectRepository;
 import com.crawler.repository.UserRepository;
 import com.crawler.service.CrawlerService;
-import com.crawler.tfidf.TfIdfMain;
 import com.crawler.utils.DateTimeUtils;
+import com.crawler.utils.GsonUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.ricecode.similarity.JaroWinklerStrategy;
+import net.ricecode.similarity.SimilarityStrategy;
+import net.ricecode.similarity.StringSimilarityService;
+import net.ricecode.similarity.StringSimilarityServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -71,7 +76,7 @@ public class CrawlerServiceImpl implements CrawlerService {
   public CommonResponse crawlerBatDongSan() {
     logger.info("Thread execute crawlerBatDongSan - {}", Thread.currentThread().getName());
     List<NewsItem> newsItemList = new ArrayList<>();
-    double compareTfIdf;
+    double compareDescription;
     try {
       Document doc = Jsoup.connect(FOR_SALE).get();
       Elements elements = doc.select("item");
@@ -84,7 +89,8 @@ public class CrawlerServiceImpl implements CrawlerService {
         String descriptMain = Jsoup.parse(description.replaceAll("<div[^>]*>", "\n")).text();
 
         //check trùng url tại đây.
-        if (NewsItemIndex.newsItem != null && !NewsItemIndex.newsItem.getUrl().equals(url))
+        if (NewsItemIndex.newsItem != null && !NewsItemIndex.newsItem.getUrl().equals(url)
+            && !NewsItemIndex.newsItem.getTitle().equalsIgnoreCase(title))
         {
           NewsItem newsItem = new NewsItem();
           newsItem.setTitle(title);
@@ -114,10 +120,10 @@ public class CrawlerServiceImpl implements CrawlerService {
             String desc = productDetail.getElementsByClass(DESCRIPTION_PROP).text()
                 .replaceAll("<br>", "\t");
 
-            // check TfIdf tại đây.
-            compareTfIdf = new TfIdfMain().compareText(NewsItemIndex.newsItem.getDescription(), desc);
-            logger.info("crawlerBatDongSan News duplicate index score: {}", compareTfIdf);
-            if (compareTfIdf >= 0.9) {
+            // check mức độ similar của desciption
+            compareDescription = stringSimilar(NewsItemIndex.newsItem.getDescription(), desc);
+            logger.info("crawlerBatDongSan duplicate score: {}", compareDescription);
+            if (compareDescription <= 0.8) {
               newsItem.setDescription(desc);
 
               if (productDetail.getElementById(ROOM_NUMBER) != null) {
@@ -253,12 +259,12 @@ public class CrawlerServiceImpl implements CrawlerService {
               }
             }
             else {
-              logger.info("BatDongSan.com.vn Tin tức trùng description - {}", desc);
+              logger.info("BatDongSan.com.vn description similar - {}", desc);
             }
           }
         }
         else {
-          logger.info("BatDongSan.com.vn Tin trùng lặp url - {}", url);
+          logger.info("BatDongSan.com.vn similar url - {}, title: {}", url, title);
         }
         //cập nhật lại index mới nhất
         indexNewsItem();
@@ -271,17 +277,12 @@ public class CrawlerServiceImpl implements CrawlerService {
     }
   }
 
-  private void indexNewsItem() {
-    NewsItemIndex.newsItem = cacheDataService.findLastRow(currentPartition);
-    logger.info("NewsItemIndex.newsItem - {}", NewsItemIndex.newsItem);
-  }
-
   @Override
   @Transactional
   public CommonResponse crawlerDiaOcOnline() {
     logger.info("Thread execute crawlerDiaOcOnline - {}", Thread.currentThread().getName());
     List<NewsItem> newsItemList = new ArrayList<>();
-    double compareTfIdf;
+    double compareDescription;
     try {
       Document doc = Jsoup.connect(DIAOCONLINE_DUAN_QUYHOACH).get();
       Elements entrys = doc.select("entry");
@@ -294,7 +295,8 @@ public class CrawlerServiceImpl implements CrawlerService {
         newsItem.setTitle(title);
 
         // check trùng url
-        if (NewsItemIndex.newsItem != null && !NewsItemIndex.newsItem.getUrl().equals(url)) {
+        if (NewsItemIndex.newsItem != null && !NewsItemIndex.newsItem.getUrl().equals(url)
+            && !NewsItemIndex.newsItem.getTitle().equalsIgnoreCase(title)) {
           newsItem.setTrans_type("DiaOcOnline.vn");
           newsItem.setUrl(url);
           newsItem.setPostedDate(pubDate);
@@ -312,10 +314,10 @@ public class CrawlerServiceImpl implements CrawlerService {
               .getElementsByTag("p").text().replaceAll("<br>", "\n");
           newsItem.setDescription(descript);
 
-          // check TfIdf tại đây.
-          compareTfIdf = new TfIdfMain().compareText(NewsItemIndex.newsItem.getDescription(), descript);
-          logger.info("crawlerDiaOcOnline News duplicate index score: {}", compareTfIdf);
-          if (compareTfIdf >= 0.45) {
+          // check
+          compareDescription = stringSimilar(NewsItemIndex.newsItem.getDescription(), descript);
+          logger.info("crawlerDiaOcOnline duplicate score: {}", compareDescription);
+          if (compareDescription <= 0.8) {
             newsItem.setTitle(title);
             newsItem.setPubDate(pubDate);
 
@@ -393,11 +395,11 @@ public class CrawlerServiceImpl implements CrawlerService {
             }
           }
           else {
-            logger.info("DiaOcOnline.vn Tin tức trùng description - {}", descript);
+            logger.info("DiaOcOnline.vn description similar - {}", descript);
           }
         }
         else {
-          logger.info("DiaOcOnline.vn Tin trùng lặp url - {}", url);
+          logger.info("DiaOcOnline.vn similar url - {}, title: {}", url, title);
         }
         //cập nhật lại index mới nhất
         indexNewsItem();
@@ -409,6 +411,17 @@ public class CrawlerServiceImpl implements CrawlerService {
       logger.error("CrawlerServiceImpl crawlerDiaOcOnline Exception: ", ex);
       return new CommonResponse.Fail("CrawlerServiceImpl crawlerDiaOcOnline Exception.");
     }
+  }
+
+  private double stringSimilar(String s1, String s2) {
+    SimilarityStrategy strategy = new JaroWinklerStrategy();
+    StringSimilarityService service = new StringSimilarityServiceImpl(strategy);
+    return service.score(s1, s2);
+  }
+
+  private void indexNewsItem() {
+    NewsItemIndex.newsItem = cacheDataService.findLastRow(currentPartition);
+    logger.info("NewsItemIndex.newsItem - {}", GsonUtils.toJsonString(NewsItemIndex.newsItem));
   }
 
 }

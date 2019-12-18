@@ -4,8 +4,10 @@ import com.web.bean.Request.CommentRequest;
 import com.web.bean.Request.LikeRequest;
 import com.web.bean.Request.PostNewsRequest;
 import com.web.bean.Request.ShareRequest;
+import com.web.bean.Request.SimilarStringRequest;
 import com.web.bean.Response.CommonResponse;
 import com.web.dto.RequestFilterSearchDto;
+import com.web.service.ApiService;
 import com.web.service.NewsItemService;
 import com.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class NewsController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ApiService apiService;
 
     @GetMapping(value = "/all-news")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -82,6 +87,11 @@ public class NewsController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> getAllNewsByUser(@RequestParam Long userID) throws IOException {
         return new ResponseEntity<>(newsItemService.getAllNewsByUser(userID), HttpStatus.OK);
+    }
+
+    @PostMapping("/string-similar")
+    public double stringSimilar(@RequestBody SimilarStringRequest request) {
+        return apiService.stringSimilar(request.getS1(), request.getS2());
     }
 
 }
