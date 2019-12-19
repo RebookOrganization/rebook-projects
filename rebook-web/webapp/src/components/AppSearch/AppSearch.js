@@ -11,6 +11,9 @@ import {
 } from "../../api/userCallApi";
 import shallowCompare from 'react-addons-shallow-compare';
 import Alert from 'react-s-alert';
+import InputRange from 'react-input-range';
+import 'react-input-range/lib/css/index.css';
+
 
 class AppSearch extends React.Component {
   constructor(props) {
@@ -37,6 +40,9 @@ class AppSearch extends React.Component {
       optionDirectHouse: null,
       selectedDirectHouse: 0,
       resultSearch: null,
+      areaDistance: {min: 500, max: 1000},
+      priceDistance: {min: 500, max: 1000},
+      isRenderDistrict: false
     }
   }
 
@@ -82,15 +88,15 @@ class AppSearch extends React.Component {
 
   handleSearchByFiler = () => {
     const {selectedProvince, selectedDistrict, selectedRentType, inputSearch,
-      selectedPrice, selectedArea, selectedDirectHouse} = this.state;
+      selectedDirectHouse, areaDistance, priceDistance} = this.state;
     this.setState({loading: true});
 
     const request = {
       content: inputSearch ? inputSearch : selectedDistrict.label,
-      priceFrom: selectedPrice ? selectedPrice.label : "",
-      priceTo: selectedPrice ? selectedPrice.label : "",
-      areaFrom: selectedArea ? selectedArea.label : "",
-      areaTo: selectedArea ? selectedArea.label : "",
+      priceFrom: priceDistance ? priceDistance.min : "",
+      priceTo: priceDistance ? priceDistance.max : "",
+      areaFrom: areaDistance ? areaDistance.min : "",
+      areaTo: areaDistance ? areaDistance.max : "",
       district: selectedDistrict ? selectedDistrict.label : "",
       provinceCity: selectedProvince ? selectedProvince.label : "",
       transType: selectedRentType ? selectedRentType.label : "",
@@ -117,8 +123,7 @@ class AppSearch extends React.Component {
   };
 
   render() {
-    const {optionProvince, optionDistrict, selectedDistrict, optionRentType,
-      selectedRentType, optionSaleType, selectedSaleType, optionPrice, selectedPrice,
+    const {optionProvince, optionDistrict, selectedDistrict, optionPrice, selectedPrice,
       optionArea, selectedArea, optionDirectHouse, selectedDirectHouse} = this.state;
 
     let province = [];
@@ -137,37 +142,37 @@ class AppSearch extends React.Component {
       })
     }) : null;
 
-    let rentType = [];
-    optionRentType ? Object.keys(optionRentType).map(item => {
-      rentType.push({
-        value: item,
-        label: optionRentType[item]
-      })
-    }) : null;
+    // let rentType = [];
+    // optionRentType ? Object.keys(optionRentType).map(item => {
+    //   rentType.push({
+    //     value: item,
+    //     label: optionRentType[item]
+    //   })
+    // }) : null;
+    //
+    // let saleType = [];
+    // optionSaleType ? Object.keys(optionSaleType).map(item => {
+    //   saleType.push({
+    //     value: item,
+    //     label: optionSaleType[item]
+    //   })
+    // }) : null;
 
-    let saleType = [];
-    optionSaleType ? Object.keys(optionSaleType).map(item => {
-      saleType.push({
-        value: item,
-        label: optionSaleType[item]
-      })
-    }) : null;
-
-    let prices = [];
-    optionPrice ? Object.keys(optionPrice).map(item => {
-      prices.push({
-        value: item,
-        label: optionPrice[item]
-      })
-    }) : null;
-
-    let areas = [];
-    optionArea ? Object.keys(optionArea).map(item => {
-      areas.push({
-        value: item,
-        label: optionArea[item]
-      })
-    }) : null;
+    // let prices = [];
+    // optionPrice ? Object.keys(optionPrice).map(item => {
+    //   prices.push({
+    //     value: item,
+    //     label: optionPrice[item]
+    //   })
+    // }) : null;
+    //
+    // let areas = [];
+    // optionArea ? Object.keys(optionArea).map(item => {
+    //   areas.push({
+    //     value: item,
+    //     label: optionArea[item]
+    //   })
+    // }) : null;
 
     let directHouse = [];
     optionDirectHouse ? Object.keys(optionDirectHouse).map(item => {
@@ -225,22 +230,36 @@ class AppSearch extends React.Component {
                 <Col md={6}>
                   <h5>Tỉnh/Thành phố</h5>
                   <Select value={this.state.selectedProvince}
-                          onChange={(e)=> this.setState({selectedProvince: e})}
+                          onChange={(e)=> this.setState({selectedProvince: e},
+                              ()=>{
+                                if (this.state.selectedProvince) {
+                                  if (parseInt(this.state.selectedProvince.value) === 1) {
+                                    this.setState({isRenderDistrict: true})
+                                  }
+                                  else {
+                                    this.setState({isRenderDistrict: false})
+                                  }
+                                }
+                              })}
                           options={province}
                           isSearchable={true}
                           isClearable={true}
                           style={{fontSize:'16px'}}
                   />
                 </Col>
-                <Col md={6}>
-                  <h5>Quận/Huyện: </h5>
-                  <Select value={selectedDistrict}
-                          onChange={(e)=> this.setState({selectedDistrict: e})}
-                          options={district}
-                          isSearchable={true}
-                          isClearable={true}
-                  />
-                </Col>
+                {
+                  this.state.isRenderDistrict ?
+                      <Col md={6}>
+                        <h5>Quận/Huyện: </h5>
+                        <Select value={selectedDistrict}
+                                onChange={(e)=> this.setState({selectedDistrict: e})}
+                                options={district}
+                                isSearchable={true}
+                                isClearable={true}
+                        />
+                      </Col>
+                      : null
+                }
               </Row>
               <hr/>
               <Row>
@@ -263,27 +282,6 @@ class AppSearch extends React.Component {
                 {/*  />*/}
                 {/*</Col>*/}
                 <Col md={6}>
-                  <h5>Diện tích: </h5>
-                  <Select value={selectedArea}
-                          onChange={(e)=> this.setState({selectedArea: e})}
-                          options={areas}
-                          isSearchable={true}
-                          isClearable={true}
-                  />
-                </Col>
-                <Col md={6}>
-                  <h5>Giá: </h5>
-                  <Select value={selectedPrice}
-                          onChange={(e)=> this.setState({selectedPrice: e})}
-                          options={prices}
-                          isSearchable={true}
-                          isClearable={true}
-                  />
-                </Col>
-              </Row>
-              <hr/>
-              <Row>
-                <Col md={6}>
                   <h5>Hướng nhà: </h5>
                   <Select value={selectedDirectHouse}
                           onChange={(e)=> this.setState({selectedDirectHouse: e})}
@@ -292,6 +290,55 @@ class AppSearch extends React.Component {
                           isClearable={true}
                   />
                 </Col>
+                {/*<Col md={6}>*/}
+                {/*  <h5>Diện tích: </h5>*/}
+                {/*  <Select value={selectedArea}*/}
+                {/*          onChange={(e)=> this.setState({selectedArea: e})}*/}
+                {/*          options={areas}*/}
+                {/*          isSearchable={true}*/}
+                {/*          isClearable={true}*/}
+                {/*  />*/}
+                {/*</Col>*/}
+                {/*<Col md={6}>*/}
+                {/*  <h5>Giá: </h5>*/}
+                {/*  <Select value={selectedPrice}*/}
+                {/*          onChange={(e)=> this.setState({selectedPrice: e})}*/}
+                {/*          options={prices}*/}
+                {/*          isSearchable={true}*/}
+                {/*          isClearable={true}*/}
+                {/*  />*/}
+                {/*</Col>*/}
+              </Row>
+              <hr/>
+              <Row>
+                <Col xs={12} sm={1}/>
+                <Col xs={12} sm={10}>
+                  <h5>Diện tích đơn vị: m²</h5>
+                  {/*<Slider marks={marksArea} step={null} onChange={this.onChangeArea} defaultValue={100} />*/}
+                  <div style={{margin:'30px'}}>
+                    <InputRange
+                        maxValue={5000}
+                        minValue={0}
+                        value={this.state.areaDistance}
+                        onChange={value => this.setState({ areaDistance: value })} />
+                  </div>
+                </Col>
+                <Col xs={12} sm={1}/>
+              </Row>
+              <Row>
+                <Col xs={12} sm={1}/>
+                <Col xs={12} sm={10}>
+                  <h5>Giá đơn vị: triệu </h5>
+                  {/*<Slider marks={marksPrice} step={null} onChange={this.onChangePrice} defaultValue={100} />*/}
+                  <div style={{margin:'30px'}}>
+                    <InputRange
+                        maxValue={7000}
+                        minValue={0}
+                        value={this.state.priceDistance}
+                        onChange={value => this.setState({ priceDistance: value })} />
+                  </div>
+                </Col>
+                <Col xs={12} sm={1}/>
               </Row>
               <hr/>
               <Row style={{padding:'0 15px',justifyContent:'flex-end'}}>

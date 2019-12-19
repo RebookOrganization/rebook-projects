@@ -17,8 +17,10 @@ import com.crawler.repository.PropertyAdressRepository;
 import com.crawler.repository.PropertyProjectRepository;
 import com.crawler.repository.UserRepository;
 import com.crawler.service.CrawlerService;
+import com.crawler.utils.ConvertData;
 import com.crawler.utils.DateTimeUtils;
 import com.crawler.utils.GsonUtils;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,15 +109,29 @@ public class CrawlerServiceImpl implements CrawlerService {
           Element productDetail = document.getElementById(NEW_DETAILS_TAG);
 
           if (productDetail != null) {
-            if (productDetail.getElementsByClass(LOCATION_PROP) != null) {
-              String khuvuc = productDetail.getElementsByClass(LOCATION_PROP).select("a").text();
-              newsItem.setCity(khuvuc);
-            }
+//            if (productDetail.getElementsByClass(LOCATION_PROP) != null) {
+//              String khuvuc = productDetail.getElementsByClass(LOCATION_PROP).select("a").text();
+//              newsItem.setCity(khuvuc);
+//            }
 
             String price = productDetail.getElementsByClass(PRICE_PROP).first().select("strong").text();
             String area = productDetail.getElementsByClass(PRICE_PROP).get(1).select("strong").text();
             newsItem.setPrice(price);
             newsItem.setArea(area);
+            if (area.contains("m²")) {
+              float areaNum = Float.parseFloat(area.replaceAll("m²", "").trim());
+              newsItem.setAreaNum(areaNum);
+              newsItem.setPriceNum(ConvertData.convertPriceNum(price, areaNum));
+            }
+            else if (area.contains("m2")) {
+              float areaNum = Float.parseFloat(area.replaceAll("m2", "").trim());
+              newsItem.setAreaNum(areaNum);
+              newsItem.setPriceNum(ConvertData.convertPriceNum(price, areaNum));
+            }
+            else {
+              newsItem.setAreaNum(0f);
+              newsItem.setPriceNum(0d);
+            }
 
             String desc = productDetail.getElementsByClass(DESCRIPTION_PROP).text()
                 .replaceAll("<br>", "\t");
@@ -234,7 +250,7 @@ public class CrawlerServiceImpl implements CrawlerService {
               propertyAddress1 = propertyAdressRepository.findLastRow(currentPartition);
               newsItem.setPropertyAddressId(propertyAddress1.getId());
 
-              newsItemRepository.saveToPartition(newsItem.getArea(), newsItem.getBalcony(), newsItem.getCity(), newsItem.getDescription(),
+              newsItemRepository.saveToPartition(newsItem.getArea(), newsItem.getBalcony(), newsItem.getDescription(),
                   newsItem.getDirect_of_house(), newsItem.getFloor_number(), newsItem.getFrontEnd(), newsItem.getInterior(),
                   newsItem.getPostedDate(), newsItem.getPostedMilisec(), newsItem.getPrice(), newsItem.getPubDate(), newsItem.getRoom_number(),
                   newsItem.getSummary(), newsItem.getTitle(), newsItem.getToilet_number(), newsItem.getTrans_type(), newsItem.getUrl(),
@@ -338,12 +354,29 @@ public class CrawlerServiceImpl implements CrawlerService {
 
             newsItem.setContactOwnerId(contactOwner1.getId());
 
-            newsItem.setPrice(elements.first().getElementsByClass("money").text().substring(5));
+            String price = elements.first().getElementsByClass("money").text().substring(5);
+            newsItem.setPrice(price);
 
             Elements block = elements.first().getElementsByClass("block");
 
-            newsItem.setArea(block.first().getElementsByTag("td")
-                .first().getElementsByTag("strong").text());
+            String area = block.first().getElementsByTag("td")
+                .first().getElementsByTag("strong").text();
+            newsItem.setArea(area);
+
+            if (area.contains("m²")) {
+              float areaNum = Float.parseFloat(area.replaceAll("m²", "").trim());
+              newsItem.setAreaNum(areaNum);
+              newsItem.setPriceNum(ConvertData.convertPriceNum(price, areaNum));
+            }
+            else if (area.contains("m2")) {
+              float areaNum = Float.parseFloat(area.replaceAll("m2", "").trim());
+              newsItem.setAreaNum(areaNum);
+              newsItem.setPriceNum(ConvertData.convertPriceNum(price, areaNum));
+            }
+            else {
+              newsItem.setAreaNum(0f);
+              newsItem.setPriceNum(0d);
+            }
 
             newsItem.setFloor_number(block.get(1).getElementsByTag("td")
                 .get(5).getElementsByTag("strong").text());
@@ -360,7 +393,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             newsItem.setWardin(block.get(1).getElementsByTag("td")
                 .get(3).getElementsByTag("strong").text());
 
-            newsItemRepository.saveToPartition(newsItem.getArea(), newsItem.getBalcony(), newsItem.getCity(), newsItem.getDescription(),
+            newsItemRepository.saveToPartition(newsItem.getArea(), newsItem.getBalcony(), newsItem.getDescription(),
                 newsItem.getDirect_of_house(), newsItem.getFloor_number(), newsItem.getFrontEnd(), newsItem.getInterior(),
                 newsItem.getPostedDate(), newsItem.getPostedMilisec(), newsItem.getPrice(), newsItem.getPubDate(),
                 newsItem.getRoom_number(), newsItem.getSummary(), newsItem.getTitle(), newsItem.getToilet_number(),
@@ -421,7 +454,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
   private void indexNewsItem() {
     NewsItemIndex.newsItem = cacheDataService.findLastRow(currentPartition);
-    logger.info("NewsItemIndex.newsItem - {}", GsonUtils.toJsonString(NewsItemIndex.newsItem));
+    logger.info("NewsItemIndex - {}", NewsItemIndex.newsItem.toString());
   }
 
 }

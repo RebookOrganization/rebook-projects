@@ -16,33 +16,61 @@ public class ConvertDataService {
   @Autowired
   private PropertyAdressRepository propertyAdressRepository;
 
-  public Long convertPrice(String priceIn) {
-    String area = "100.0";
-    long output = 0L;
+  public double convertPriceNum(String priceIn, float area) {
+    float output = 0;
     if (priceIn.contains("triệu") && priceIn.contains("tỷ")) {
-      //1 tỷ 300 triệu
       int indexOfBili = priceIn.indexOf("tỷ");
       int indexOfMili = priceIn.indexOf("triệu");
-      output = Long.parseLong(priceIn.substring(0, indexOfBili - 1).trim())*1000000000L
-          + Long.parseLong(priceIn.substring(indexOfBili + 1, indexOfMili -1).trim());
-    }
-    else if (priceIn.contains("triệu") && !priceIn.contains("tỷ")) {
-      //900 triệu
-      output = Long.parseLong(priceIn.replaceAll(" triệu", "").trim());
-    }
-    else if (!priceIn.contains("triệu") && priceIn.contains("tỷ")) {
-      //3 tỷ
-      output = Long.parseLong(priceIn.replaceAll(" tỷ", "").trim());
-    }
-    else if (priceIn.contains("triệu/m²")) {
-      output = Long.parseLong(priceIn.replaceAll(" triệu/m²", "").trim())*1000000
-          * Long.parseLong(area.trim());
+      output = Integer.parseInt(priceIn.substring(0, indexOfBili).trim())*1000
+          + Integer.parseInt(priceIn.substring(indexOfBili + "tỷ".length(), indexOfMili).trim());
     }
     else {
-      //other
-      logger.info("Méo biết thể loại gì.");
+      if (priceIn.contains("triệu/m")) {
+        if (priceIn.contains("triệu/m²")) {
+          output = Float.parseFloat(priceIn.replaceAll(" triệu/m²", "")) * area;
+        }
+        else {
+          output = Float.parseFloat(priceIn.replaceAll(" triệu/m2", "")) * area;
+        }
+      }
+      else {
+        if (priceIn.contains("ngàn/m")) {
+          int indexOfMili = priceIn.indexOf("triệu");
+          int indexOfThousand = 0;
+          if (priceIn.contains("ngàn/m²")) {
+            indexOfThousand = priceIn.indexOf("ngàn/m²");
+          }
+          else {
+            indexOfThousand = priceIn.indexOf("ngàn/m2");
+          }
+          output = Float.parseFloat(priceIn.substring(0, indexOfMili).trim()) * 1000
+              + Float.parseFloat(priceIn.substring(indexOfMili + "triệu".length(), indexOfThousand).trim()) * 1000
+              * area;
+        }
+        else {
+          if (priceIn.contains("triệu") && !priceIn.contains("tỷ")) {
+            int indexOfMili = priceIn.indexOf("triệu");
+            String thousand = priceIn.replaceAll("[^0-9^.]", "")
+                .substring(indexOfMili + "triệu".length());
+            if (thousand.length() > 0) {
+              output = Float.parseFloat(priceIn.substring(0, indexOfMili).trim()) * 1000 + Float.parseFloat(thousand);
+            }
+            else {
+              output = Float.parseFloat(priceIn.substring(0, indexOfMili).trim()) * 1000;
+            }
+          }
+          else {
+            if (!priceIn.contains("triệu") && priceIn.contains("tỷ")) {
+              output = Float.parseFloat(priceIn.replaceAll(" tỷ", "").trim()) * 1000000;
+            }
+            else {
+              return 0;
+            }
+          }
+        }
+      }
     }
-    return null;
+    return output;
   }
 
   public String updateAddressData()  {

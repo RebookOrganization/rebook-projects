@@ -26,7 +26,9 @@ public class NewsItem implements Serializable {
     private Set<NewsImageUrl> images;
 
     private String price;
+    private Double priceNum;
     private String area;
+    private Float areaNum;
 
     @Column(name = "posted_date")
     private String postedDate;
@@ -34,7 +36,6 @@ public class NewsItem implements Serializable {
     private String trans_type;
 
     private String description;
-    private String city;
     private Long propertyAddressId;
     private Long propertyProjectId;
     private Long contactOwnerId;
@@ -98,10 +99,6 @@ public class NewsItem implements Serializable {
 
     public void setDescription(String description) { this.description = description; }
 
-    public String getCity() { return city; }
-
-    public void setCity(String city) { this.city = city; }
-
     public Long getPropertyAddressId() { return propertyAddressId; }
 
     public void setPropertyAddressId(Long propertyAddressId) { this.propertyAddressId = propertyAddressId; }
@@ -150,4 +147,26 @@ public class NewsItem implements Serializable {
 
     public void setPubDate(String pubDate) { this.pubDate = pubDate; }
 
+    public Double getPriceNum() { return priceNum; }
+
+    public void setPriceNum(Double priceNum) { this.priceNum = priceNum; }
+
+    public Float getAreaNum() {
+        return areaNum;
+    }
+
+    public void setAreaNum(Float areaNum) {
+        this.areaNum = areaNum;
+    }
+
+    @Override
+    public String toString() {
+        return "NewsItem {" +
+            "url='" + url + '\'' +
+            ", title='" + title + '\'' +
+            ", summary='" + summary + '\'' +
+            ", area='" + area + '\'' +
+            ", price=" + price +
+            '}';
+    }
 }
