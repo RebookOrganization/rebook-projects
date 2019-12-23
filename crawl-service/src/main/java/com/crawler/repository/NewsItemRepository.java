@@ -37,13 +37,13 @@ public interface NewsItemRepository extends JpaRepository<NewsItem, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO news_item?24 (area, balcony, description, direct_of_house, floor_number, front_end, "
+    @Query(value = "INSERT INTO news_item?25 (area, balcony, description, direct_of_house, floor_number, front_end, "
         + "interior, posted_date, posted_milisec, price, pub_date, room_number, summary, title, toilet_number, "
-        + "trans_type, url, wardin, contact_owner_id, property_address_id, property_project_id, user_id) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11,"
-        + " ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22) ", nativeQuery = true)
+        + "trans_type, url, wardin, contact_owner_id, property_address_id, property_project_id, user_id, area_num, price_num) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11,"
+        + " ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24) ", nativeQuery = true)
     void saveToPartition(String area, String balcony, String description, String direct_of_house, String floor_number, String front_end,
             String interior, String posted_date, Long posted_milisec, String price, String pub_date, String room_number, String summary, String title,
             String toilet_number, String trans_type, String url, String wardin, Long contact_owner_id, Long property_address_id,
-            Long property_project_id, Long user_id , int partition);
+            Long property_project_id, Long user_id, Float area_num, Double price_num, int partition);
 
 }

@@ -24,6 +24,8 @@ import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 import './_listCardItem.css';
 import InfiniteScroll from "react-infinite-scroller";
+import Skeleton from 'react-loading-skeleton';
+import SkeletonLoading from "../../../components/Loading/SkeletonLoading";
 
 class ListCardItem extends Component{
   constructor(props) {
@@ -187,15 +189,7 @@ class ListCardItem extends Component{
   render() {
     const {allNewsItem, newsDetail, textOfReadMore, currentUser, indexNews,
       renderComment, activeLike, activeShare} = this.state;
-    const loader =
-        <Card>
-          <CardBody style={{alignItems:'center', justifyContent:'center'}}>
-            <Spinner type="grow" color="info" />
-            <Spinner type="grow" color="info" />
-            <Spinner type="grow" color="info" />
-            <Spinner type="grow" color="info" />
-          </CardBody>
-        </Card>;
+    const loader = <SkeletonLoading/>;
 
     return (
       <InfiniteScroll pageStart={0}

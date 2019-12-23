@@ -1,9 +1,9 @@
 package com.web.utils;
 
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.util.List;
 import javax.validation.constraints.NotNull;
-import net.minidev.json.JSONObject;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,13 +76,13 @@ public class CallApiUtils {
     return response.getBody();
   }
 
-  public String sendPostJson(JSONObject object, String url) throws IOException {
+  public String sendPostJson(JsonObject object, String url) throws IOException {
     RestTemplate restTemplate = new RestTemplate(getClientHttpRequestFactory());
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
-    HttpEntity<String> request = new HttpEntity<>(object.toJSONString(), headers);
+    HttpEntity<String> request = new HttpEntity<>(GsonUtils.toJsonString(object), headers);
 
     ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
     if (response.getStatusCode().value() != 200) {

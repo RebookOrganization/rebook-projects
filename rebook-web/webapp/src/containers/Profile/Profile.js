@@ -99,7 +99,9 @@ class Profile extends Component {
     if (window.pageYOffset >= 350) {
       navbar.classList.add("sticky-navbar")
     } else {
-      navbar.classList.remove("sticky-navbar");
+      if (navbar.classList.contains("sticky-navbar")) {
+        navbar.classList.remove("sticky-navbar");
+      }
     }
   };
 

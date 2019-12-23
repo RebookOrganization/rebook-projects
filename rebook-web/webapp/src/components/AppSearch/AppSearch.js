@@ -92,7 +92,7 @@ class AppSearch extends React.Component {
     this.setState({loading: true});
 
     const request = {
-      content: inputSearch ? inputSearch : selectedDistrict.label,
+      content: inputSearch ? inputSearch : "",
       priceFrom: priceDistance ? priceDistance.min : "",
       priceTo: priceDistance ? priceDistance.max : "",
       areaFrom: areaDistance ? areaDistance.min : "",

@@ -91,6 +91,15 @@ public enum  ProvinceCity {
         return null;
     }
 
+    public static ProvinceCity fromDisplayValue(String displayValue) {
+        for (ProvinceCity province : ProvinceCity.values()) {
+            if (province.getDisplayValue().equals(displayValue)) {
+                return province;
+            }
+        }
+        return null;
+    }
+
     public static Map<Integer,String> toHashMap(){
         Map<Integer,String> map = new HashMap();
         for(ProvinceCity type : ProvinceCity.values()){

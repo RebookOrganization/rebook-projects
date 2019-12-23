@@ -51,6 +51,15 @@ public enum  District {
         return null;
     }
 
+    public static District fromDisplayValue(String displayValue) {
+        for (District district : District.values()){
+            if (displayValue.contains(district.getDisplayValue())){
+                return district;
+            }
+        }
+        return null;
+    }
+
     public static Map<Integer, String> toHashMap() {
         Map<Integer, String> adverts = new HashMap<>();
         for(District advert : District.values()){

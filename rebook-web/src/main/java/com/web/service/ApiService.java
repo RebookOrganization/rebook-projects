@@ -1,5 +1,7 @@
 package com.web.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.web.bean.Response.EsNewsItemResponse;
 import com.web.bean.Response.NewsResponseDTO;
 import com.web.config.WebAppConfig;
@@ -14,6 +16,7 @@ import net.ricecode.similarity.JaroWinklerStrategy;
 import net.ricecode.similarity.SimilarityStrategy;
 import net.ricecode.similarity.StringSimilarityService;
 import net.ricecode.similarity.StringSimilarityServiceImpl;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -55,20 +58,20 @@ public class ApiService {
     List<NewsResponseDTO> newsResponseDTOList = new ArrayList<>();
     String url = WebAppConfig.esNewsItemSearchUrl;
 
-    JSONObject object = new JSONObject();
-    object.put("content", request.getContent());
-    object.put("priceFrom", request.getPriceFrom());
-    object.put("priceTo", request.getPriceTo());
-    object.put("areaFrom", request.getAreaFrom());
-    object.put("areaTo", request.getAreaTo());
-    object.put("district", request.getDistrict());
-    object.put("provinceCity", request.getProvinceCity());
-    object.put("transType", request.getTransType());
-    object.put("directHouse", request.getDirectHouse());
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("content", request.getContent());
+    jsonObject.addProperty("priceFrom", request.getPriceFrom());
+    jsonObject.addProperty("priceTo", request.getPriceTo());
+    jsonObject.addProperty("areaFrom", request.getAreaFrom());
+    jsonObject.addProperty("areaTo", request.getAreaTo());
+    jsonObject.addProperty("district", request.getDistrict());
+    jsonObject.addProperty("provinceCity", request.getProvinceCity());
+    jsonObject.addProperty("transType", request.getTransType());
+    jsonObject.addProperty("directHouse", request.getDirectHouse());
 
-    logger.info("ApiService esSearchNewsApi request: {}", GsonUtils.toJsonString(object));
+    logger.info("ApiService esSearchNewsApi request: {}", GsonUtils.toJsonString(request));
     try {
-      esResponse = callApiUtils.sendPostJson(object, url);
+      esResponse = callApiUtils.sendPostJson(jsonObject, url);
       logger.info("ApiService esSearchNewsApi response: {}", esResponse);
       EsNewsItemResponse response = GsonUtils.fromJsonString(esResponse, EsNewsItemResponse.class);
       newsResponseDTOList = response.getResult();

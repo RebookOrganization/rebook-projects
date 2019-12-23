@@ -10,6 +10,8 @@ import com.web.bean.Response.LikeResponse;
 import com.web.bean.Response.NewsResponseDTO;
 import com.web.bean.Response.ShareResponse;
 import com.web.bean.Response.UploadFileResponse;
+import com.web.enumeration.District;
+import com.web.enumeration.ProvinceCity;
 import com.web.model.Comment;
 import com.web.model.ContactOwner;
 import com.web.model.LikeNews;
@@ -28,6 +30,7 @@ import com.web.repository.PropertyAdressRepository;
 import com.web.repository.PropertyProjectRepository;
 import com.web.repository.ShareRepository;
 import com.web.repository.UserRepository;
+import com.web.service.ConvertDataService;
 import com.web.service.FileStorageService;
 import com.web.service.UserService;
 import com.web.utils.DateTimeUtils;
@@ -36,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -83,6 +87,9 @@ public class UserServiceImpl implements UserService {
   @Autowired
   FileStorageService fileStorageService;
 
+  @Autowired
+  ConvertDataService convertDataService;
+
   private int returnCode = 1;
   private String returnMessage = "success";
 
@@ -96,6 +103,7 @@ public class UserServiceImpl implements UserService {
       NewsItem newsItem = new NewsItem();
       newsItem.setTitle(request.getTitle());
       newsItem.setPostedDate(request.getPub_date());
+      newsItem.setPostedMilisec(DateTimeUtils.convertTimeStampMilisecond(request.getPub_date(), DateTimeUtils.DATE_FORMAT));
       newsItem.setUser(userRepository.findById(request.getUser_id()).get());
       newsItem.setUrl(ServletUriComponentsBuilder.fromCurrentContextPath().toUriString());
       try {
@@ -127,6 +135,9 @@ public class UserServiceImpl implements UserService {
       newsItem.setFloor_number(request.getFloor_number());
       newsItem.setToilet_number(request.getToilet_number());
       newsItem.setInterior(request.getInterior());
+      newsItem.setAreaNum(convertDataService.convertAreaNum(request.getArea()));
+      newsItem.setPriceNum(convertDataService.convertPriceNum(request.getPrice(),
+          newsItem.getAreaNum()));
 
       ContactOwner contactOwner = new ContactOwner();
       contactOwner.setContactName(request.getOwnerName());
@@ -138,6 +149,12 @@ public class UserServiceImpl implements UserService {
 
       PropertyAddress propAddress = new PropertyAddress();
       propAddress.setSummary(request.getProp_address());
+      if (ProvinceCity.fromDisplayValue(propAddress.getSummary()) != null) {
+        propAddress.setProvince(Objects.requireNonNull(ProvinceCity.fromDisplayValue(propAddress.getSummary())).getDisplayValue());
+      }
+      if (District.fromDisplayValue(propAddress.getSummary()) != null) {
+        propAddress.setDistrict(Objects.requireNonNull(District.fromDisplayValue(propAddress.getSummary())).getDisplayValue());
+      }
       propertyAdressRepository.save(propAddress);
 
       newsItem.setPropertyAddressId(propAddress.getId());

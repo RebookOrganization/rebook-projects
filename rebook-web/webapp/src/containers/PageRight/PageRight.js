@@ -50,6 +50,12 @@ class PageRight extends Component {
     this.setState({collapseSearch: !this.state.collapseSearch})
   };
 
+  toggleModalRecommendDetail = () =>  {
+    if (typeof this.props.toggleModalRecommendDetail === 'function') {
+      return this.props.toggleModalRecommendDetail();
+    }
+  };
+
   // handleSearchByFiler = () => {
   //   const {inputSearch, inputSearchType} = this.state;
   //   this.setState({loading: true});
@@ -175,7 +181,7 @@ class PageRight extends Component {
             <CardBody>
               <CardText>With supporting text below as a natural lead-in to
                 additional content.</CardText>
-              <button className={"pull-right"}>
+              <button className={"pull-right"} onClick={()=>this.toggleModalRecommendDetail()}>
                 <i className="fa fa-plus"/> Chi tiết
               </button>
             </CardBody>
@@ -187,7 +193,7 @@ class PageRight extends Component {
             <CardBody>
               <CardText>With supporting text below as a natural lead-in to
                 additional content.</CardText>
-              <button className={"pull-right"}>
+              <button className={"pull-right"} onClick={()=>this.toggleModalRecommendDetail()}>
                 <i className="fa fa-plus"/> Chi tiết
               </button>
             </CardBody>
@@ -198,7 +204,7 @@ class PageRight extends Component {
                      alt="Card image cap"/>
             <CardBody>
               <CardText><strong>Recommend for you</strong></CardText>
-              <button className={"pull-right"}>
+              <button className={"pull-right"} onClick={()=>this.toggleModalRecommendDetail()}>
                 <i className="fa fa-plus"/> Chi tiết
               </button>
             </CardBody>

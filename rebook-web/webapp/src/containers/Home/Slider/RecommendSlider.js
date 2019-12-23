@@ -6,6 +6,17 @@ import {Button, Card, CardBody, CardImg, CardText, Col, Row} from "reactstrap";
 import "./_slider.css";
 
 class RecommendSlider extends Component {
+  constructor(props) {
+    super(props);
+
+  }
+
+  toggleModalRecommendDetail = () =>  {
+    if (typeof this.props.toggleModalRecommendDetail === 'function') {
+      return this.props.toggleModalRecommendDetail();
+    }
+  };
+
   render() {
     const settings = {
       className: "center",
@@ -34,7 +45,9 @@ class RecommendSlider extends Component {
                          alt="Card image cap"/>
                 <CardBody>
                   <CardText><strong>Recommend for you</strong></CardText>
-                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}>
+                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}
+                          onClick={()=>this.toggleModalRecommendDetail()}
+                  >
                     <i className="fa fa-plus"/> Chi tiết
                   </Button>
                 </CardBody>
@@ -47,7 +60,9 @@ class RecommendSlider extends Component {
                          alt="Card image cap"/>
                 <CardBody>
                   <CardText><strong>Recommend for you</strong></CardText>
-                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}>
+                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}
+                          onClick={()=>this.toggleModalRecommendDetail()}
+                  >
                     <i className="fa fa-plus"/> Chi tiết
                   </Button>
                 </CardBody>
@@ -60,7 +75,9 @@ class RecommendSlider extends Component {
                          alt="Card image cap"/>
                 <CardBody>
                   <CardText><strong>Recommend for you</strong></CardText>
-                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}>
+                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}
+                          onClick={()=>this.toggleModalRecommendDetail()}
+                  >
                     <i className="fa fa-plus"/> Chi tiết
                   </Button>
                 </CardBody>
@@ -73,7 +90,9 @@ class RecommendSlider extends Component {
                          alt="Card image cap"/>
                 <CardBody>
                   <CardText><strong>Recommend for you</strong></CardText>
-                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}>
+                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}
+                          onClick={()=>this.toggleModalRecommendDetail()}
+                  >
                     <i className="fa fa-plus"/> Chi tiết
                   </Button>
                 </CardBody>
@@ -86,7 +105,9 @@ class RecommendSlider extends Component {
                          alt="Card image cap"/>
                 <CardBody>
                   <CardText><strong>Recommend for you</strong></CardText>
-                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}>
+                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}
+                          onClick={()=>this.toggleModalRecommendDetail()}
+                  >
                     <i className="fa fa-plus"/> Chi tiết
                   </Button>
                 </CardBody>
@@ -99,7 +120,9 @@ class RecommendSlider extends Component {
                          alt="Card image cap"/>
                 <CardBody>
                   <CardText><strong>Recommend for you</strong></CardText>
-                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}>
+                  <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}
+                          onClick={()=>this.toggleModalRecommendDetail()}
+                  >
                     <i className="fa fa-plus"/> Chi tiết
                   </Button>
                 </CardBody>

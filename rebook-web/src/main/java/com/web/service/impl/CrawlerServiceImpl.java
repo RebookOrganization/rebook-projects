@@ -102,10 +102,10 @@ public class CrawlerServiceImpl implements CrawlerService {
           Element productDetail = document.getElementById(NEW_DETAILS_TAG);
 
           if (productDetail != null) {
-            if (productDetail.getElementsByClass(LOCATION_PROP) != null) {
-              String khuvuc = productDetail.getElementsByClass(LOCATION_PROP).select("a").text();
-              newsItem.setCity(khuvuc);
-            }
+//            if (productDetail.getElementsByClass(LOCATION_PROP) != null) {
+//              String khuvuc = productDetail.getElementsByClass(LOCATION_PROP).select("a").text();
+//              newsItem.setCity(khuvuc);
+//            }
 
             String price = productDetail.getElementsByClass(PRICE_PROP).first().select("strong").text();
             String area = productDetail.getElementsByClass(PRICE_PROP).get(1).select("strong").text();
@@ -228,7 +228,7 @@ public class CrawlerServiceImpl implements CrawlerService {
               propertyAddress1 = propertyAdressRepository.findLastRow(currentPartition);
               newsItem.setPropertyAddressId(propertyAddress1.getId());
 
-              newsItemRepository.saveToPartition(newsItem.getArea(), newsItem.getBalcony(), newsItem.getCity(), newsItem.getDescription(),
+              newsItemRepository.saveToPartition(newsItem.getArea(), newsItem.getBalcony(), newsItem.getDescription(),
                   newsItem.getDirect_of_house(), newsItem.getFloor_number(), newsItem.getFrontEnd(), newsItem.getInterior(),
                   newsItem.getPostedDate(), newsItem.getPostedMilisec(), newsItem.getPrice(), newsItem.getPubDate(), newsItem.getRoom_number(),
                   newsItem.getSummary(), newsItem.getTitle(), newsItem.getToilet_number(), newsItem.getTrans_type(), newsItem.getUrl(),
@@ -368,7 +368,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             newsItem.setWardin(block.get(1).getElementsByTag("td")
                 .get(3).getElementsByTag("strong").text());
 
-            newsItemRepository.saveToPartition(newsItem.getArea(), newsItem.getBalcony(), newsItem.getCity(), newsItem.getDescription(),
+            newsItemRepository.saveToPartition(newsItem.getArea(), newsItem.getBalcony(), newsItem.getDescription(),
                 newsItem.getDirect_of_house(), newsItem.getFloor_number(), newsItem.getFrontEnd(), newsItem.getInterior(),
                 newsItem.getPostedDate(), newsItem.getPostedMilisec(), newsItem.getPrice(), newsItem.getPubDate(),
                 newsItem.getRoom_number(), newsItem.getSummary(), newsItem.getTitle(), newsItem.getToilet_number(),

@@ -7,16 +7,22 @@ public class ConvertData {
     if (priceIn.contains("triệu") && priceIn.contains("tỷ")) {
       int indexOfBili = priceIn.indexOf("tỷ");
       int indexOfMili = priceIn.indexOf("triệu");
-      output = Integer.parseInt(priceIn.substring(0, indexOfBili).trim())*1000
-          + Integer.parseInt(priceIn.substring(indexOfBili + "tỷ".length(), indexOfMili).trim());
+      output = Integer.parseInt(priceIn.substring(0, indexOfBili).trim())*1000000
+          + Integer.parseInt(priceIn.substring(indexOfBili + "tỷ".length(), indexOfMili).trim())*1000;
     }
     else {
       if (priceIn.contains("triệu/m")) {
         if (priceIn.contains("triệu/m²")) {
-          output = Float.parseFloat(priceIn.replaceAll(" triệu/m²", "")) * area;
+          if (area != 0.0)
+            output = Float.parseFloat(priceIn.replaceAll(" triệu/m²", "")) * area*1000;
+          else
+            output = Float.parseFloat(priceIn.replaceAll(" triệu/m²", ""))*1000;
         }
         else {
-          output = Float.parseFloat(priceIn.replaceAll(" triệu/m2", "")) * area;
+          if (area != 0.0)
+            output = Float.parseFloat(priceIn.replaceAll(" triệu/m2", "")) * area*1000;
+          else
+            output = Float.parseFloat(priceIn.replaceAll(" triệu/m2", ""))*1000;
         }
       }
       else {
@@ -29,21 +35,21 @@ public class ConvertData {
           else {
             indexOfThousand = priceIn.indexOf("ngàn/m2");
           }
-          output = Float.parseFloat(priceIn.substring(0, indexOfMili).trim()) * 1000
-              + Float.parseFloat(priceIn.substring(indexOfMili + "triệu".length(), indexOfThousand).trim()) * 1000
-              * area;
+
+          if (area != 0) {
+            output =( (Float.parseFloat(priceIn.substring(0, indexOfMili).trim())*1000 +
+                (Float.parseFloat(priceIn.substring(indexOfMili + "triệu".length(), indexOfThousand).trim()) )))
+                * area;
+          }
+          else {
+            output = (Float.parseFloat(priceIn.substring(0, indexOfMili).trim())*1000
+                + (Float.parseFloat(priceIn.substring(indexOfMili + "triệu".length(), indexOfThousand).trim())));
+          }
         }
         else {
           if (priceIn.contains("triệu") && !priceIn.contains("tỷ")) {
             int indexOfMili = priceIn.indexOf("triệu");
-            String thousand = priceIn.replaceAll("[^0-9^.]", "")
-                .substring(indexOfMili + "triệu".length());
-            if (thousand.length() > 0) {
-              output = Float.parseFloat(priceIn.substring(0, indexOfMili).trim()) * 1000 + Float.parseFloat(thousand);
-            }
-            else {
-              output = Float.parseFloat(priceIn.substring(0, indexOfMili).trim()) * 1000;
-            }
+            output = Float.parseFloat(priceIn.substring(0, indexOfMili).trim())*1000;
           }
           else {
             if (!priceIn.contains("triệu") && priceIn.contains("tỷ")) {
@@ -56,6 +62,6 @@ public class ConvertData {
         }
       }
     }
-    return output;
+    return output/1000;
   }
 }

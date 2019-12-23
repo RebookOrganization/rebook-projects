@@ -4,6 +4,8 @@ import static com.crawler.constant.Constant.*;
 import com.crawler.bean.Response.CommonResponse;
 import com.crawler.cache.CacheDataService;
 import com.crawler.cache.NewsItemIndex;
+import com.crawler.enumeration.District;
+import com.crawler.enumeration.ProvinceCity;
 import com.crawler.model.ContactOwner;
 import com.crawler.model.NewsImageUrl;
 import com.crawler.model.NewsItem;
@@ -24,6 +26,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import net.ricecode.similarity.JaroWinklerStrategy;
 import net.ricecode.similarity.SimilarityStrategy;
@@ -245,8 +248,11 @@ public class CrawlerServiceImpl implements CrawlerService {
                   .getElementsByClass("row");
               String prop_address = row.get(1).getElementsByClass("right").text();
 
-              propertyAdressRepository.saveByPartition(currentPartition, "",
-                  "", "", prop_address);
+              propertyAdressRepository.saveByPartition(currentPartition,
+                  District.fromDisplayValue(prop_address) != null ? Objects
+                      .requireNonNull(District.fromDisplayValue(prop_address)).getDisplayValue() : "",
+                  ProvinceCity.fromDisplayValue(prop_address) != null ? Objects
+                      .requireNonNull(ProvinceCity.fromDisplayValue(prop_address)).getDisplayValue() : "", "", prop_address);
               propertyAddress1 = propertyAdressRepository.findLastRow(currentPartition);
               newsItem.setPropertyAddressId(propertyAddress1.getId());
 
@@ -255,7 +261,7 @@ public class CrawlerServiceImpl implements CrawlerService {
                   newsItem.getPostedDate(), newsItem.getPostedMilisec(), newsItem.getPrice(), newsItem.getPubDate(), newsItem.getRoom_number(),
                   newsItem.getSummary(), newsItem.getTitle(), newsItem.getToilet_number(), newsItem.getTrans_type(), newsItem.getUrl(),
                   newsItem.getWardin(), contactOwner1.getId(), propertyAddress1.getId(),
-                  propertyProject1.getId(), newsItem.getUser().getId(), currentPartition);
+                  propertyProject1.getId(), newsItem.getUser().getId(), newsItem.getAreaNum(), newsItem.getPriceNum(), currentPartition);
 
               NewsItem newsItem1 = newsItemRepository.findLastRow(currentPartition);
               newsItemList.add(newsItem1);
@@ -338,7 +344,11 @@ public class CrawlerServiceImpl implements CrawlerService {
             newsItem.setPubDate(pubDate);
 
             String address = elements.first().getElementsByClass("location").text().substring(7);
-            propertyAdressRepository.saveByPartition(currentPartition, "", "", "", address);
+            propertyAdressRepository.saveByPartition(currentPartition,
+                District.fromDisplayValue(address) != null ? Objects
+                    .requireNonNull(District.fromDisplayValue(address)).getDisplayValue() : "",
+                ProvinceCity.fromDisplayValue(address) != null ? Objects
+                    .requireNonNull(ProvinceCity.fromDisplayValue(address)).getDisplayValue() : "", "", address);
             PropertyAddress propertyAddress1 = propertyAdressRepository.findLastRow(currentPartition);
 
             newsItem.setPropertyAddressId(propertyAddress1.getId());
@@ -398,7 +408,7 @@ public class CrawlerServiceImpl implements CrawlerService {
                 newsItem.getPostedDate(), newsItem.getPostedMilisec(), newsItem.getPrice(), newsItem.getPubDate(),
                 newsItem.getRoom_number(), newsItem.getSummary(), newsItem.getTitle(), newsItem.getToilet_number(),
                 newsItem.getTrans_type(), newsItem.getUrl(), newsItem.getWardin(), contactOwner1.getId(),
-                propertyAddress1.getId(), null, newsItem.getUser().getId(), currentPartition);
+                propertyAddress1.getId(), null, newsItem.getUser().getId(), newsItem.getAreaNum(), newsItem.getPriceNum(), currentPartition);
 
             NewsItem newsItem1 = newsItemRepository.findLastRow(currentPartition);
             newsItemList.add(newsItem);
