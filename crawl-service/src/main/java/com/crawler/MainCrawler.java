@@ -31,6 +31,5 @@ public class MainCrawler implements ApplicationRunner {
 		logger.info("'65 triệu/m²: {}",ConvertData.convertPriceNum("65 triệu/m²",230));
 		logger.info("300 triệu: {}",ConvertData.convertPriceNum("300 triệu",1f));
 		logger.info("1 tỷ 200 triệu: {}",ConvertData.convertPriceNum("1 tỷ 200 triệu",1f));
-
 	}
 }

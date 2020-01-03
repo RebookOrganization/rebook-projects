@@ -52,9 +52,9 @@
     <div class="signup-container" style="top: 45%;">
       <div class="signup-content">
 <!--        <h1 class="signup-title">Sign Up to Real Estate Social</h1>-->
-        <div class="or-separator">
-          <span class="or-text">Rebook</span>
-        </div>
+<!--        <div class="or-separator">-->
+<!--          <span class="or-text">Rebook</span>-->
+<!--        </div>-->
         <p th:text="${message}" class="error" style="color:red;">
         <form action="#" th:action="@{/signup}" th:object="${userDto}" method="post">
         <p class="error-message" th:if="${#fields.hasGlobalErrors()}" style="color:red;"

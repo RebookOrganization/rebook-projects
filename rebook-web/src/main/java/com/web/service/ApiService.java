@@ -38,6 +38,9 @@ public class ApiService {
     try {
       UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
           .queryParam("offset", offset);
+
+      logger.info("ApiService esNewsScrollApi url: {}, builder: {}", url, builder);
+
       esResponse = callApiUtils.sendGet(builder);
 
       logger.info("ApiService esNewsScrollApi response: {}", esResponse);

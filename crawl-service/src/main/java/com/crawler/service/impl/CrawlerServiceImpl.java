@@ -21,8 +21,6 @@ import com.crawler.repository.UserRepository;
 import com.crawler.service.CrawlerService;
 import com.crawler.utils.ConvertData;
 import com.crawler.utils.DateTimeUtils;
-import com.crawler.utils.GsonUtils;
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,6 @@ import net.ricecode.similarity.JaroWinklerStrategy;
 import net.ricecode.similarity.SimilarityStrategy;
 import net.ricecode.similarity.StringSimilarityService;
 import net.ricecode.similarity.StringSimilarityServiceImpl;
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -94,8 +91,8 @@ public class CrawlerServiceImpl implements CrawlerService {
         String descriptMain = Jsoup.parse(description.replaceAll("<div[^>]*>", "\n")).text();
 
         //check trùng url tại đây.
-        if (NewsItemIndex.newsItem != null && !NewsItemIndex.newsItem.getUrl().equals(url)
-            && !NewsItemIndex.newsItem.getTitle().equalsIgnoreCase(title))
+        if (NewsItemIndex.newsItem == null || (!NewsItemIndex.newsItem.getUrl().equals(url)
+            && !NewsItemIndex.newsItem.getTitle().equalsIgnoreCase(title)))
         {
           NewsItem newsItem = new NewsItem();
           newsItem.setTitle(title);
@@ -317,8 +314,8 @@ public class CrawlerServiceImpl implements CrawlerService {
         newsItem.setTitle(title);
 
         // check trùng url
-        if (NewsItemIndex.newsItem != null && !NewsItemIndex.newsItem.getUrl().equals(url)
-            && !NewsItemIndex.newsItem.getTitle().equalsIgnoreCase(title)) {
+        if (NewsItemIndex.newsItem == null || (!NewsItemIndex.newsItem.getUrl().equals(url)
+            && !NewsItemIndex.newsItem.getTitle().equalsIgnoreCase(title))) {
           newsItem.setTrans_type("DiaOcOnline.vn");
           newsItem.setUrl(url);
           newsItem.setPostedDate(pubDate);

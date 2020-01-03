@@ -35,6 +35,7 @@ public class KafkaProducerConfig {
         new HashMap<>(kafkaProperties.buildProducerProperties());
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
         bootstrap_server);
+    props.put(ProducerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, 60000);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
         StringSerializer.class);
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
