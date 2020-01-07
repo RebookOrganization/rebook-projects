@@ -5,12 +5,14 @@ import com.web.bean.Response.CommonResponse.Fail;
 import com.web.bean.Response.NewsResponseDTO;
 import com.web.cache.CacheDataService;
 import com.web.cache.NewsItemIndex;
+import com.web.config.WebAppConfig;
 import com.web.dto.RequestFilterSearchDto;
 import com.web.model.*;
 import com.web.repository.*;
 import com.web.service.ApiService;
 import com.web.service.NewsItemService;
 import com.web.utils.DateTimeUtils;
+import com.web.utils.GenerateRandom;
 import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class NewsItemServiceImpl implements NewsItemService {
@@ -144,6 +147,28 @@ public class NewsItemServiceImpl implements NewsItemService {
       ex.printStackTrace();
       logger.error("NewsItemServiceImpl getAllNewsByUser Exception: ", ex);
       return new Fail("Tìm kiếm thông tin bài viết của user thất bại.");
+    }
+  }
+
+  @Override
+  public CommonResponse getNewsById(String id) throws IOException {
+    NewsResponseDTO newsResponseDTO = new NewsResponseDTO();
+    try {
+      int randomId = GenerateRandom.randomNewsId();
+      newsResponseDTO = apiService.esNewsItemById(String.valueOf(randomId));
+
+      if (newsResponseDTO == null) {
+        Optional<NewsItem> newsItem = newsRepository.findById(Long.parseLong(String.valueOf(randomId)));
+        if (newsItem.isPresent()) {
+          newsResponseDTO = mapNewsToNewsResponseDTO(newsItem.get());
+        }
+      }
+
+      return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTO);
+    }
+    catch (Exception ex) {
+      logger.error("getNewsById exception: ", ex);
+      return new CommonResponse.Fail("Lấy thông tin bài viết thất bại.");
     }
   }
 

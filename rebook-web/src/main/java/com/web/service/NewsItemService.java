@@ -12,4 +12,6 @@ public interface NewsItemService {
     CommonResponse getAllNewsByUser(Long userID) throws IOException;
 
     CommonResponse esSearchNewsApi (RequestFilterSearchDto request) throws IOException;
+
+    CommonResponse getNewsById (String id) throws IOException;
 }

@@ -42,6 +42,12 @@ public class NewsController {
         return newsItemService.getAllNewsItem(offset);
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public CommonResponse getNewsById(@RequestParam String id) throws IOException {
+        return newsItemService.getNewsById(id);
+    }
+
     @GetMapping(value = "/search-by-address")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public CommonResponse searchNewsByAddress(String address) throws Exception {

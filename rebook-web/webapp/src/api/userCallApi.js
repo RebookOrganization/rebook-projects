@@ -8,6 +8,10 @@ export function getCurrentUser() {
   return httpGet("api/auth/me");
 }
 
+export function getNewsItemById(id) {
+  return httpGet(API_NEWS + "?id=" + id);
+}
+
 export function getAllNewsItem(offset) {
   return httpGet(API_NEWS + "/all-news?offset=" + offset)
 }

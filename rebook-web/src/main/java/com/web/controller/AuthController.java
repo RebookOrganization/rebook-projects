@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,10 +56,13 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${spring.mail.username}")
+    private String mailSendFrom;
+
     @GetMapping(value = "/")
     public String home(Model model) { return "redirect:/index"; }
 
-    @GetMapping(value = "/index")
+    @GetMapping(value = {"/", "/index", "/home", "/message", "/profile"})
     public String index(Model model) { return "index"; }
 
     @GetMapping(value = "/login")
@@ -114,7 +118,7 @@ public class AuthController {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(user.getEmail());
         mailMessage.setSubject("Complete Registration!");
-        mailMessage.setFrom("rebook.thanhle@gmail.com");
+        mailMessage.setFrom(mailSendFrom);
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         mailMessage.setText("To confirm your account, please click here : "
             + baseUrl + "/confirm-account?token=" + confirmationToken.getVerifyToken());

@@ -78,7 +78,7 @@ public class CrawlerServiceImpl implements CrawlerService {
   public CommonResponse crawlerBatDongSan() {
     logger.info("Thread execute crawlerBatDongSan - {}", Thread.currentThread().getName());
     List<NewsItem> newsItemList = new ArrayList<>();
-    double compareDescription;
+    double compareDescription = 0;
     try {
       Document doc = Jsoup.connect(FOR_SALE).get();
       Elements elements = doc.select("item");
@@ -137,8 +137,10 @@ public class CrawlerServiceImpl implements CrawlerService {
                 .replaceAll("<br>", "\t");
 
             // check mức độ similar của desciption
-            compareDescription = stringSimilar(NewsItemIndex.newsItem.getDescription(), desc);
-            logger.info("crawlerBatDongSan duplicate score: {}", compareDescription);
+            if (NewsItemIndex.newsItem != null) {
+              compareDescription = stringSimilar(NewsItemIndex.newsItem.getDescription(), desc);
+              logger.info("crawlerBatDongSan duplicate score: {}", compareDescription);
+            }
             if (compareDescription <= 0.8) {
               newsItem.setDescription(desc);
 
@@ -301,7 +303,7 @@ public class CrawlerServiceImpl implements CrawlerService {
   public CommonResponse crawlerDiaOcOnline() {
     logger.info("Thread execute crawlerDiaOcOnline - {}", Thread.currentThread().getName());
     List<NewsItem> newsItemList = new ArrayList<>();
-    double compareDescription;
+    double compareDescription = 0;
     try {
       Document doc = Jsoup.connect(DIAOCONLINE_DUAN_QUYHOACH).get();
       Elements entrys = doc.select("entry");
@@ -334,8 +336,10 @@ public class CrawlerServiceImpl implements CrawlerService {
           newsItem.setDescription(descript);
 
           // check
-          compareDescription = stringSimilar(NewsItemIndex.newsItem.getDescription(), descript);
-          logger.info("crawlerDiaOcOnline duplicate score: {}", compareDescription);
+          if (NewsItemIndex.newsItem != null) {
+            compareDescription = stringSimilar(NewsItemIndex.newsItem.getDescription(), descript);
+            logger.info("crawlerDiaOcOnline duplicate score: {}", compareDescription);
+          }
           if (compareDescription <= 0.8) {
             newsItem.setTitle(title);
             newsItem.setPubDate(pubDate);

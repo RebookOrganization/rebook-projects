@@ -2,6 +2,8 @@ package com.web.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.web.bean.Response.CommonResponse;
+import com.web.bean.Response.EsNewsItemById;
 import com.web.bean.Response.EsNewsItemResponse;
 import com.web.bean.Response.NewsResponseDTO;
 import com.web.config.WebAppConfig;
@@ -46,7 +48,6 @@ public class ApiService {
       logger.info("ApiService esNewsScrollApi response: {}", esResponse);
       EsNewsItemResponse response = GsonUtils.fromJsonString(esResponse, EsNewsItemResponse.class);
       newsResponseDTOList = response.getResult();
-
     }
     catch (Exception ex) {
       logger.info("ApiService esNewsScrollApi exception - {}", ex.getMessage());
@@ -54,6 +55,28 @@ public class ApiService {
     }
 
     return newsResponseDTOList;
+  }
+
+  public NewsResponseDTO esNewsItemById(String id) throws Exception {
+    final String esResponse;
+    String url = WebAppConfig.esNewsItemById;
+    NewsResponseDTO newsResponseDTO = new NewsResponseDTO();
+    try {
+      UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+          .queryParam("id", id);
+
+      logger.info("ApiService esNewsItemById url: {}, builder: {}", url, builder);
+      esResponse = callApiUtils.sendGet(builder);
+
+      logger.info("ApiService esNewsItemById response: {}", esResponse);
+      EsNewsItemById response = GsonUtils.fromJsonString(esResponse, EsNewsItemById.class);
+      newsResponseDTO = response.getResult();
+    }
+    catch (Exception ex) {
+      logger.error("es getNewsById exception: ", ex);
+    }
+
+    return newsResponseDTO;
   }
 
   public List<NewsResponseDTO> esSearchNewsApi(RequestFilterSearchDto request) throws Exception {

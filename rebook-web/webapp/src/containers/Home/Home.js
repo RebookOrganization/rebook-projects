@@ -16,7 +16,7 @@ import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 import '../App/_app.css';
 import {
   createNewsPostItem,
-  getAllNewsItem, uploadMultiImages
+  getAllNewsItem, getNewsItemById, uploadMultiImages
 } from "../../api/userCallApi";
 import ImageUploader from 'react-images-upload';
 import moment from "moment";
@@ -107,7 +107,9 @@ class Home extends Component {
       optionArea: null,
       optionDirectHouse: null,
 
-      recommendModal: false
+      recommendModal: false,
+      loadingRecommend: false,
+      newsRecommend: null
     };
 
   }
@@ -134,6 +136,18 @@ class Home extends Component {
   toggleModalRecommendDetail = () => {
     this.setState({
       recommendModal: !this.state.recommendModal
+    }, () => {
+      if (this.state.recommendModal) {
+        this.setState({loadingRecommend: true});
+        getNewsItemById(0).then(res => {
+          if (parseInt(res.data.returnCode) === 1) {
+            this.setState({newsRecommend: res.data.result})
+          }
+          else {
+            Alert.warning(res.data.returnMessage)
+          }
+        }).finally(()=>this.setState({loadingRecommend: false}))
+      }
     })
   };
 
@@ -874,6 +888,8 @@ class Home extends Component {
         />
 
         <RecommendModal recommendModal={this.state.recommendModal}
+                        newsRecommend={this.state.newsRecommend}
+                        loadingRecommend={this.state.loadingRecommend}
                         toggleModalRecommendDetail={this.toggleModalRecommendDetail}/>
 
         <Alert stack={{limit: 3}}

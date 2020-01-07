@@ -20,6 +20,7 @@ public class WebAppConfig {
   private String uploadDir;
   public static String esNewsScrollApiUrl;
   public static String esNewsItemSearchUrl;
+  public static String esNewsItemById;
 
   public String getUploadDir() { return uploadDir; }
 
@@ -41,4 +42,8 @@ public class WebAppConfig {
     WebAppConfig.esNewsItemSearchUrl = esNewsItemSearchUrl;
   }
 
+  @Value("${es.newsItemById}")
+  public void setEsNewsItemById(String esNewsItemById) {
+    WebAppConfig.esNewsItemById = esNewsItemById;
+  }
 }
