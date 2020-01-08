@@ -140,6 +140,7 @@ class Home extends Component {
       if (this.state.recommendModal) {
         this.setState({loadingRecommend: true});
         getNewsItemById(0).then(res => {
+          console.log("res get News by id:" + JSON.stringify(res));
           if (parseInt(res.data.returnCode) === 1) {
             this.setState({newsRecommend: res.data.result})
           }
