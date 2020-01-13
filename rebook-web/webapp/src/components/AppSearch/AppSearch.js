@@ -15,7 +15,7 @@ import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
 
 
-class AppSearch extends React.Component {
+class AppSearch extends React.PureComponent {
   constructor(props) {
     super(props);
 

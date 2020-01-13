@@ -5,12 +5,12 @@ import com.web.bean.Response.CommonResponse.Fail;
 import com.web.bean.Response.NewsResponseDTO;
 import com.web.cache.CacheDataService;
 import com.web.cache.NewsItemIndex;
-import com.web.config.WebAppConfig;
 import com.web.dto.RequestFilterSearchDto;
 import com.web.model.*;
 import com.web.repository.*;
 import com.web.service.ApiService;
 import com.web.service.NewsItemService;
+import com.web.service.ObjectMapperService;
 import com.web.utils.DateTimeUtils;
 import com.web.utils.GenerateRandom;
 import java.util.Map;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class NewsItemServiceImpl implements NewsItemService {
@@ -37,24 +36,6 @@ public class NewsItemServiceImpl implements NewsItemService {
   private UserRepository userRepository;
 
   @Autowired
-  private LikeRepository likeRepository;
-
-  @Autowired
-  private CommentRepository commentRepository;
-
-  @Autowired
-  private ShareRepository shareRepository;
-
-  @Autowired
-  private PropertyAdressRepository propertyAdressRepository;
-
-  @Autowired
-  private ContactOwnerRepository contactOwnerRepository;
-
-  @Autowired
-  private PropertyProjectRepository propertyProjectRepository;
-
-  @Autowired
   private UserSearchLogRepository userSearchLogRepository;
 
   @Autowired
@@ -65,10 +46,13 @@ public class NewsItemServiceImpl implements NewsItemService {
   private static Integer currentPartition = DateTimeUtils.getPartition();
 
   private ApiService apiService;
+  private ObjectMapperService objectMapperService;
 
   @Autowired
-  public NewsItemServiceImpl(ApiService apiService) {
+  public NewsItemServiceImpl(ApiService apiService,
+      ObjectMapperService objectMapperService) {
     this.apiService = apiService;
+    this.objectMapperService = objectMapperService;
   }
 
   @Override
@@ -86,14 +70,14 @@ public class NewsItemServiceImpl implements NewsItemService {
           for (Map.Entry<String, NewsItem> entry : newsMap.entrySet()) {
             NewsItem newsItem = entry.getValue();
             if (newsItem != null) {
-              newsResponseDTOList.add(mapNewsToNewsResponseDTO(newsItem));
+              newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem));
             }
           }
         }
         else {
           List<NewsItem> newsItemList = newsRepository.findNewsByPartition(currentPartition);
           for (NewsItem newsItem : newsItemList) {
-            newsResponseDTOList.add(mapNewsToNewsResponseDTO(newsItem));
+            newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem));
           }
         }
       }
@@ -116,7 +100,7 @@ public class NewsItemServiceImpl implements NewsItemService {
       if (user.isPresent()) {
         newsItemList = newsRepository.findAllByUser(user.get());
         for (NewsItem newsItem : newsItemList) {
-          newsResponseDTOList.add(mapNewsToNewsResponseDTO(newsItem));
+          newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem));
         }
       }
       return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTOList);
@@ -160,7 +144,7 @@ public class NewsItemServiceImpl implements NewsItemService {
       if (newsResponseDTO == null) {
         Optional<NewsItem> newsItem = newsRepository.findById(Long.parseLong(String.valueOf(randomId)));
         if (newsItem.isPresent()) {
-          newsResponseDTO = mapNewsToNewsResponseDTO(newsItem.get());
+          newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get());
         }
       }
 
@@ -172,64 +156,4 @@ public class NewsItemServiceImpl implements NewsItemService {
     }
   }
 
-  private NewsResponseDTO mapNewsToNewsResponseDTO(NewsItem newsItem) {
-    NewsResponseDTO newsResponseDTO = new NewsResponseDTO();
-    newsResponseDTO.setImageUser(newsItem.getUser().getImageUrl());
-    newsResponseDTO.setUsername(newsItem.getUser().getName());
-    newsResponseDTO.setTitleNews(newsItem.getTitle());
-
-    if (newsItem.getSummary() != null) {
-      newsResponseDTO.setSummaryNews(newsItem.getSummary());
-    }
-
-    if (newsItem.getDescription() != null) {
-      newsResponseDTO.setDescriptionNews(newsItem.getDescription());
-    }
-
-    newsResponseDTO.setPubDate(newsItem.getPostedDate());
-    newsResponseDTO.setPrice(newsItem.getPrice());
-    newsResponseDTO.setArea(newsItem.getArea());
-
-    if (newsItem.getPropertyAddressId() != null) {
-      Optional<PropertyAddress> propertyAddress = propertyAdressRepository.findById(currentPartition,
-          newsItem.getPropertyAddressId());
-      propertyAddress.ifPresent(address -> newsResponseDTO.setAddress_prop(address.getSummary()));
-    }
-
-    newsResponseDTO.setImageUrlList(newsItem.getImages());
-    newsResponseDTO.setNewsId(newsItem.getId());
-    newsResponseDTO.setUserId(newsItem.getUser().getId());
-
-    if (newsItem.getContactOwnerId() != null) {
-      Optional<ContactOwner> contactOwner = contactOwnerRepository.findById(currentPartition,
-          newsItem.getContactOwnerId());
-      contactOwner.ifPresent(contact -> {
-        newsResponseDTO.setContactEmail(contact.getEmail());
-        newsResponseDTO.setContactName(contact.getContactName());
-        newsResponseDTO.setContactPhone(contact.getPhoneNumber());
-      });
-
-    }
-
-    if (newsItem.getPropertyProjectId() != null) {
-      Optional<PropertyProject> propertyProject = propertyProjectRepository.findById(currentPartition,
-          newsItem.getPropertyProjectId());
-      propertyProject.ifPresent(project -> {
-        newsResponseDTO.setProjectOwner(project.getProjectOwner());
-        newsResponseDTO.setProjectSize(project.getProjectSize());
-        newsResponseDTO.setProjectName(project.getProjectName());
-      });
-    }
-
-    List<LikeNews> likeNewsList = likeRepository.findByNewsItemId(newsItem.getId());
-    newsResponseDTO.setLikeNewsList(likeNewsList);
-
-    List<Comment> commentList = commentRepository.findByNewItemId(newsItem.getId());
-    newsResponseDTO.setCommentList(commentList);
-
-    List<ShareNews> shareNewsList = shareRepository.findByNewItemId(newsItem.getId());
-    newsResponseDTO.setShareNewsList(shareNewsList);
-
-    return newsResponseDTO;
-  }
 }

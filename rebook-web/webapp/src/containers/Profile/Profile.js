@@ -5,13 +5,13 @@ import {
   Button,
   CardBody,
   CardText,
-  CardTitle,
-  Input, Modal, ModalBody, ModalHeader,
+  CardTitle, Col,
+  Input, Modal, ModalBody, ModalHeader, Row,
 } from "reactstrap";
 import ButtonGroup from "reactstrap/es/ButtonGroup";
 import '../Home/_home.css';
 import Aside from "../Aside/Aside";
-import {getAllNewsByUser} from "../../api/userCallApi";
+import {getAllNewsByUser, updateUserProfile} from "../../api/userCallApi";
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
@@ -25,6 +25,9 @@ import { withCookies } from 'react-cookie';
 import LoadingIndicator from "../../components/Loading/LoadingIndicator";
 import AppHeader from "../../components/Header/AppHeader";
 import {NavLink, withRouter} from "react-router-dom";
+import ListCardItem from "../Home/ListCardItem/ListCardItem";
+import SkeletonLoading from "../../components/Loading/SkeletonLoading";
+import LaddaButton, {EXPAND_LEFT} from "react-ladda";
 
 class Profile extends Component {
   constructor(props) {
@@ -48,7 +51,7 @@ class Profile extends Component {
 
       modalEditProfile: false,
 
-      image: 'assets/img/avatars/avatar.jpg',
+      image: this.props.currentUser ? this.props.currentUser.imageUrl : '/icon/default.jpg',
       allowZoomOut: false,
       position: { x: 0.5, y: 0.5 },
       scale: 1,
@@ -57,7 +60,13 @@ class Profile extends Component {
       preview: null,
       width: 300,
       height: 300,
-      hideNav: false
+      hideNav: false,
+
+      displayName: "",
+      displayPhone: "",
+      displayBirthDate: "",
+      displayGender: "",
+      loadingUpdate: false
     }
   }
 
@@ -96,11 +105,13 @@ class Profile extends Component {
 
   handleScroll = () => {
     let navbar = document.getElementById("navbar");
-    if (window.pageYOffset >= 350) {
-      navbar.classList.add("sticky-navbar")
-    } else {
-      if (navbar.classList.contains("sticky-navbar")) {
-        navbar.classList.remove("sticky-navbar");
+    if (navbar != null) {
+      if (window.pageYOffset >= 350) {
+        navbar.classList.add("sticky-navbar")
+      } else {
+        if (navbar.classList.contains("sticky-navbar")) {
+          navbar.classList.remove("sticky-navbar");
+        }
       }
     }
   };
@@ -167,36 +178,29 @@ class Profile extends Component {
     this.setState({ position })
   };
 
+  handleUpdateUserProfile = () => {
+    this.setState({loadingUpdate: true});
+    const request = {
+      userId: this.state.currentUser,
+      imageUrl: this.state.image,
+      name: this.state.displayName,
+      phoneNumber: this.state.displayPhone,
+      birthDate: this.state.displayBirthDate,
+      gender: this.state.displayGender
+    };
+
+    updateUserProfile(request).then(res => {
+      Alert.success("Cập nhật thành công. " + JSON.stringify(res))
+    }).catch(err => console.log(err))
+    .finally(()=>this.setState({loadingUpdate: false}))
+  };
+
   render() {
-    const {newsDetail, textOfReadMore, currentUser, indexNews,
-      renderComment, activeLike, activeShare, newsByUser} = this.state;
+    const {currentUser, newsByUser} = this.state;
 
-    const styleText = {
-      fontSize: '16px',
-      fontWeight: 'normal',
-      lineHeight: '1.58',
-      fontFamily: 'inherit',
-      marginBottom: '10px',
-      paddingRight: '5px',
-    };
-
-    const styleTitle = {
-      fontSize: '16px',
-      fontWeight: 'normal',
-      lineHeight: '1.58',
-      fontFamily: 'inherit',
-      marginBottom: '10px'
-    };
-
-    const styleIcon = {
-      width: '21px',
-      height: '21px',
-      marginRight: "2px"
-    };
-
-    if (this.state.loading) {
-      return <LoadingIndicator/>;
-    }
+    // if (this.state.loading) {
+    //   return <LoadingIndicator/>;
+    // }
 
     return (
       <div className="app">
@@ -285,231 +289,48 @@ class Profile extends Component {
                   <div className="row">
                     <div className="col col-md-8">
                       {
-                        newsByUser ? newsByUser.map((item, index) => {
-                          return (
-                              <Card className="card" key={index}>
-                                <CardTitle>
-                                  <div className="row"
-                                       style={{display: 'flex', alignItems: 'center', marginTop: '12px'}}>
-                                    <div className="col-md-9">
-                                      <a className="btn-circle btn-lg">
-                                        <img
-                                            src={item.imageUser ? item.imageUser
-                                                : '/icon/default.jpg'}
-                                            className="rounded-circle img-profile"
-                                            alt="Username"/>
-                                      </a>{' '}
-                                      <a href={item.imageUser ? item.imageUser
-                                          : '/icon/default.jpg'}
-                                         className="username"
-                                      >
-                                        <strong>{item.username ? item.username
-                                            : 'username'}</strong>
-                                      </a>
-
-                                      {/*pub Date*/}
-                                      <div style={{color: '#606770', margin: '0 70px'}}>
-                                        {item.pubDate ? item.pubDate : ''}
-                                      </div>
-                                    </div>
-                                    <div className="col-md-3">
-                                      <div className="dropdown float-right">
-                                        <button className="btn border-none-outline"
-                                                type="button" id="dropdownMenuButton"
-                                                data-toggle="dropdown" aria-haspopup="true"
-                                                aria-expanded="false">
-                                          <img src="/icon/menu-5.svg" style={{width:'23px',height:'23px'}}/>
-                                        </button>
-                                        <div className="dropdown-menu"
-                                             aria-labelledby="dropdownMenuButton">
-                                          <a className="dropdown-item">
-                                            <i className="far fa-eye-slash"/> Ẩn bài viết
-                                          </a>
-                                          <a className="dropdown-item">
-                                            <i className="far fa-save"/> Lưu bài viết
-                                          </a>
-                                          <a className="dropdown-item">
-                                            <i className="far fa-flag"/> Gửi phản hồi
-                                          </a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </CardTitle>
-
-                                <div className="row"
-                                     style={{display: 'flex', alignItems: 'center', marginLeft: '15px', marginRight: '15px'}}>
-                                  <p style={styleTitle}>
-                                    {item.titleNews ? item.titleNews : null}
-                                  </p>
-                                  <p style={styleText}>
-                                    <strong>Giá: </strong>{item.price ? item.price : null}
-                                  </p>
-                                  <p style={styleText}>
-                                    <strong>Diện tích: </strong>{item.area ? item.area : null}
-                                  </p>
-                                  <p style={styleText}>
-                                    <strong>Địa chỉ: </strong>{item.address_prop ? item.address_prop
-                                      : null}
-                                  </p>
-                                  <p style={styleTitle}>
-                                    {item.summaryNews ? item.summaryNews : null}
-                                  </p>
-
-                                  <a style={{
-                                    fontSize: '16px',
-                                    fontWeight: 'normal',
-                                    lineHeight: '1.58',
-                                    fontFamily: 'inherit',
-                                    marginBottom: '10px',
-                                    paddingRight: '5px',
-                                    color: '#20a8d8'
-                                  }}
-                                      // onClick={()=>this.handleRenderNewsDetail(item.newsId)}
-                                  >
-                                    {textOfReadMore}
-                                  </a>
-                                  {
-                                    newsDetail && indexNews === item.newsId ?
-                                        <p style={styleTitle}>
-                                          {item.descriptionNews ? item.descriptionNews : null}
-                                        </p> : null
-                                  }
-
-                                  <p style={styleTitle}>
-                                    <strong>Liên hệ: </strong>{' '}
-                                    {item.contactName ? item.contactName : null}
-                                    {item.contactPhone ? item.contactPhone : null}
-                                    {item.contactEmail ? item.contactEmail : null}
-                                  </p>
-                                  <p style={styleTitle}>
-                                    {item.projectName ? item.projectName : null}
-                                    {item.projectOwner ? item.projectOwner : null}
-                                    {item.projectSize ? item.projectSize : null}
-                                  </p>
-                                </div>
-
-                                <div style={{marginBottom: '10px'}}>
-                                  {
-                                    item.imageUrlList && item.imageUrlList.length ? this.handleRenderImageSlide(item.imageUrlList) : null
-                                  }
-                                </div>
-
-                                {/*Luot like luot share o day*/}
-                                <div style={{margin: '0 20px'}}>
-                                  <a className="amount-like-share" style={{color: '#606770'}}>
-                                    <img style={styleIcon} src="/icon/thumb-up.svg"/>
-                                    <img style={styleIcon} src="/icon/heart.svg"/>
-                                    {item.likeNewsList ? item.likeNewsList.length : 0}
-                                  </a>
-                                  <a className="float-right amount-like-share"
-                                     style={{marginLeft: '10px',color: '#606770'}}>
-                                    {item.shareList ? item.shareList.length : 0} lượt share
-                                  </a>
-                                  <a className="float-right amount-like-share"
-                                     style={{color: '#606770'}}
-                                  >
-                                    {item.commentList ? item.commentList.length : 0} comment
-                                  </a>
-                                </div>
-
-                                <hr style={{margin: '5px 20px'}}/>
-
-                                <div>
-                                  <ButtonGroup style={{width: '100%', padding: '0 20px'}}>
-                                    <Button
-                                        className="border-none-outline btn-like-share-comment"
-                                        style={activeLike && indexNews === item.newsId ?
-                                            {backgroundColor:'#20a8d8', color:'white'} : {}}
-                                        onClick={() => this.handleLikePost(item.newsId)}>
-                                      <img style={styleIcon} src="/icon/thumb-up.svg"/> Thích
-                                    </Button>
-                                    <Button
-                                        className="border-none-outline btn-like-share-comment"
-                                        style={renderComment && indexNews === item.newsId ?
-                                            {backgroundColor:'#20a8d8', color:'white'} : {}}
-                                        // onClick={() => this.handleRenderComment(item.newsId)}
-                                    >
-                                      <img style={styleIcon} src="/icon/a-chat.svg"/> Bình luận
-                                    </Button>
-                                    <Button
-                                        className="border-none-outline btn-like-share-comment"
-                                        style={activeShare && indexNews === item.newsId ?
-                                            {backgroundColor:'#20a8d8', color:'white'} : {}}
-                                        onClick={() => this.handleSharePost(item.newsId)}>
-                                      <img style={styleIcon} src="/icon/share-right.svg"/> Chia sẻ
-                                    </Button>
-                                  </ButtonGroup>
-                                </div>
-
-                                <hr/>
-                                {
-                                  renderComment && indexNews === item.newsId ?
-                                      <React.Fragment>
-                                        <div className="input-comment" style={{paddingBottom:'10px'}}>
-                                          <a className="btn-user">
-                                            <img
-                                                src={'/icon/icons8-checked_user_male.png'}
-                                                className="rounded-circle icon-user"
-                                                alt="Username"/>
-                                          </a>{' '}
-                                          <p style={{borderRadius: '30px', width:'470px', padding: '10px',
-                                            backgroundColor: '#f2f3f5',textIdent:'32px',fontSize:'16px',marginBottom:'0'}}>
-                                            <p style={{fontSize:'16px',fontWeight:'500', color:'#4267B2'}}>{"Other User "}</p>
-                                            {"Bai viet rat hay!!!Bai viet rat hay!!!Bai viet rat hay!!!Bai viet rat hay!!!"
-                                            + "Bai viet rat hay!!!Bai viet rat hay!!!"
-                                            + "Bai viet rat hay!!!Bai viet rat hay!!!Bai viet rat hay!!!Bai viet rat hay!!!Bai viet rat hay!!!"}
-                                          </p>
-                                        </div>
-                                        <div className="input-comment" style={{paddingBottom:'10px'}}>
-                                          <a className="btn-user">
-                                            <img
-                                                src={'/icon/icons8-checked_user_male.png'}
-                                                className="rounded-circle icon-user"
-                                                alt="Username"/>
-                                          </a>{' '}
-                                          <p style={{borderRadius: '30px', width:'470px', padding: '10px',
-                                            backgroundColor: '#f2f3f5',textIdent:'32px',fontSize:'16px',marginBottom:'0'}}>
-                                            <p style={{fontSize:'16px',fontWeight:'500', color:'#4267B2'}}>{"Other User "}</p>
-                                            {"Bai viet rat hay!!!Bai viet rat hay!!!Bai viet rat hay!!!Bai viet rat hay!!!"}
-                                          </p>
-                                        </div>
-                                      </React.Fragment>
-                                      : null
-                                }
-
-                                <div className="input-comment">
-                                  <a className="btn-user">
-                                    <img
-                                        src={currentUser && currentUser.imageUrl
-                                            ? currentUser.imageUrl
-                                            : '/icon/default.jpg'}
-                                        className="rounded-circle icon-user"
-                                        alt="Username"/>
-                                  </a>{' '}
-                                  <Input style={{borderRadius: '36px', height: '40px',
-                                    border:'1px solid #bbc0c4',
-                                    backgroundColor: '#f2f3f5',textIdent:'32px',fontSize:'16px'}}
-                                         placeholder="Viết bình luận..."
-                                         value={this.state.comment}
-                                         onChange={(e) => this.setState(
-                                             {comment: e.target.value})}/>
-                                  <button style={{border:'none', outline:'none'}}
-                                          onClick={()=>this.handleCommentPost(item.newsId)}>
-                                    <img style={{width:'40px'}} src={'icon/icons8-circled_up.png'} alt={""}/>
-                                  </button>
-                                </div>
-                              </Card>
-                          )
-                        }) :  null
+                        this.state.loading ? <SkeletonLoading/> :
+                            <ListCardItem allNewsItem={newsByUser}
+                                          currentUser={currentUser}/>
                       }
                     </div>
                     <div className="col col-md-4">
                       <div className="sticky-top" style={{zIndex:'1',top:'120px'}}>
                         <Card>
                           <CardBody>
-                            <h6>Giới thiệu</h6>
-
+                            <h5 style={{marginBottom:"10px"}}>Giới thiệu</h5>
+                            <Row style={{marginTop:"5px", marginBottom:"5px"}}>
+                              <Col xs={12} sm={5}>
+                                <h6>Họ tên: </h6>
+                              </Col>
+                              <Col xs={12} sm={7} style={{textAlign:"end"}}>
+                                <p style={{color:"blue"}}>{currentUser.name}</p>
+                              </Col>
+                            </Row>
+                            <Row style={{marginTop:"5px", marginBottom:"5px"}}>
+                              <Col xs={12} sm={5}><h6>Ngày sinh: </h6></Col>
+                              <Col xs={12} sm={7} style={{textAlign:"end"}}>
+                                <p style={{color:"blue"}}>{currentUser.birthDate}</p>
+                              </Col>
+                            </Row>
+                            <Row style={{marginTop:"5px", marginBottom:"5px"}}>
+                              <Col xs={12} sm={5}><h6>Giới tính: </h6></Col>
+                              <Col xs={12} sm={7} style={{textAlign:"end"}}>
+                                <p style={{color:"blue"}}>{currentUser.gender}</p>
+                              </Col>
+                            </Row>
+                            <Row style={{marginTop:"5px", marginBottom:"5px"}}>
+                              <Col xs={12} sm={5}><h6>Số điện thoại: </h6></Col>
+                              <Col xs={12} sm={7} style={{textAlign:"end"}}>
+                                <p style={{color:"blue"}}>{currentUser.phone}</p>
+                              </Col>
+                            </Row>
+                            <Row style={{marginTop:"5px", marginBottom:"5px"}}>
+                              <Col xs={12} sm={5}><h6>Địa chỉ: </h6></Col>
+                              <Col xs={12} sm={7} style={{textAlign:"end"}}>
+                                <p style={{color:"blue"}}>{"null"}</p>
+                              </Col>
+                            </Row>
                           </CardBody>
                         </Card>
                         <Card style={{display:'flex',flexDirection:'row',padding:'10px'}}>
@@ -545,34 +366,79 @@ class Profile extends Component {
               <ModalHeader toggle={()=>this.toggleModalEditProfile()}>
                 Cập nhật ảnh đại diện
               </ModalHeader>
-              <ModalBody style={{margin:'auto'}}>
-                <div>
-                  <ReactAvatarEditor
-                      scale={parseFloat(this.state.scale)}
-                      width={this.state.width}
-                      height={this.state.height}
-                      position={this.state.position}
-                      onPositionChange={this.handlePositionChange}
-                      rotate={parseFloat(this.state.rotate)}
-                      borderRadius={this.state.width / (100 / this.state.borderRadius)}
-                      image={this.state.image}
-                      className="editor-canvas"
-                  />
-                </div>
-                <br />
-                New File:
-                <input name="newImage" type="file" onChange={this.handleNewImage} />
-                <br />
-                Zoom:
-                <input
-                    name="scale"
-                    type="range"
-                    onChange={this.handleScale}
-                    min={this.state.allowZoomOut ? '0.1' : '1'}
-                    max="2"
-                    step="0.01"
-                    defaultValue="1"
-                />
+              <ModalBody>
+                <Row>
+                  <Col xs={12} sm={6}>
+                    <div>
+                      <ReactAvatarEditor
+                          scale={parseFloat(this.state.scale)}
+                          width={this.state.width}
+                          height={this.state.height}
+                          position={this.state.position}
+                          onPositionChange={this.handlePositionChange}
+                          rotate={parseFloat(this.state.rotate)}
+                          borderRadius={this.state.width / (100 / this.state.borderRadius)}
+                          image={this.state.image}
+                          className="editor-canvas"
+                      />
+                    </div>
+                    <br />
+                    <h6>New File:</h6>
+                    <Input name="newImage" type="file" onChange={this.handleNewImage} />
+                    <br />
+                    <h6>Zoom:</h6>
+                    <Input
+                        name="scale"
+                        type="range"
+                        onChange={this.handleScale}
+                        min={this.state.allowZoomOut ? '0.1' : '1'}
+                        max="2"
+                        step="0.01"
+                        defaultValue="1"
+                    />
+                  </Col>
+                  <Col xs={12} sm={6}>
+                    <br/>
+                    <h6>Tên hiển thị:</h6>
+                    <Input type={"text"} placeholder={"Tên hiển thị"}
+                           style={{marginBottom: "10px"}}
+                           value={currentUser.name ? currentUser.name : ""}
+                           onChange={(e)=>this.setState({displayName: e.target.value})}
+                    />
+                    <br/>
+                    <h6>Giới tính:</h6>
+                    <Input type={"text"} placeholder={"Giới tính"}
+                           style={{marginBottom: "10px"}}
+                           value={currentUser.gender ? currentUser.gender : ""}
+                           onChange={(e)=>this.setState({displayGender: e.target.value})}
+                    />
+                    <br/>
+                    <h6>Ngày sinh:</h6>
+                    <Input type={"text"} placeholder={"Ngày sinh"}
+                           style={{marginBottom: "10px"}}
+                           value={currentUser.birthDate ? currentUser.birthDate : ""}
+                           onChange={(e)=>this.setState({displayBirthDate: e.target.value})}
+                    />
+                    <br/>
+                    <h6>Số điện thoại:</h6>
+                    <Input type={"text"} placeholder={"Số điện thoại"}
+                           style={{marginBottom: "10px"}}
+                           value={currentUser.phoneNumber ? currentUser.phoneNumber : ""}
+                           onChange={(e)=>this.setState({displayPhone: e.target.value})}
+                    />
+                  </Col>
+                </Row>
+                <hr/>
+                <Row style={{padding:'0 15px',justifyContent:'flex-end'}}>
+                  <LaddaButton
+                      className="btn btn-info btn-ladda"
+                      loading={this.state.loadingUpdate}
+                      onClick={() => this.handleUpdateUserProfile()}
+                      data-style={EXPAND_LEFT}
+                      style={{backgroundColor: '#008FE5', color: 'white',border:'none',height:'40px',lineHeight:'0'}}>
+                    <i className="fas fa-search"/> Cập nhật
+                  </LaddaButton>
+                </Row>
               </ModalBody>
             </Modal>
           </div>

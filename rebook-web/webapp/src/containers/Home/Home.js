@@ -153,7 +153,6 @@ class Home extends Component {
   };
 
   handleLoadEnum = () => {
-    this.setState({loading: true});
     let provinceCity = loadEnumProvince();
     let district = loadEnumDistrict();
     let rentType = loadEnumRentType();
@@ -174,14 +173,10 @@ class Home extends Component {
         optionDirectHouse: res[6].data,
       })
     }).catch(e => console.log(e))
-    .finally(()=> {
-      this.setState({loading: false})
-    })
   };
 
   componentDidMount() {
     this.setState({loading: true});
-
     getAllNewsItem(initOffset).then(res => {
       this.setState({
         allNewsItem: res.data.result
@@ -310,7 +305,7 @@ class Home extends Component {
         const requestParams = {
           user_id: currentUser ? currentUser.userId : '1',
           prop_address: address,
-          desc: summary,
+          desc: summary.length >= 50 ? summary : Alert.warning("Nội dung quá ngắn, vui lòng nhập >= 50 ký tự."),
           listUpload: listUpload ? listUpload : [],
           ownerName: contactName ? contactName : '',
           ownerPhone: contactPhone ? contactPhone : '',
@@ -337,7 +332,7 @@ class Home extends Component {
             this.setState({
               createNewsPost: res.data.result
             }, () => {
-              console.log("create new post response: " + this.state.createNewsPost);
+              console.log("create new post response: " + JSON.stringify(this.state.createNewsPost));
               this.handleCloseAllInput();
               this.setState({summary: ""})
             });
@@ -620,119 +615,117 @@ class Home extends Component {
               </div>
               <div className="col col-md-5">
                 {!this.state.loading ? (
-                    <Card className="card">
-                      <CardHeader className="news-post"
-                                  onClick={this.toggleModalCreatedPost}>
-                        <strong>
-                          <img src="/icon/icons8-browser_window.png"/> Tạo bài
-                          viết
-                        </strong>
-                      </CardHeader>
-                      {/*<form id={"create-new-post"}>*/}
-                        <CardBody style={{padding: '10px'}}>
-                          <div style={{display: 'flex', alignItems: 'center'}}>
-                            <a className="btn-user-in-create">
-                              <img
-                                  src={currentUser && currentUser.imageUrl ?
-                                      currentUser.imageUrl
-                                      : '/icon/default.jpg'}
-                                  className="rounded-circle icon-user-in-create"
-                                  alt="Username"/>
-                            </a>
-                            <Input className='border-none-outline' type='textarea'
-                                   name="summary" id={"news-summary"}
-                                   onClick={this.toggleCollapse}
-                                   style={{
-                                     height: '50px',
-                                     textIdent: '32px',
-                                     color: '#aaa',
-                                     fontSize: '16px'
-                                   }}
-                                   onChange={this.handleChangeInput}
-                                   placeholder={currentUser ? (currentUser.name
-                                       + ', thông tin bất động sản của bạn là gì?')
-                                       : 'Thông tin bất động sản của bạn là gì?'}
-                            />
-                          </div>
-                          <hr/>
-                          <button className="button-pill"
-                                  onClick={() => this.handleRenderInputAddress()}>
-                            <img src="/icon/icons8-order_delivered.png" alt={""}/> Địa
-                            chỉ
-                          </button>
-                          {' '}
-                          <button className="button-pill"
-                                  onClick={() => this.handleRenderInputContact()}>
-                            <img src="/icon/contact.png" alt={""}/> Người liên hệ
-                          </button>
-                          {' '}
-                          <button className="button-pill"
-                                  onClick={() => this.handleRenderInputAreaAndPrice()}>
-                            <img src="/icon/icons8-price_tag_euro.png" alt={""}/> Diện tích, giá
-                          </button>
-                          {' '}
-                          <button className="button-pill"
-                                  onClick={() => this.handleRenderInputProject()}>
-                            <img src="/icon/icons8-project.png" alt={""}/> Dự án
-                          </button>
-                          {' '}
-                          <button className="button-pill"
-                                  onClick={() => this.handleRenderMoreButton()}>
-                            <img src={"/icon/menu-5.svg"} alt={""}/>
-                          </button>
-                          {moreButton}
-                          <Collapse isOpen={this.state.collapsePost}
-                                    id="collapseExample">
-                            <ImageUploader
-                                withIcon={false}
-                                buttonText='Ảnh/Video'
-                                onChange={this.onDrop}
-                                imgExtension={['.jpg', '.gif', '.png', '.gif',
-                                  '.jpeg']}
-                                maxFileSize={5242880}
-                                withPreview={true}
-                            />
+                  <Card className="card">
+                    <CardHeader className="news-post"
+                                onClick={this.toggleModalCreatedPost}>
+                      <strong>
+                        <img src="/icon/icons8-browser_window.png"/> Tạo bài
+                        viết
+                      </strong>
+                    </CardHeader>
+                      <CardBody style={{padding: '10px'}}>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                          <a className="btn-user-in-create">
+                            <img
+                                src={currentUser && currentUser.imageUrl ?
+                                    currentUser.imageUrl
+                                    : '/icon/default.jpg'}
+                                className="rounded-circle icon-user-in-create"
+                                alt="Username"/>
+                          </a>
+                          <Input className='border-none-outline' type='textarea'
+                                 name="summary" id={"news-summary"}
+                                 onClick={this.toggleCollapse}
+                                 style={{
+                                   height: '50px',
+                                   textIdent: '32px',
+                                   color: '#aaa',
+                                   fontSize: '16px'
+                                 }}
+                                 onChange={this.handleChangeInput}
+                                 placeholder={currentUser ? (currentUser.name
+                                     + ', thông tin bất động sản của bạn là gì?')
+                                     : 'Thông tin bất động sản của bạn là gì?'}
+                          />
+                        </div>
+                        <hr/>
+                        <button className="button-pill"
+                                onClick={() => this.handleRenderInputAddress()}>
+                          <img src="/icon/icons8-order_delivered.png" alt={""}/> Địa
+                          chỉ
+                        </button>
+                        {' '}
+                        <button className="button-pill"
+                                onClick={() => this.handleRenderInputContact()}>
+                          <img src="/icon/contact.png" alt={""}/> Người liên hệ
+                        </button>
+                        {' '}
+                        <button className="button-pill"
+                                onClick={() => this.handleRenderInputAreaAndPrice()}>
+                          <img src="/icon/icons8-price_tag_euro.png" alt={""}/> Diện tích, giá
+                        </button>
+                        {' '}
+                        <button className="button-pill"
+                                onClick={() => this.handleRenderInputProject()}>
+                          <img src="/icon/icons8-project.png" alt={""}/> Dự án
+                        </button>
+                        {' '}
+                        <button className="button-pill"
+                                onClick={() => this.handleRenderMoreButton()}>
+                          <img src={"/icon/menu-5.svg"} alt={""}/>
+                        </button>
+                        {moreButton}
+                        <Collapse isOpen={this.state.collapsePost}
+                                  id="collapseExample">
+                          <ImageUploader
+                              withIcon={false}
+                              buttonText='Ảnh/Video'
+                              onChange={this.onDrop}
+                              imgExtension={['.jpg', '.gif', '.png', '.gif',
+                                '.jpeg']}
+                              maxFileSize={5242880}
+                              withPreview={true}
+                          />
 
-                            <hr/>
-                            {inputAddress}
-                            {inputContact}
-                            {inputAreaAndPrice}
-                            {inputProject}
-                            {inputfurniture}
-                            {inputFloor}
-                            {inputRoom}
-                            {inputToilet}
-                            {inputDirect}
-                            <div style={{display: 'flex', alignItems: 'center'}}>
-                              <button className="button-pill" style={{
-                                borderRadius: '5px',
-                                marginRight: '10px',
-                                width: '30%'
-                              }}
-                                      onClick={() => this.handleCloseAllInput()}>
-                                <i className="fas fa-caret-down"/> Close All
-                              </button>
-                              <LaddaButton
-                                  data-style={EXPAND_LEFT}
-                                  className="btn btn-info btn-ladda"
-                                  loading={this.state.loadingPost}
-                                  style={{
-                                    width: '70%',
-                                    fontWeight: '500',
-                                    backgroundColor: '#008FE5',
-                                    border: 'none',
-                                    color: 'white',
-                                    height: '40px',
-                                    lineHeight: 0
-                                  }}
-                                  onClick={() => this.handlePostNewsItem()}>
-                                <img src={"/icon/icons8-hand_cursor.png"} alt={""}/> Chia sẻ
-                              </LaddaButton>
-                            </div>
-                          </Collapse>
-                        </CardBody>
-                      {/*</form>*/}
-                    </Card>
+                          <hr/>
+                          {inputAddress}
+                          {inputContact}
+                          {inputAreaAndPrice}
+                          {inputProject}
+                          {inputfurniture}
+                          {inputFloor}
+                          {inputRoom}
+                          {inputToilet}
+                          {inputDirect}
+                          <div style={{display: 'flex', alignItems: 'center'}}>
+                            <button className="button-pill" style={{
+                              borderRadius: '5px',
+                              marginRight: '10px',
+                              width: '30%'
+                            }}
+                                    onClick={() => this.handleCloseAllInput()}>
+                              <i className="fas fa-caret-down"/> Close All
+                            </button>
+                            <LaddaButton
+                                data-style={EXPAND_LEFT}
+                                className="btn btn-info btn-ladda"
+                                loading={this.state.loadingPost}
+                                style={{
+                                  width: '70%',
+                                  fontWeight: '500',
+                                  backgroundColor: '#008FE5',
+                                  border: 'none',
+                                  color: 'white',
+                                  height: '40px',
+                                  lineHeight: 0
+                                }}
+                                onClick={() => this.handlePostNewsItem()}>
+                              <img src={"/icon/icons8-hand_cursor.png"} alt={""}/> Chia sẻ
+                            </LaddaButton>
+                          </div>
+                        </Collapse>
+                      </CardBody>
+                  </Card>
                   ) : null
                 }
 
@@ -742,6 +735,7 @@ class Home extends Component {
                   this.state.loading ? <SkeletonLoading/>
                       : <ListCardItem allNewsItem={this.state.allNewsItem}
                                       currentUser={currentUser}
+                                      createNewsPost={this.state.createNewsPost}
                       />
                 }
 
@@ -903,4 +897,5 @@ class Home extends Component {
   }
 }
 
+// export default Home;
 export default withCookies(withRouter(Home));

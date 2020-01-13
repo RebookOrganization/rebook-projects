@@ -2,15 +2,8 @@ import React, {Component} from 'react';
 import {Link, NavLink} from 'react-router-dom';
 import './_appHeader.css';
 import '../../containers/Home/_home.css';
-import {
-  loadEnumArea, loadEnumDirectHouse,
-  loadEnumDistrict, loadEnumPrice,
-  loadEnumProvince,
-  loadEnumRentType, loadEnumSaleType
-} from "../../api/requestFilterSearchApi";
 import LoadingIndicator from "../Loading/LoadingIndicator";
 import InfiniteScroll from "react-infinite-scroller";
-import AppSearch from "../AppSearch/AppSearch";
 
 class AppHeader extends Component {
   constructor(props) {
@@ -23,7 +16,8 @@ class AppHeader extends Component {
     }
   }
 
-  toggleModalSearch = () => {
+  toggleModalSearch = (e) => {
+    e.preventDefault();
     if (typeof this.props.toggleModalSearch === 'function') {
       return this.props.toggleModalSearch()
     }
@@ -80,8 +74,7 @@ class AppHeader extends Component {
   };
 
   render() {
-    const {currentUser, optionProvince, optionDistrict, optionRentType,
-      optionSaleType, optionPrice, optionArea, optionDirectHouse} = this.state;
+    const {currentUser} = this.state;
 
     return (
         <header className="app-header">
@@ -99,12 +92,14 @@ class AppHeader extends Component {
                 <Link to="/profile" className="app-title">Rebook</Link>
                 <div className="input-group input-group-sm"
                    style={{marginLeft:'20px', width:'350px'}}>
-                <input type="text" className="form-control"
-                       placeholder="Tìm kiếm"
-                       style={{fontSize:'14px',height:'34px'}}
-                       onClick={this.toggleModalSearch}
-                       aria-label="Tìm kiếm"
-                       aria-describedby="basic-addon2"/>
+                  <input type="text"
+                         className="form-control"
+                         placeholder="Tìm kiếm"
+                         style={{fontSize:'14px',height:'34px'}}
+                         onClick={(e)=>this.toggleModalSearch(e)}
+                         aria-label="Tìm kiếm"
+                         aria-describedby="basic-addon2"
+                  />
                   <div className="input-group-append">
                     <span className="input-group-text"
                           style={{width:'50px'}}

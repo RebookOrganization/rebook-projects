@@ -1,5 +1,13 @@
 import React, {Component} from "react";
-import {Card, CardTitle, Modal, ModalBody, ModalHeader} from "reactstrap";
+import {
+  Card,
+  CardTitle,
+  Col,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row
+} from "reactstrap";
 import Skeleton from 'react-loading-skeleton';
 import '../Home/ListCardItem/_listCardItem.css';
 import ImageGallery from 'react-image-gallery';
@@ -59,6 +67,7 @@ class RecommendModal extends Component {
         <Modal isOpen={this.state.recommendModal}
                toggle={()=>this.toggleModalRecommendDetail()}
                className={'modal-lg modal-lg-custom ' + this.props.className}
+               style={{maxWidth: "85%"}}
                centered={true}
         >
           <ModalBody>
@@ -73,7 +82,7 @@ class RecommendModal extends Component {
             }
             {
               newsRecommend ?
-                  <Card className="card">
+                  <div>
                     <CardTitle>
                       <div className="row"
                            style={{display: 'flex', alignItems: 'center', marginTop: '12px'}}>
@@ -123,66 +132,72 @@ class RecommendModal extends Component {
                       </div>
                     </CardTitle>
 
-                    <div className="row"
-                         style={{display: 'flex', alignItems: 'center', marginLeft: '15px', marginRight: '15px'}}>
-                      <p className={"styleTitle"}>
-                        {newsRecommend.titleNews ? newsRecommend.titleNews : null}
-                      </p>
-                      <p className={"styleText"}>
-                        <strong>Giá: </strong>{newsRecommend.price ? newsRecommend.price : null}
-                      </p>
-                      <p className={"styleText"}>
-                        <strong>Diện tích: </strong>{newsRecommend.area ? newsRecommend.area : null}
-                      </p>
-                      <p className={"styleText"}>
-                        <strong>Địa chỉ: </strong>{newsRecommend.address_prop ? newsRecommend.address_prop
-                          : null}
-                      </p>
-                      <p className={"styleTitle"}>
-                        {newsRecommend.summaryNews ? newsRecommend.summaryNews : null}
-                      </p>
-                      <p className={"styleTitle"}>
-                        {newsRecommend.descriptionNews ? newsRecommend.descriptionNews : null}
-                      </p> : null
+                    <Row>
+                      <Col xs={12} sm={7}>
+                        <div style={{marginBottom: '10px'}}>
+                          {
+                            newsRecommend.imageUrlList && newsRecommend.imageUrlList.length ? this.handleRenderImageSlide(newsRecommend.imageUrlList) : null
+                          }
+                        </div>
+                      </Col>
+                      <Col xs={12} sm={5}>
+                        <div className="row"
+                             style={{display: 'flex', alignItems: 'center', marginLeft: '15px', marginRight: '15px'}}>
+                          <p className={"styleTitle"}>
+                            {newsRecommend.titleNews ? newsRecommend.titleNews : null}
+                          </p>
+                          <p className={"styleText"}>
+                            <strong>Giá: </strong>{newsRecommend.price ? newsRecommend.price : null}
+                          </p>
+                          <p className={"styleText"}>
+                            <strong>Diện tích: </strong>{newsRecommend.area ? newsRecommend.area : null}
+                          </p>
+                          <p className={"styleText"}>
+                            <strong>Địa chỉ: </strong>{newsRecommend.address_prop ? newsRecommend.address_prop
+                              : null}
+                          </p>
+                          <p className={"styleTitle"}>
+                            {newsRecommend.summaryNews ? newsRecommend.summaryNews : null}
+                          </p>
+                          <p className={"styleTitle"}>
+                            {newsRecommend.descriptionNews ? newsRecommend.descriptionNews : null}
+                          </p> : null
 
-                      <p className={"styleTitle"}>
-                        <strong>Liên hệ: </strong>{' '}
-                        {newsRecommend.contactName ? newsRecommend.contactName : null}
-                        {newsRecommend.contactPhone ? newsRecommend.contactPhone : null}
-                        {newsRecommend.contactEmail ? newsRecommend.contactEmail : null}
-                      </p>
-                      <p className={"styleTitle"}>
-                        {newsRecommend.projectName ? newsRecommend.projectName : null}
-                        {newsRecommend.projectOwner ? newsRecommend.projectOwner : null}
-                        {newsRecommend.projectSize ? newsRecommend.projectSize : null}
-                      </p>
-                    </div>
+                          <p className={"styleTitle"}>
+                            <strong>Liên hệ: </strong>{' '}
+                            {newsRecommend.contactName ? newsRecommend.contactName : null}
+                            {newsRecommend.contactPhone ? newsRecommend.contactPhone : null}
+                            {newsRecommend.contactEmail ? newsRecommend.contactEmail : null}
+                          </p>
+                          <p className={"styleTitle"}>
+                            {newsRecommend.projectName ? newsRecommend.projectName : null}
+                            {newsRecommend.projectOwner ? newsRecommend.projectOwner : null}
+                            {newsRecommend.projectSize ? newsRecommend.projectSize : null}
+                          </p>
+                        </div>
 
-                    <div style={{marginBottom: '10px'}}>
-                      {
-                        newsRecommend.imageUrlList && newsRecommend.imageUrlList.length ? this.handleRenderImageSlide(newsRecommend.imageUrlList) : null
-                      }
-                    </div>
+                        {/*Luot like luot share o day*/}
+                        <div style={{margin: '0 20px'}}>
+                          <a className="amount-like-share" style={{color: '#606770'}}>
+                            <img className={"styleIcon"} src="/icon/thumb-up.svg"/>
+                            <img className={"styleIcon"} src="/icon/heart.svg"/>
+                            {newsRecommend.likeNewsList ? newsRecommend.likeNewsList.length : 0}
+                          </a>
+                          <a className="float-right amount-like-share"
+                             style={{marginLeft: '10px',color: '#606770'}}>
+                            {newsRecommend.shareList ? newsRecommend.shareList.length : 0} lượt share
+                          </a>
+                          <a className="float-right amount-like-share"
+                             // onClick={()=>this.handleRenderComment(newsRecommend.newsId)}
+                             style={{color: '#606770'}}
+                          >
+                            {newsRecommend.commentList ? newsRecommend.commentList.length : 0} comment
+                          </a>
+                        </div>
+                      </Col>
+                    </Row>
 
-                    {/*Luot like luot share o day*/}
-                    <div style={{margin: '0 20px'}}>
-                      <a className="amount-like-share" style={{color: '#606770'}}>
-                        <img className={"styleIcon"} src="/icon/thumb-up.svg"/>
-                        <img className={"styleIcon"} src="/icon/heart.svg"/>
-                        {newsRecommend.likeNewsList ? newsRecommend.likeNewsList.length : 0}
-                      </a>
-                      <a className="float-right amount-like-share"
-                         style={{marginLeft: '10px',color: '#606770'}}>
-                        {newsRecommend.shareList ? newsRecommend.shareList.length : 0} lượt share
-                      </a>
-                      <a className="float-right amount-like-share"
-                         onClick={()=>this.handleRenderComment(newsRecommend.newsId)}
-                         style={{color: '#606770'}}
-                      >
-                        {newsRecommend.commentList ? newsRecommend.commentList.length : 0} comment
-                      </a>
-                    </div>
-                  </Card>
+                  </div>
                   : null
             }
           </ModalBody>

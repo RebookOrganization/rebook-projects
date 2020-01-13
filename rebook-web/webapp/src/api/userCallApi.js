@@ -61,3 +61,7 @@ export function getAllNewsByUser(userID) {
 export function elasticSearchNews(request) {
   return httpPost(API_NEWS + "/es-search", request);
 }
+
+export function updateUserProfile(request) {
+  return httpPost("/api/user/update-profile", request);
+}

@@ -1,7 +1,11 @@
-import React, {Component} from 'react'
-import {Badge, Progress} from "reactstrap";
+import React, {Component} from 'react';
 import InfiniteScroll from "react-infinite-scroller";
 import {SocialIcon} from "react-social-icons";
+import {NavLink} from "react-router-dom";
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 
 class Aside extends Component {
   constructor(props) {
@@ -19,7 +23,8 @@ class Aside extends Component {
     const styleChat = {
       display: 'flex',
       alignItems: 'center',
-      padding: '0'
+      padding: '0',
+      marginTop: '7px'
     };
 
     const dot = {
@@ -30,19 +35,17 @@ class Aside extends Component {
       display: 'inline-block',
       marginLeft: '100px'
     };
+
     for (let i = 0; i < this.state.items; i++) {
       items.push(
           <div style={styleChat} key={i}>
             <a className="btn-user">
               <img
-                  src={'assets/img/avatars/4.jpg'}
+                  src={'assets/img/avatars/' + getRandomInt(9) + '.jpg'}
                   className="rounded-circle icon-user"
                   alt="Username"/>
             </a>{' '}
-            <p style={{
-              fontSize: '15px',
-              marginTop: '15px'
-            }}>user chat {i}</p>
+            <NavLink tag={"a"} to={"/message"} style={{fontSize:'15px',color:'black'}}>User chat {i}</NavLink>
             <span className={"pull-right"} style={dot}/>
           </div>
       );

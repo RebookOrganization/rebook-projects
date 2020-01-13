@@ -59,8 +59,8 @@ public class AuthController {
     @Value("${spring.mail.username}")
     private String mailSendFrom;
 
-    @GetMapping(value = "/")
-    public String home(Model model) { return "redirect:/index"; }
+//    @GetMapping(value = "/")
+//    public String home(Model model) { return "redirect:/index"; }
 
     @GetMapping(value = {"/", "/index", "/home", "/message", "/profile"})
     public String index(Model model) { return "index"; }

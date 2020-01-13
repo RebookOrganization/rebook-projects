@@ -4,6 +4,7 @@ import com.web.bean.Request.CommentRequest;
 import com.web.bean.Request.LikeRequest;
 import com.web.bean.Request.PostNewsRequest;
 import com.web.bean.Request.ShareRequest;
+import com.web.bean.Request.UpdateUserProfileRequest;
 import com.web.bean.Response.CommonResponse;
 import com.web.model.User;
 import java.io.IOException;
@@ -23,5 +24,7 @@ public interface UserService {
   CommonResponse searchNewsByAddress(String address) throws IOException;
 
   CommonResponse getAllNewsByUser(Long userID) throws Exception;
+
+  CommonResponse updateUserProfile(UpdateUserProfileRequest request) throws Exception;
 
 }

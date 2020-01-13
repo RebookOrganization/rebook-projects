@@ -9,6 +9,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ShareRepository extends JpaRepository<ShareNews, Long> {
 
-  @Query(value = "SELECT * FROM share_news AS t WHERE t.news_item_id = ?1", nativeQuery = true)
+  @Query(value = "SELECT * FROM share_news AS t WHERE t.news_item_id = ?1 AND t.is_share = 1", nativeQuery = true)
   List<ShareNews> findByNewItemId(Long newsItemId);
+
+  @Query(value = "SELECT * FROM share_news AS t WHERE t.news_item_id=?1 AND t.user_id=?2", nativeQuery = true)
+  ShareNews findByNewItemIdAndUserId(Long newsId, Long userId);
+
 }

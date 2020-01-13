@@ -4,6 +4,7 @@ import com.web.bean.Request.CommentRequest;
 import com.web.bean.Request.LikeRequest;
 import com.web.bean.Request.PostNewsRequest;
 import com.web.bean.Request.ShareRequest;
+import com.web.bean.Request.UpdateUserProfileRequest;
 import com.web.bean.Response.CommonResponse;
 import com.web.bean.Response.CommonResponse.Fail;
 import com.web.bean.Response.LikeResponse;
@@ -32,8 +33,10 @@ import com.web.repository.ShareRepository;
 import com.web.repository.UserRepository;
 import com.web.service.ConvertDataService;
 import com.web.service.FileStorageService;
+import com.web.service.ObjectMapperService;
 import com.web.service.UserService;
 import com.web.utils.DateTimeUtils;
+import com.web.utils.GsonUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,13 +95,20 @@ public class UserServiceImpl implements UserService {
 
   private int returnCode = 1;
   private String returnMessage = "success";
-
   private static Integer currentPartition = DateTimeUtils.getPartition();
+
+  private ObjectMapperService objectMapperService;
+
+  @Autowired
+  public UserServiceImpl(ObjectMapperService objectMapperService) {
+    this.objectMapperService = objectMapperService;
+  }
 
   @Override
   @Transactional
   public CommonResponse createNewsPost(PostNewsRequest request)
       throws IOException {
+    logger.info("UserServiceImpl createNewsPost request: {}", GsonUtils.toJsonString(request));
     try {
       NewsItem newsItem = new NewsItem();
       newsItem.setTitle(request.getTitle());
@@ -107,7 +117,12 @@ public class UserServiceImpl implements UserService {
       newsItem.setUser(userRepository.findById(request.getUser_id()).get());
       newsItem.setUrl(ServletUriComponentsBuilder.fromCurrentContextPath().toUriString());
       try {
-        newsItem.setSummary(request.getDesc().substring(0, 100));
+        if (request.getDesc().length() > 100) {
+          newsItem.setSummary(request.getDesc().substring(0, 100));
+        }
+        else {
+          newsItem.setSummary(request.getDesc().substring(0, 50));
+        }
       } catch (Exception e) {
         logger.error("Can't set summary for news.");
       }
@@ -169,7 +184,11 @@ public class UserServiceImpl implements UserService {
 
       newsItemRepository.save(newsItem);
 
-      return new CommonResponse<>(this.returnCode, this.returnMessage, newsItem);
+      NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem);
+
+      logger.info("UserServiceImpl createNewsPost response: {}", GsonUtils.toJsonString(newsResponseDTO));
+
+      return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTO);
     } catch (Exception ex) {
       logger.error("Service createNewsPost exception: ", ex);
       return new CommonResponse.Fail("Service createNewsPost exception.");
@@ -180,18 +199,31 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public CommonResponse likeNewsFeed(LikeRequest request) throws IOException {
     try {
-      LikeNews like = new LikeNews();
-      like.setLike(true);
-      like.setNewsItemId(request.getNewsItemId());
-      like.setUserId(request.getUserId());
+      LikeNews likeNews = likeRepository.findByNewsItemIdAndUserId(request.getUserId(), request.getNewsItemId());
+      if (likeNews != null) {
+        likeNews.setLike(!likeNews.isLike());
+        likeRepository.save(likeNews);
 
-      likeRepository.save(like);
+        List<LikeNews> listLike = likeRepository.findLikeNewsByNewsItemId(request.getNewsItemId());
+        Integer likeAmount = listLike.size();
 
-      List<LikeNews> listLike = likeRepository.findByNewsItemId(request.getNewsItemId());
-      Integer likeAmount = listLike.size();
+        return new CommonResponse<>(this.returnCode, this.returnMessage,
+            new LikeResponse(listLike, likeAmount, likeNews.isLike()));
+      }
+      else {
+        LikeNews like = new LikeNews();
+        like.setLike(true);
+        like.setNewsItemId(request.getNewsItemId());
+        like.setUserId(request.getUserId());
+        likeRepository.save(like);
 
-      return new CommonResponse<>(this.returnCode, this.returnMessage,
-          new LikeResponse(listLike, likeAmount));
+        List<LikeNews> listLike = likeRepository.findLikeNewsByNewsItemId(request.getNewsItemId());
+        Integer likeAmount = listLike.size();
+
+        return new CommonResponse<>(this.returnCode, this.returnMessage,
+            new LikeResponse(listLike, likeAmount, like.isLike()));
+      }
+
     } catch (Exception e) {
       logger.error("Service likeNewsFeed exception - {}", e.getMessage());
       return new CommonResponse.Fail("Service likeNewsFeed exception.");
@@ -222,18 +254,31 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public CommonResponse shareNewsFeed(ShareRequest request) throws IOException {
     try {
-      ShareNews shareNews = new ShareNews();
-      shareNews.setUserId(request.getUserId());
-      shareNews.setNewItemId(request.getNewsItemId());
-      shareNews.setShare(request.isShare());
+      ShareNews shareNewsItem = shareRepository.findByNewItemIdAndUserId(request.getNewsItemId(), request.getUserId());
+      if (shareNewsItem != null) {
+          shareNewsItem.setShare(!shareNewsItem.isShare());
+          shareRepository.save(shareNewsItem);
 
-      shareRepository.save(shareNews);
+        List<ShareNews> listShareNews = shareRepository.findByNewItemId(request.getNewsItemId());
+        int shareAmount = listShareNews.size();
 
-      List<ShareNews> listShareNews = shareRepository.findByNewItemId(request.getNewsItemId());
-      int shareAmount = listShareNews.size();
+        return new CommonResponse<>(this.returnCode, this.returnMessage,
+            new ShareResponse(listShareNews, shareAmount, shareNewsItem.isShare()));
+      }
+      else {
+        ShareNews shareNews = new ShareNews();
+        shareNews.setUserId(request.getUserId());
+        shareNews.setNewItemId(request.getNewsItemId());
+        shareNews.setShare(request.isShare());
+        shareRepository.save(shareNews);
 
-      return new CommonResponse<>(this.returnCode, this.returnMessage,
-          new ShareResponse(listShareNews, shareAmount));
+        List<ShareNews> listShareNews = shareRepository.findByNewItemId(request.getNewsItemId());
+        int shareAmount = listShareNews.size();
+
+        return new CommonResponse<>(this.returnCode, this.returnMessage,
+            new ShareResponse(listShareNews, shareAmount, shareNews.isShare()));
+      }
+
     } catch (Exception ex) {
       logger.error("Service shareNewsFeed exception: "+ ex);
       return new CommonResponse.Fail("Service shareNewsFeed exception.");
@@ -318,7 +363,7 @@ public class UserServiceImpl implements UserService {
             List<Comment> commentList = commentRepository.findByNewItemId(newsItem.getId());
             newsResponseDTO.setCommentList(commentList);
 
-            List<LikeNews> likeNewsList = likeRepository.findByNewsItemId(newsItem.getId());
+            List<LikeNews> likeNewsList = likeRepository.findLikeNewsByNewsItemId(newsItem.getId());
             newsResponseDTO.setLikeNewsList(likeNewsList);
 
             List<ShareNews> shareNewsList = shareRepository.findByNewItemId(newsItem.getId());
@@ -349,6 +394,25 @@ public class UserServiceImpl implements UserService {
     }
     catch (Exception ex) {
       return new Fail("Lấy thông tin bài viết của user thất bại.");
+    }
+  }
+
+  @Override
+  public CommonResponse updateUserProfile(UpdateUserProfileRequest request) throws Exception {
+    try {
+      String name = request.getName();
+      String imageUrl = request.getImageUrl();
+      if (!name.isEmpty() && !imageUrl.isEmpty()) {
+        userRepository.updateUserProfile(request.getUserId(), name, imageUrl, request.getPhoneNumber(),
+            request.getBirthDate(), request.getGender());
+        return new CommonResponse<>(1, "Cập nhật thông tin thành công.", null);
+      }
+
+      return new CommonResponse.Fail("Cập nhật thông tin tài khoản không thành công.");
+    }
+    catch (Exception ex) {
+      logger.error("UserServiceImpl updateUserProfile exception: ", ex);
+      return new CommonResponse.Fail("Cập nhật thông tin tài khoản không thành công.");
     }
   }
 }

@@ -7,10 +7,17 @@ public class LikeResponse {
 
   private List<LikeNews> listLike;
   private Integer likeAmount;
+  private boolean userIsLike;
 
   public LikeResponse(List<LikeNews> listLike, Integer likeAmount) {
     this.listLike = listLike;
     this.likeAmount = likeAmount;
+  }
+
+  public LikeResponse(List<LikeNews> listLike, Integer likeAmount, boolean userIsLike) {
+    this.listLike = listLike;
+    this.likeAmount = likeAmount;
+    this.userIsLike = userIsLike;
   }
 
   public List<LikeNews> getListLike() {
@@ -28,4 +35,8 @@ public class LikeResponse {
   public void setLikeAmount(Integer likeAmount) {
     this.likeAmount = likeAmount;
   }
+
+  public boolean isUserIsLike() { return userIsLike; }
+
+  public void setUserIsLike(boolean userIsLike) { this.userIsLike = userIsLike; }
 }
