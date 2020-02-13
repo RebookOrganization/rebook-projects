@@ -11,6 +11,7 @@ import com.web.bean.Response.LikeResponse;
 import com.web.bean.Response.NewsResponseDTO;
 import com.web.bean.Response.ShareResponse;
 import com.web.bean.Response.UploadFileResponse;
+import com.web.dto.CommentNewsDTO;
 import com.web.enumeration.District;
 import com.web.enumeration.ProvinceCity;
 import com.web.model.Comment;
@@ -241,9 +242,24 @@ public class UserServiceImpl implements UserService {
 
       commentRepository.save(comment);
 
+      List<CommentNewsDTO> commentNewsDTOList = new ArrayList<>();
       List<Comment> listComment = commentRepository.findByNewItemId(request.getNewsItemId());
+      for (Comment comment1 : listComment) {
+        CommentNewsDTO commentNewsDTO = new CommentNewsDTO();
+        commentNewsDTO.setId(comment1.getId());
+        commentNewsDTO.setUserId(comment1.getUserId());
+        commentNewsDTO.setNewItemId(comment1.getNewItemId());
+        commentNewsDTO.setContent(comment1.getContent());
+        commentNewsDTO.setCommentTime(comment1.getTimeComment());
+        Optional<User> user = userRepository.findById(comment1.getUserId());
+        if (user.isPresent()) {
+          commentNewsDTO.setUserName(user.get().getName());
+          commentNewsDTO.setUserImageUrl(user.get().getImageUrl());
+        }
+        commentNewsDTOList.add(commentNewsDTO);
+      }
 
-      return new CommonResponse<>(this.returnCode, this.returnMessage, listComment);
+      return new CommonResponse<>(this.returnCode, this.returnMessage, commentNewsDTOList);
     } catch (Exception e) {
       logger.error("Service commentNewsFeed exception - {}", e.getMessage());
       return new CommonResponse.Fail("Service commentNewsFeed exception.");
@@ -360,14 +376,14 @@ public class UserServiceImpl implements UserService {
             newsResponseDTO.setImageUrlList(newsItem.getImages());
             newsResponseDTO.setUserId(newsItem.getUser().getId());
 
-            List<Comment> commentList = commentRepository.findByNewItemId(newsItem.getId());
-            newsResponseDTO.setCommentList(commentList);
-
-            List<LikeNews> likeNewsList = likeRepository.findLikeNewsByNewsItemId(newsItem.getId());
-            newsResponseDTO.setLikeNewsList(likeNewsList);
-
-            List<ShareNews> shareNewsList = shareRepository.findByNewItemId(newsItem.getId());
-            newsResponseDTO.setShareNewsList(shareNewsList);
+//            List<Comment> commentList = commentRepository.findByNewItemId(newsItem.getId());
+//            newsResponseDTO.setCommentList(commentList);
+//
+//            List<LikeNews> likeNewsList = likeRepository.findLikeNewsByNewsItemId(newsItem.getId());
+//            newsResponseDTO.setLikeNewsList(likeNewsList);
+//
+//            List<ShareNews> shareNewsList = shareRepository.findByNewItemId(newsItem.getId());
+//            newsResponseDTO.setShareNewsList(shareNewsList);
 
             listNewsResponseDTO.add(newsResponseDTO);
           }

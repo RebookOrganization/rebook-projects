@@ -1,5 +1,8 @@
 package com.web.bean.Response;
 
+import com.web.dto.CommentNewsDTO;
+import com.web.dto.LikeNewsDTO;
+import com.web.dto.ShareNewsDTO;
 import com.web.model.Comment;
 import com.web.model.LikeNews;
 import com.web.model.NewsImageUrl;
@@ -30,9 +33,9 @@ public class NewsResponseDTO {
   private String projectOwner;
   private String projectSize;
 
-  private List<LikeNews> likeNewsList;
-  private List<Comment> commentList;
-  private List<ShareNews> shareNewsList;
+  private List<LikeNewsDTO> likeNewsList;
+  private List<CommentNewsDTO> commentList;
+  private List<ShareNewsDTO> shareNewsList;
 
   private Set<NewsImageUrl> imageUrlList;
 
@@ -156,27 +159,27 @@ public class NewsResponseDTO {
     this.projectSize = projectSize;
   }
 
-  public List<LikeNews> getLikeNewsList() {
+  public List<LikeNewsDTO> getLikeNewsList() {
     return likeNewsList;
   }
 
-  public void setLikeNewsList(List<LikeNews> likeNewsList) {
+  public void setLikeNewsList(List<LikeNewsDTO> likeNewsList) {
     this.likeNewsList = likeNewsList;
   }
 
-  public List<Comment> getCommentList() {
+  public List<CommentNewsDTO> getCommentList() {
     return commentList;
   }
 
-  public void setCommentList(List<Comment> commentList) {
+  public void setCommentList(List<CommentNewsDTO> commentList) {
     this.commentList = commentList;
   }
 
-  public List<ShareNews> getShareNewsList() {
+  public List<ShareNewsDTO> getShareNewsList() {
     return shareNewsList;
   }
 
-  public void setShareNewsList(List<ShareNews> shareNewsList) {
+  public void setShareNewsList(List<ShareNewsDTO> shareNewsList) {
     this.shareNewsList = shareNewsList;
   }
 }

@@ -1,5 +1,6 @@
 package com.web.model;
 
+import java.util.Date;
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -17,6 +18,7 @@ public class ShareNews implements Serializable {
     private Long newItemId;
 
     private boolean isShare;
+    private Date shareTime;
 
     public Long getId() { return id; }
 
@@ -33,4 +35,12 @@ public class ShareNews implements Serializable {
     public boolean isShare() { return isShare; }
 
     public void setShare(boolean share) { isShare = share; }
+
+    public Date getShareTime() {
+        return shareTime;
+    }
+
+    public void setShareTime(Date shareTime) {
+        this.shareTime = shareTime;
+    }
 }

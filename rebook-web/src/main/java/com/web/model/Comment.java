@@ -1,5 +1,6 @@
 package com.web.model;
 
+import java.util.Date;
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -18,6 +19,7 @@ public class Comment implements Serializable {
     private Long newItemId;
 
     private String content;
+    private Date timeComment;
 
     public Long getId() { return id; }
 
@@ -34,4 +36,8 @@ public class Comment implements Serializable {
     public String getContent() { return content; }
 
     public void setContent(String content) { this.content = content; }
+
+    public Date getTimeComment() { return timeComment; }
+
+    public void setTimeComment(Date timeComment) { this.timeComment = timeComment; }
 }

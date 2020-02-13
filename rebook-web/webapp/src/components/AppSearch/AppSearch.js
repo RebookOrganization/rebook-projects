@@ -1,9 +1,9 @@
-import React from "react";
+import React, {Component} from "react";
 import LaddaButton, {EXPAND_LEFT} from "react-ladda";
 import {
   Modal,
   ModalBody,
-  ModalHeader, Row, Col
+  ModalHeader, Row, Col, NavLink
 } from "reactstrap";
 import Select from 'react-select';
 import {
@@ -13,7 +13,73 @@ import shallowCompare from 'react-addons-shallow-compare';
 import Alert from 'react-s-alert';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
+import {withScriptjs, withGoogleMap, GoogleMap, Marker, InfoWindow } from 'react-google-maps';
 
+const defaultZoom = 15;
+const defaultCenter = {lat: 12.23893, lng: 109.1906241};
+const locations = [
+  {
+    lat: 12.2406224,
+    lng: 109.1956035,
+    label: 'S',
+    draggable: false,
+    title: 'Tháp Trầm Hương Nha Trang',
+    www: 'https://www.vntrip.vn/cam-nang/thap-tram-huong-diem-den-thu-vi-trong-tour-du-lich-nha-trang-1043'
+  },
+];
+
+class MarkerList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  render() {
+    return locations.map((location, index) => {
+          return (
+              <MarkerWithInfoWindow key={index.toString()} location={location}/>
+          )
+        }
+    );
+  }
+}
+
+class MarkerWithInfoWindow extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isOpen: false
+    };
+    this.toggle = this.toggle.bind(this);
+  }
+
+  toggle() {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  }
+  render() {
+    const {location} = this.props;
+
+    return (
+        <Marker onClick={this.toggle} position={location} title={location.title} label={location.label}>
+          {this.state.isOpen &&
+          <InfoWindow onCloseClick={this.toggle}>
+            <NavLink href={location.www} target="_blank">{location.title}</NavLink>
+          </InfoWindow>}
+        </Marker>
+    )
+  }
+}
+
+const GoogleMapsComponent = withScriptjs(withGoogleMap((props) => {
+      return (
+          <GoogleMap defaultZoom={defaultZoom} defaultCenter={defaultCenter}>
+            {<MarkerList locations={locations}/>}
+          </GoogleMap>
+      );
+    }
+));
 
 class AppSearch extends React.PureComponent {
   constructor(props) {
@@ -40,8 +106,8 @@ class AppSearch extends React.PureComponent {
       optionDirectHouse: null,
       selectedDirectHouse: 0,
       resultSearch: null,
-      areaDistance: {min: 500, max: 1000},
-      priceDistance: {min: 500, max: 1000},
+      areaDistance: {min: 0, max: 1000},
+      priceDistance: {min: 0, max: 10000},
       isRenderDistrict: false
     }
   }
@@ -123,8 +189,7 @@ class AppSearch extends React.PureComponent {
   };
 
   render() {
-    const {optionProvince, optionDistrict, selectedDistrict, optionPrice, selectedPrice,
-      optionArea, selectedArea, optionDirectHouse, selectedDirectHouse} = this.state;
+    const {optionProvince, optionDistrict, selectedDistrict, optionDirectHouse, selectedDirectHouse} = this.state;
 
     let province = [];
     optionProvince ? Object.keys(optionProvince).map(item => {
@@ -142,38 +207,6 @@ class AppSearch extends React.PureComponent {
       })
     }) : null;
 
-    // let rentType = [];
-    // optionRentType ? Object.keys(optionRentType).map(item => {
-    //   rentType.push({
-    //     value: item,
-    //     label: optionRentType[item]
-    //   })
-    // }) : null;
-    //
-    // let saleType = [];
-    // optionSaleType ? Object.keys(optionSaleType).map(item => {
-    //   saleType.push({
-    //     value: item,
-    //     label: optionSaleType[item]
-    //   })
-    // }) : null;
-
-    // let prices = [];
-    // optionPrice ? Object.keys(optionPrice).map(item => {
-    //   prices.push({
-    //     value: item,
-    //     label: optionPrice[item]
-    //   })
-    // }) : null;
-    //
-    // let areas = [];
-    // optionArea ? Object.keys(optionArea).map(item => {
-    //   areas.push({
-    //     value: item,
-    //     label: optionArea[item]
-    //   })
-    // }) : null;
-
     let directHouse = [];
     optionDirectHouse ? Object.keys(optionDirectHouse).map(item => {
       directHouse.push({
@@ -187,169 +220,118 @@ class AppSearch extends React.PureComponent {
           <Modal isOpen={this.state.isSearch}
                  toggle={()=>this.toggleModalSearch()}
                  className={'modal-lg modal-lg-custom modal-info' + this.props.className}
-                 // style={{maxWidth: '60%'}}
+                 style={{maxWidth: '85%'}}
           >
             <ModalHeader toggle={()=>this.toggleModalSearch()}>
               <img src="/icon/icons8-search-2.png" alt={""}/> Công cụ tìm kiếm
             </ModalHeader>
             <ModalBody style={{padding:'15px'}}>
-              <div className="search-box" style={{marginBottom:"5px"}}>
-                <span className="fa fa-search"/>
-                <input id="inputSearch" placeholder="Nhập địa điểm, vd: Sunrise City"
-                       style={{textIdent:'32px',backgroundColor: '#f2f3f5',outline:'none'}}
-                       value={this.state.inputSearch}
-                       onChange={(e) => this.setState(
-                           {inputSearch: e.target.value})}
-                />
-              </div>
-              <hr/>
               <Row>
-                {/*<Col md={3}>*/}
-                {/*  <h5>Loại tìm kiếm</h5>*/}
-                {/*  <select className="form-control"*/}
-                {/*          style={{height: '40px',fontSize:'16px',backgroundColor: '#f2f3f5',marginBottom:"5px"}}*/}
-                {/*          onChange={(e) => this.setState(*/}
-                {/*              {inputSearchType: e.target.value})}*/}
-                {/*  >*/}
-                {/*    <option value={0}>Chọn loại tìm kiếm</option>*/}
-                {/*    <option value={1}>Địa điểm bất động sản</option>*/}
-                {/*    <option value={2}>Loại giao dịch</option>*/}
-                {/*    <option value={3}>Người dùng rebook</option>*/}
-                {/*  </select>*/}
-                {/*</Col>*/}
-                {/*<Col md={3}>*/}
-                {/*  <h5>Loại bất động sản: </h5>*/}
-                {/*  <select className="form-control"*/}
-                {/*          style={{height: '40px',fontSize:'16px',backgroundColor: '#f2f3f5',marginBottom:"5px"}}*/}
-                {/*  >*/}
-                {/*    <option value={0}>Mua bán</option>*/}
-                {/*    <option value={1}>Cho thuê</option>*/}
-                {/*    <option value={2}>Kho bãi</option>*/}
-                {/*  </select>*/}
-                {/*</Col>*/}
-                <Col md={6}>
-                  <h5>Tỉnh/Thành phố</h5>
-                  <Select value={this.state.selectedProvince}
-                          onChange={(e)=> this.setState({selectedProvince: e},
-                              ()=>{
-                                if (this.state.selectedProvince) {
-                                  if (parseInt(this.state.selectedProvince.value) === 1) {
-                                    this.setState({isRenderDistrict: true})
-                                  }
-                                  else {
-                                    this.setState({isRenderDistrict: false})
-                                  }
-                                }
-                              })}
-                          options={province}
-                          isSearchable={true}
-                          isClearable={true}
-                          style={{fontSize:'16px'}}
+                <Col xs={12} sm={6}>
+                  <div className="search-box" style={{marginBottom:"5px"}}>
+                    <span className="fa fa-search"/>
+                    <input id="inputSearch" placeholder="Nhập địa điểm, vd: Sunrise City"
+                           style={{textIdent:'32px',backgroundColor: '#f2f3f5',outline:'none'}}
+                           value={this.state.inputSearch}
+                           onChange={(e) => this.setState(
+                               {inputSearch: e.target.value})}
+                    />
+                  </div>
+                  <hr/>
+                  <Row>
+                    <Col md={6}>
+                      <h5>Tỉnh/Thành phố</h5>
+                      <Select value={this.state.selectedProvince}
+                              onChange={(e)=> this.setState({selectedProvince: e},
+                                  ()=>{
+                                    if (this.state.selectedProvince) {
+                                      if (parseInt(this.state.selectedProvince.value) === 1) {
+                                        this.setState({isRenderDistrict: true})
+                                      }
+                                      else {
+                                        this.setState({isRenderDistrict: false})
+                                      }
+                                    }
+                                  })}
+                              options={province}
+                              isSearchable={true}
+                              isClearable={true}
+                              style={{fontSize:'16px'}}
+                      />
+                    </Col>
+                    {
+                      this.state.isRenderDistrict ?
+                          <Col md={6}>
+                            <h5>Quận/Huyện: </h5>
+                            <Select value={selectedDistrict}
+                                    onChange={(e)=> this.setState({selectedDistrict: e})}
+                                    options={district}
+                                    isSearchable={true}
+                                    isClearable={true}
+                            />
+                          </Col>
+                          : null
+                    }
+                  </Row>
+                  <hr/>
+                  <Row>
+                    <Col md={6}>
+                      <h5>Hướng nhà: </h5>
+                      <Select value={selectedDirectHouse}
+                              onChange={(e)=> this.setState({selectedDirectHouse: e})}
+                              options={directHouse}
+                              isSearchable={true}
+                              isClearable={true}
+                      />
+                    </Col>
+                  </Row>
+                  <hr/>
+                  <Row style={{paddingTop: "20px"}}>
+                    <Col xs={12} sm={12}>
+                      <h5>Diện tích đơn vị: m²</h5>
+                      {/*<Slider marks={marksArea} step={null} onChange={this.onChangeArea} defaultValue={100} />*/}
+                      <div style={{margin:'40px 10px'}}>
+                        <InputRange
+                            maxValue={5000}
+                            minValue={0}
+                            value={this.state.areaDistance}
+                            onChange={value => this.setState({ areaDistance: value })} />
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row style={{paddingTop: "20px"}}>
+                    <Col xs={12} sm={12}>
+                      <h5>Giá đơn vị: triệu </h5>
+                      {/*<Slider marks={marksPrice} step={null} onChange={this.onChangePrice} defaultValue={100} />*/}
+                      <div style={{margin:'40px 10px'}}>
+                        <InputRange
+                            maxValue={50000}
+                            minValue={0}
+                            value={this.state.priceDistance}
+                            onChange={value => this.setState({ priceDistance: value })} />
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row style={{padding:'115px 15px 0',justifyContent:'center'}}>
+                    <LaddaButton
+                        className="btn btn-info btn-ladda"
+                        loading={this.state.loading}
+                        onClick={() => this.handleSearchByFiler()}
+                        data-style={EXPAND_LEFT}
+                        style={{backgroundColor: '#008FE5', color: 'white',border:'none',height:'40px',lineHeight:'0'}}>
+                      <i className="fas fa-search"/> Tìm kiếm
+                    </LaddaButton>
+                  </Row>
+                </Col>
+                <Col xs={12} sm={6}>
+                  <GoogleMapsComponent
+                      key="map"
+                      googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyBGcJRwkhXS-DG7qKWPwURYc-kbvmL77uw"
+                      loadingElement={<div style={{height: `100%`}}/>}
+                      containerElement={<div style={{height: `650px`}}/>}
+                      mapElement={<div style={{height: `100%`}}/>}
                   />
                 </Col>
-                {
-                  this.state.isRenderDistrict ?
-                      <Col md={6}>
-                        <h5>Quận/Huyện: </h5>
-                        <Select value={selectedDistrict}
-                                onChange={(e)=> this.setState({selectedDistrict: e})}
-                                options={district}
-                                isSearchable={true}
-                                isClearable={true}
-                        />
-                      </Col>
-                      : null
-                }
-              </Row>
-              <hr/>
-              <Row>
-                {/*<Col md={3}>*/}
-                {/*  <h5>Mua bán: </h5>*/}
-                {/*  <Select value={selectedSaleType}*/}
-                {/*          onChange={(e)=> this.setState({selectedSaleType: e})}*/}
-                {/*          options={saleType}*/}
-                {/*          isSearchable={true}*/}
-                {/*          isClearable={true}*/}
-                {/*  />*/}
-                {/*</Col>*/}
-                {/*<Col md={3}>*/}
-                {/*  <h5>Cho thuê: </h5>*/}
-                {/*  <Select value={selectedRentType}*/}
-                {/*          onChange={(e)=> this.setState({selectedRentType: e})}*/}
-                {/*          options={rentType}*/}
-                {/*          isSearchable={true}*/}
-                {/*          isClearable={true}*/}
-                {/*  />*/}
-                {/*</Col>*/}
-                <Col md={6}>
-                  <h5>Hướng nhà: </h5>
-                  <Select value={selectedDirectHouse}
-                          onChange={(e)=> this.setState({selectedDirectHouse: e})}
-                          options={directHouse}
-                          isSearchable={true}
-                          isClearable={true}
-                  />
-                </Col>
-                {/*<Col md={6}>*/}
-                {/*  <h5>Diện tích: </h5>*/}
-                {/*  <Select value={selectedArea}*/}
-                {/*          onChange={(e)=> this.setState({selectedArea: e})}*/}
-                {/*          options={areas}*/}
-                {/*          isSearchable={true}*/}
-                {/*          isClearable={true}*/}
-                {/*  />*/}
-                {/*</Col>*/}
-                {/*<Col md={6}>*/}
-                {/*  <h5>Giá: </h5>*/}
-                {/*  <Select value={selectedPrice}*/}
-                {/*          onChange={(e)=> this.setState({selectedPrice: e})}*/}
-                {/*          options={prices}*/}
-                {/*          isSearchable={true}*/}
-                {/*          isClearable={true}*/}
-                {/*  />*/}
-                {/*</Col>*/}
-              </Row>
-              <hr/>
-              <Row>
-                <Col xs={12} sm={1}/>
-                <Col xs={12} sm={10}>
-                  <h5>Diện tích đơn vị: m²</h5>
-                  {/*<Slider marks={marksArea} step={null} onChange={this.onChangeArea} defaultValue={100} />*/}
-                  <div style={{margin:'30px'}}>
-                    <InputRange
-                        maxValue={5000}
-                        minValue={0}
-                        value={this.state.areaDistance}
-                        onChange={value => this.setState({ areaDistance: value })} />
-                  </div>
-                </Col>
-                <Col xs={12} sm={1}/>
-              </Row>
-              <Row>
-                <Col xs={12} sm={1}/>
-                <Col xs={12} sm={10}>
-                  <h5>Giá đơn vị: triệu </h5>
-                  {/*<Slider marks={marksPrice} step={null} onChange={this.onChangePrice} defaultValue={100} />*/}
-                  <div style={{margin:'30px'}}>
-                    <InputRange
-                        maxValue={7000}
-                        minValue={0}
-                        value={this.state.priceDistance}
-                        onChange={value => this.setState({ priceDistance: value })} />
-                  </div>
-                </Col>
-                <Col xs={12} sm={1}/>
-              </Row>
-              <hr/>
-              <Row style={{padding:'0 15px',justifyContent:'flex-end'}}>
-                <LaddaButton
-                    className="btn btn-info btn-ladda"
-                    loading={this.state.loading}
-                    onClick={() => this.handleSearchByFiler()}
-                    data-style={EXPAND_LEFT}
-                    style={{backgroundColor: '#008FE5', color: 'white',border:'none',height:'40px',lineHeight:'0'}}>
-                  <i className="fas fa-search"/> Tìm kiếm
-                </LaddaButton>
               </Row>
             </ModalBody>
           </Modal>

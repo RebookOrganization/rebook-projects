@@ -361,7 +361,6 @@ class Home extends Component {
 
   callBackFromAppSearch = (allNewsItem, loading) => {
     if (allNewsItem) {
-      console.log("allNewsItem: " + JSON.stringify(allNewsItem));
       this.setState({
         allNewsItem: allNewsItem,
         loading: loading

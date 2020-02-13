@@ -29,7 +29,6 @@
 				<groupId>org.springframework.kafka</groupId>
 				<artifactId>spring-kafka</artifactId>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter</artifactId>
@@ -44,7 +43,6 @@
 <!--				<artifactId>mysql-connector-java</artifactId>-->
 <!--				<scope>runtime</scope>-->
 <!--			</dependency>-->
-			<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
