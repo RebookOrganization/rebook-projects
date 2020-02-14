@@ -17,6 +17,8 @@ import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 import './_listCardItem.css';
 import InfiniteScroll from "react-infinite-scroller";
 import SkeletonLoading from "../../../components/Loading/SkeletonLoading";
+import NewsHeader from "./NewsHeader";
+import NewsDetail from "./NewsDetail";
 
 class ListCardItem extends PureComponent {
   constructor(props) {
@@ -76,10 +78,39 @@ class ListCardItem extends PureComponent {
       newItem.shareAmount = item.shareNewsList ? item.shareNewsList.length : 0;
       return newItem;
     }) : null;
+
+    let NewPost = null;
+    NewPost = createNewsPost;
+    if (NewPost) {
+      NewPost.hidden = false;
+      NewPost.newsDetail = false;
+      NewPost.textOfReadMore = "Chi tiết";
+      NewPost.renderComment = false;
+      NewPost.activeLike = false;
+      if (NewPost.likeNewsList && NewPost.likeNewsList.length) {
+        NewPost.likeNewsList.map(i => {
+          if (currentUser && i.userId === currentUser.userId) {
+            NewPost.activeLike = true;
+          }
+        })
+      }
+      NewPost.likeAmount = NewPost.likeNewsList ? NewPost.likeNewsList.length : 0;
+      NewPost.commentAmount = NewPost.commentList ? NewPost.commentList.length : 0;
+      NewPost.activeShare = false;
+      if (NewPost.shareNewsList && NewPost.shareNewsList.length) {
+        NewPost.shareNewsList.map(i => {
+          if (currentUser && i.userId === currentUser.userId) {
+            NewPost.activeShare = true;
+          }
+        })
+      }
+      NewPost.shareAmount = NewPost.shareNewsList ? NewPost.shareNewsList.length : 0;
+    }
+
     this.setState({
       currentUser: currentUser,
       allNewsItem: allNewsList,
-      createNewsPost: createNewsPost
+      createNewsPost: NewPost
     })
   }
 
@@ -113,10 +144,39 @@ class ListCardItem extends PureComponent {
         newItem.shareAmount = item.shareNewsList ? item.shareNewsList.length : 0;
         return newItem;
       }) : null;
+
+      let NewPost = null;
+      NewPost = nextProps.createNewsPost;
+      if (NewPost) {
+        NewPost.hidden = false;
+        NewPost.newsDetail = false;
+        NewPost.textOfReadMore = "Chi tiết";
+        NewPost.renderComment = false;
+        NewPost.activeLike = false;
+        if (NewPost.likeNewsList && NewPost.likeNewsList.length) {
+          NewPost.likeNewsList.map(i => {
+            if (nextProps.currentUser && i.userId === nextProps.currentUser.userId) {
+              NewPost.activeLike = true;
+            }
+          })
+        }
+        NewPost.likeAmount = NewPost.likeNewsList ? NewPost.likeNewsList.length : 0;
+        NewPost.commentAmount = NewPost.commentList ? NewPost.commentList.length : 0;
+        NewPost.activeShare = false;
+        if (NewPost.shareNewsList && NewPost.shareNewsList.length) {
+          NewPost.shareNewsList.map(i => {
+            if (nextProps.currentUser && i.userId === nextProps.currentUser.userId) {
+              NewPost.activeShare = true;
+            }
+          })
+        }
+        NewPost.shareAmount = NewPost.shareNewsList ? NewPost.shareNewsList.length : 0;
+      }
+
       this.setState({
         currentUser: nextProps.currentUser,
         allNewsItem: allNewsList,
-        createNewsPost: nextProps.createNewsPost
+        createNewsPost: NewPost
       })
     }
   }
@@ -149,6 +209,7 @@ class ListCardItem extends PureComponent {
         item.newsDetail ?
           item.textOfReadMore = "Thu gọn" :
             item.textOfReadMore = "Chi tiết";
+        console.log("aaaaaaaaaaaa newsDetail: "+item.newsDetail);
       }
       return item;
     });
@@ -269,105 +330,9 @@ class ListCardItem extends PureComponent {
           {
             createNewsPost ?
                 <Card className="card">
-                  <CardTitle>
-                    <div className="row"
-                         style={{display: 'flex', alignItems: 'center', marginTop: '12px'}}>
-                      <div className="col-md-9">
-                        <a className="btn-circle btn-lg">
-                          <img
-                              src={createNewsPost.imageUser ? createNewsPost.imageUser
-                                  : '/icon/default.jpg'}
-                              className="rounded-circle img-profile"
-                              alt="Username"/>
-                        </a>{' '}
-                        <a href={createNewsPost.imageUser ? createNewsPost.imageUser
-                            : '/icon/default.jpg'}
-                           className="username"
-                        >
-                          <strong>{createNewsPost.username ? createNewsPost.username
-                              : 'username'}</strong>
-                        </a>
-
-                        {/*pub Date*/}
-                        <div style={{color: '#606770', margin: '0 70px'}}>
-                          {createNewsPost.pubDate ? createNewsPost.pubDate : ''}
-                        </div>
-                      </div>
-                      <div className="col-md-3">
-                        <div className="dropdown float-right">
-                          <button className="btn border-none-outline"
-                                  type="button" id="dropdownMenuButton"
-                                  data-toggle="dropdown" aria-haspopup="true"
-                                  aria-expanded="false">
-                            <img src="/icon/menu-5.svg" style={{width:'23px',height:'23px'}}/>
-                          </button>
-                          <div className="dropdown-menu"
-                               aria-labelledby="dropdownMenuButton">
-                            <a className="dropdown-item">
-                              <i className="far fa-eye-slash"/> Ẩn bài viết
-                            </a>
-                            <a className="dropdown-item">
-                              <i className="far fa-save"/> Lưu bài viết
-                            </a>
-                            <a className="dropdown-item">
-                              <i className="far fa-flag"/> Gửi phản hồi
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardTitle>
-
-                  <div className="row"
-                       style={{display: 'flex', alignItems: 'center', marginLeft: '15px', marginRight: '15px'}}>
-                    <p className={"styleTitle"}>
-                      {createNewsPost.titleNews ? createNewsPost.titleNews : null}
-                    </p>
-                    <p className={"styleText"}>
-                      <strong>Giá: </strong>{createNewsPost.price ? createNewsPost.price : null}
-                    </p>
-                    <p className={"styleText"}>
-                      <strong>Diện tích: </strong>{createNewsPost.area ? createNewsPost.area : null}
-                    </p>
-                    <p className={"styleText"}>
-                      <strong>Địa chỉ: </strong>{createNewsPost.address_prop ? createNewsPost.address_prop
-                        : null}
-                    </p>
-                    <p className={"styleTitle"}>
-                      {createNewsPost.summaryNews ? createNewsPost.summaryNews : null}
-                    </p>
-
-                    <a style={{
-                      fontSize: '16px',
-                      fontWeight: 'normal',
-                      lineHeight: '1.58',
-                      fontFamily: 'inherit',
-                      marginBottom: '10px',
-                      paddingRight: '5px',
-                      color: '#20a8d8'
-                    }}
-                       onClick={()=>this.handleRenderNewsDetail(createNewsPost.newsId)}>
-                      {textOfReadMore}
-                    </a>
-                    {
-                      newsDetail && indexNews === createNewsPost.newsId ?
-                          <p className={"styleTitle"}>
-                            {createNewsPost.descriptionNews ? createNewsPost.descriptionNews : null}
-                          </p> : null
-                    }
-
-                    <p className={"styleTitle"}>
-                      <strong>Liên hệ: </strong>{' '}
-                      {createNewsPost.contactName ? createNewsPost.contactName : null}
-                      {createNewsPost.contactPhone ? createNewsPost.contactPhone : null}
-                      {createNewsPost.contactEmail ? createNewsPost.contactEmail : null}
-                    </p>
-                    <p className={"styleTitle"}>
-                      {createNewsPost.projectName ? createNewsPost.projectName : null}
-                      {createNewsPost.projectOwner ? createNewsPost.projectOwner : null}
-                      {createNewsPost.projectSize ? createNewsPost.projectSize : null}
-                    </p>
-                  </div>
+                  <NewsHeader handleHidePost={this.handleHidePost} newsItem={createNewsPost}/>
+                  <NewsDetail handleRenderNewsDetail={this.handleRenderNewsDetail}
+                              newsItem={createNewsPost}/>
 
                   <div style={{marginBottom: '10px'}}>
                     {
@@ -400,21 +365,21 @@ class ListCardItem extends PureComponent {
                     <ButtonGroup style={{width: '100%', padding: '0 20px'}}>
                       <Button
                           className="border-none-outline btn-like-share-comment"
-                          style={activeLike && indexNews === createNewsPost.newsId ?
+                          style={createNewsPost.activeLike ?
                               {backgroundColor:'#20a8d8', color:'white'} : {}}
                           onClick={() => this.handleLikePost(createNewsPost.newsId)}>
                         <img className={"styleIcon"} src="/icon/thumb-up.svg" alt={""}/> Thích
                       </Button>
                       <Button
                           className="border-none-outline btn-like-share-comment"
-                          style={renderComment && indexNews === createNewsPost.newsId ?
+                          style={createNewsPost.renderComment ?
                               {backgroundColor:'#20a8d8', color:'white'} : {}}
                           onClick={() => this.handleRenderComment(createNewsPost.newsId)}>
                         <img className={"styleIcon"} src="/icon/a-chat.svg" alt={""}/> Bình luận
                       </Button>
                       <Button
                           className="border-none-outline btn-like-share-comment"
-                          style={activeShare && indexNews === createNewsPost.newsId ?
+                          style={createNewsPost.activeShare ?
                               {backgroundColor:'#20a8d8', color:'white'} : {}}
                           onClick={() => this.handleSharePost(createNewsPost.newsId)}>
                         <img className={"styleIcon"} src="/icon/share-right.svg" alt={""}/> Chia sẻ
@@ -424,23 +389,23 @@ class ListCardItem extends PureComponent {
 
                   <hr/>
                   {
-                    renderComment && indexNews === createNewsPost.newsId ?
+                    createNewsPost.renderComment ?
                         <React.Fragment>
                           {
-                            this.state.commentPosted ? this.state.commentPosted.map((item, index) => {
+                            createNewsPost.commentList ? createNewsPost.commentList.map((i, index) => {
                               return (
                                   <Row style={{padding:'0 20px'}}>
                                     <div className="input-comment" style={{paddingBottom:'10px'}}>
                                       <a className="btn-user">
-                                        <img
-                                            src={'/icon/icons8-checked_user_male.png'}
-                                            className="rounded-circle icon-user"
-                                            alt="Username"/>
+                                        <img src={i.userImageUrl ? i.userImageUrl : '/icon/icons8-checked_user_male.png'}
+                                             className="rounded-circle icon-user"
+                                             alt="Username"/>
                                       </a>{' '}
-                                      <p style={{borderRadius: '30px', width:'470px', padding: '10px',
+                                      <p style={{borderRadius: '30px', padding: '10px',
                                         backgroundColor: '#f2f3f5',textIdent:'32px',fontSize:'16px',marginBottom:'0'}} key={index}>
-                                        <p style={{fontSize:'16px',fontWeight:'500', color:'#4267B2'}}>{"Other User "}</p>
-                                        {item.content}
+                                        <p style={{fontSize:'16px',fontWeight:'500', color:'#4267B2', marginBottom:'5px'}}>{i.userName ? i.userName : "UnknownUser"}</p>
+                                        {i.content}
+                                        <p style={{fontSize:'14px',fontWeight:'400', color:'#4267B2', marginBottom:'0'}}>{i.commentTime ? i.commentTime : "now"}</p>
                                       </p>
                                     </div>
                                   </Row>
@@ -474,9 +439,6 @@ class ListCardItem extends PureComponent {
                     <button style={{border:'none', outline:'none'}}>
                       <img className={"responsive"} src={"/icon/iconfinder_ins.svg"} style={{width:'34px'}} alt={""}/>
                     </button>
-                    <button style={{border:'none', outline:'none'}}>
-                      <img className={"responsive"} src={"/icon/iconfinder_picture.svg"} style={{width:'36px'}} alt={""}/>
-                    </button>
                   </div>
                 </Card>
                 : null
@@ -487,113 +449,14 @@ class ListCardItem extends PureComponent {
                   return (
                     item.hidden === false &&
                         <Card className="card" key={index}>
-                          <CardTitle>
-                            <div className="row"
-                                 style={{display: 'flex', alignItems: 'center', marginTop: '12px'}}>
-                              <div className="col-md-9">
-                                <a className="btn-circle btn-lg">
-                                  <img
-                                      src={item.imageUser ? item.imageUser
-                                          : '/icon/default.jpg'}
-                                      className="rounded-circle img-profile"
-                                      alt="Username"/>
-                                </a>{' '}
-                                <a href={item.imageUser ? item.imageUser
-                                    : '/icon/default.jpg'}
-                                   className="username"
-                                >
-                                  <strong>{item.username ? item.username
-                                      : 'username'}</strong>
-                                </a>
-
-                                {/*pub Date*/}
-                                <div style={{color: '#606770', margin: '0 70px'}}>
-                                  {item.pubDate ? item.pubDate : ''}
-                                </div>
-                              </div>
-                              <div className="col-md-3">
-                                <div className="dropdown float-right">
-                                  <button className="btn border-none-outline"
-                                          type="button" id="dropdownMenuButton"
-                                          data-toggle="dropdown" aria-haspopup="true"
-                                          aria-expanded="false">
-                                    <img src="/icon/menu-5.svg" style={{width:'23px',height:'23px'}}/>
-                                  </button>
-                                  <div className="dropdown-menu"
-                                       aria-labelledby="dropdownMenuButton">
-                                    <a className="dropdown-item" onClick={()=>this.handleHidePost(item.newsId)}>
-                                      <i className="far fa-eye-slash"/> Ẩn bài viết
-                                    </a>
-                                    <a className="dropdown-item">
-                                      <i className="far fa-save"/> Lưu bài viết
-                                    </a>
-                                    <a className="dropdown-item">
-                                      <i className="far fa-flag"/> Gửi phản hồi
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </CardTitle>
-
-                          <div className="row"
-                               style={{display: 'flex', alignItems: 'center', marginLeft: '15px', marginRight: '15px'}}>
-                            <p className={"styleTitle"}>
-                              {item.titleNews ? item.titleNews : null}
-                            </p>
-                            <p className={"styleText"}>
-                              <strong>Giá: </strong>{item.price ? item.price : null}
-                            </p>
-                            <p className={"styleText"}>
-                              <strong>Diện tích: </strong>{item.area ? item.area : null}
-                            </p>
-                            <p className={"styleText"}>
-                              <strong>Địa chỉ: </strong>{item.address_prop ? item.address_prop
-                                : null}
-                            </p>
-                            <p className={"styleTitle"}>
-                              {item.summaryNews ? item.summaryNews : null}
-                            </p>
-
-                            <a style={{
-                              fontSize: '16px',
-                              fontWeight: 'normal',
-                              lineHeight: '1.58',
-                              fontFamily: 'inherit',
-                              marginBottom: '10px',
-                              paddingRight: '5px',
-                              color: '#20a8d8'
-                            }}
-                               onClick={()=>this.handleRenderNewsDetail(item.newsId)}>
-                              {item.textOfReadMore}
-                            </a>
-                            {
-                              item.newsDetail ?
-                                  <p className={"styleTitle"}>
-                                    {item.descriptionNews ? item.descriptionNews : null}
-                                  </p> : null
-                            }
-
-                            <p className={"styleTitle"}>
-                              <strong>Liên hệ: </strong>{' '}
-                              {item.contactName ? item.contactName : null}
-                              {item.contactPhone ? item.contactPhone : null}
-                              {item.contactEmail ? item.contactEmail : null}
-                            </p>
-                            <p className={"styleTitle"}>
-                              {item.projectName ? item.projectName : null}
-                              {item.projectOwner ? item.projectOwner : null}
-                              {item.projectSize ? item.projectSize : null}
-                            </p>
-                          </div>
+                          <NewsHeader handleHidePost={this.handleHidePost} newsItem={item}/>
+                          <NewsDetail handleRenderNewsDetail={this.handleRenderNewsDetail}
+                                      newsItem={item}/>
 
                           <div style={{marginBottom: '10px'}}>
-                            {
-                              item.imageUrlList && item.imageUrlList.length ? this.handleRenderImageSlide(item.imageUrlList) : null
-                            }
+                            {item.imageUrlList && item.imageUrlList.length ? this.handleRenderImageSlide(item.imageUrlList) : null}
                           </div>
 
-                          {/*Luot like luot share o day*/}
                           <div style={{margin: '0 20px'}}>
                             <a className="amount-like-share" style={{color: '#606770'}}>
                               <img className={"styleIcon"} src="/icon/thumb-up.svg"/>
@@ -688,9 +551,6 @@ class ListCardItem extends PureComponent {
                             />
                             <button style={{border:'none', outline:'none'}}>
                               <img className={"responsive"} src={"/icon/iconfinder_ins.svg"} style={{width:'34px'}} alt={""}/>
-                            </button>
-                            <button style={{border:'none', outline:'none'}}>
-                              <img className={"responsive"} src={"/icon/iconfinder_picture.svg"} style={{width:'36px'}} alt={""}/>
                             </button>
                           </div>
                         </Card>

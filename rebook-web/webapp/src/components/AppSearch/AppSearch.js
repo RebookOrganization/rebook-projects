@@ -1,32 +1,36 @@
 import React, {Component} from "react";
 import LaddaButton, {EXPAND_LEFT} from "react-ladda";
-import {
-  Modal,
-  ModalBody,
-  ModalHeader, Row, Col, NavLink
-} from "reactstrap";
+import {Col, Modal, ModalBody, ModalHeader, NavLink, Row} from "reactstrap";
 import Select from 'react-select';
-import {
-  elasticSearchNews,
-} from "../../api/userCallApi";
+import {elasticSearchNews,} from "../../api/userCallApi";
 import shallowCompare from 'react-addons-shallow-compare';
 import Alert from 'react-s-alert';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
-import {withScriptjs, withGoogleMap, GoogleMap, Marker, InfoWindow } from 'react-google-maps';
+import {
+  GoogleMap,
+  InfoWindow,
+  Marker,
+  withGoogleMap,
+  withScriptjs
+} from 'react-google-maps';
+import Geocode from "react-geocode";
 
-const defaultZoom = 15;
-const defaultCenter = {lat: 12.23893, lng: 109.1906241};
-const locations = [
-  {
-    lat: 12.2406224,
-    lng: 109.1956035,
-    label: 'S',
-    draggable: false,
-    title: 'Tháp Trầm Hương Nha Trang',
-    www: 'https://www.vntrip.vn/cam-nang/thap-tram-huong-diem-den-thu-vi-trong-tour-du-lich-nha-trang-1043'
-  },
-];
+Geocode.setApiKey("AIzaSyBkoOTnG-hF9GLjQj7TUIlKJjQtCUfswDc");
+Geocode.setLanguage("en");
+
+const defaultZoom = 10;
+const defaultCenter = {lat: 10.8230989, lng: 106.6296638};
+// const locations = [
+//   {
+//     lat: 10.8230989,
+//     lng: 106.6296638,
+//     label: 'H',
+//     draggable: false,
+//     title: 'Hồ Chí Minh City',
+//     www: ''
+//   },
+// ];
 
 class MarkerList extends Component {
   constructor(props) {
@@ -35,6 +39,8 @@ class MarkerList extends Component {
   }
 
   render() {
+    console.log("MarkerList locations: "+JSON.stringify(this.props.locations));
+    const {locations} = this.props;
     return locations.map((location, index) => {
           return (
               <MarkerWithInfoWindow key={index.toString()} location={location}/>
@@ -60,7 +66,6 @@ class MarkerWithInfoWindow extends Component {
   }
   render() {
     const {location} = this.props;
-
     return (
         <Marker onClick={this.toggle} position={location} title={location.title} label={location.label}>
           {this.state.isOpen &&
@@ -73,9 +78,10 @@ class MarkerWithInfoWindow extends Component {
 }
 
 const GoogleMapsComponent = withScriptjs(withGoogleMap((props) => {
+  console.log("props GoogleMapsComponent: "+JSON.stringify(props));
       return (
-          <GoogleMap defaultZoom={defaultZoom} defaultCenter={defaultCenter}>
-            {<MarkerList locations={locations}/>}
+          <GoogleMap zoom={props.zoom} center={props.center}>
+            {<MarkerList locations={props.locations}/>}
           </GoogleMap>
       );
     }
@@ -108,7 +114,10 @@ class AppSearch extends React.PureComponent {
       resultSearch: null,
       areaDistance: {min: 0, max: 1000},
       priceDistance: {min: 0, max: 10000},
-      isRenderDistrict: false
+      isRenderDistrict: false,
+      listMarker: [],
+      center: {lat: 10.8230989, lng: 106.6296638},
+      zoom: 10
     }
   }
 
@@ -188,6 +197,29 @@ class AppSearch extends React.PureComponent {
     })
   };
 
+  handleAddMarker = (location) => {
+    let center = this.state.center;
+    Geocode.fromAddress(location).then(res => {
+      const data = res.results;
+      let listMarker = data ? data.map(item => {
+        center = {lat: item.geometry.location.lat, lng: item.geometry.location.lng};
+        return {
+          lat: item.geometry.location.lat,
+          lng: item.geometry.location.lng,
+          label: 'R',
+          draggable: false,
+          title: item.formatted_address,
+          www: ''
+        };
+      }) : [];
+      this.setState({
+        listMarker: listMarker,
+        center,
+        zoom: 16
+      })
+    });
+  };
+
   render() {
     const {optionProvince, optionDistrict, selectedDistrict, optionDirectHouse, selectedDirectHouse} = this.state;
 
@@ -225,14 +257,16 @@ class AppSearch extends React.PureComponent {
             <ModalHeader toggle={()=>this.toggleModalSearch()}>
               <img src="/icon/icons8-search-2.png" alt={""}/> Công cụ tìm kiếm
             </ModalHeader>
-            <ModalBody style={{padding:'15px'}}>
+            <ModalBody style={{padding:'0'}}>
               <Row>
                 <Col xs={12} sm={6}>
+                  <div style={{margin:'15px 0 15px 15px'}}>
                   <div className="search-box" style={{marginBottom:"5px"}}>
                     <span className="fa fa-search"/>
                     <input id="inputSearch" placeholder="Nhập địa điểm, vd: Sunrise City"
                            style={{textIdent:'32px',backgroundColor: '#f2f3f5',outline:'none'}}
                            value={this.state.inputSearch}
+                           onBlur={()=>this.handleAddMarker(this.state.inputSearch)}
                            onChange={(e) => this.setState(
                                {inputSearch: e.target.value})}
                     />
@@ -312,7 +346,7 @@ class AppSearch extends React.PureComponent {
                       </div>
                     </Col>
                   </Row>
-                  <Row style={{padding:'115px 15px 0',justifyContent:'center'}}>
+                  <Row style={{padding:'90px 15px 0',justifyContent:'center'}}>
                     <LaddaButton
                         className="btn btn-info btn-ladda"
                         loading={this.state.loading}
@@ -322,14 +356,18 @@ class AppSearch extends React.PureComponent {
                       <i className="fas fa-search"/> Tìm kiếm
                     </LaddaButton>
                   </Row>
+                  </div>
                 </Col>
                 <Col xs={12} sm={6}>
                   <GoogleMapsComponent
                       key="map"
-                      googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyBGcJRwkhXS-DG7qKWPwURYc-kbvmL77uw"
+                      googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyBkoOTnG-hF9GLjQj7TUIlKJjQtCUfswDc"
                       loadingElement={<div style={{height: `100%`}}/>}
                       containerElement={<div style={{height: `650px`}}/>}
                       mapElement={<div style={{height: `100%`}}/>}
+                      locations={this.state.listMarker}
+                      center={this.state.center}
+                      zoom={this.state.zoom}
                   />
                 </Col>
               </Row>

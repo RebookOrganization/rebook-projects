@@ -37,7 +37,7 @@ class RecommendModal extends Component {
       recommendModal: nextProps.recommendModal,
       loadingRecommend: nextProps.loadingRecommend,
       newsRecommend: nextProps.newsRecommend
-    }, ()=>console.log("loadingRecommend: "+ this.state.loadingRecommend))
+    })
   }
 
   toggleModalRecommendDetail = () =>  {

@@ -26,6 +26,11 @@ export function httpUploadFile(url, body) {
   })
 }
 
+// export function getLatLngFromAddress(address) {
+//   return callApi("https://maps.googleapis.com/maps/api/geocode/json?address="
+//       + address + "&key=AIzaSyBkoOTnG-hF9GLjQj7TUIlKJjQtCUfswDc", 'GET')
+// }
+
 function callApi(url, method, body = null) {
   const headers = {'Content-Type': 'application/json; charset=utf-8'};
   const meta = {
