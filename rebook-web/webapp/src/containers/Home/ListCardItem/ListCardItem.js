@@ -19,32 +19,23 @@ import InfiniteScroll from "react-infinite-scroller";
 import SkeletonLoading from "../../../components/Loading/SkeletonLoading";
 import NewsHeader from "./NewsHeader";
 import NewsDetail from "./NewsDetail";
+import InteractiveInfo from "./InteractiveInfo";
 
 class ListCardItem extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       comment: "",
-      newsDetail: false,
-      textOfReadMore: "Chi tiết",
       currentUser: null,
-      indexNews: 0,
       allNewsItem: null,
       renderComment: false,
       likePosted: null,
-      activeLike: false,
       sharePosted: null,
-      activeShare: false,
       isLike: false,
       isShare: false,
       newsItem: 20,
       hasMoreItems: true,
       createNewsPost: null,
-
-      likeAmount: 0,
-      shareAmount: 0,
-      commentAmount: 0,
-
     }
   }
 
@@ -317,8 +308,7 @@ class ListCardItem extends PureComponent {
   };
 
   render() {
-    const {allNewsItem, newsDetail, textOfReadMore, currentUser, indexNews,
-      renderComment, activeLike, activeShare, createNewsPost} = this.state;
+    const {allNewsItem, currentUser, createNewsPost} = this.state;
     const loader = <SkeletonLoading/>;
 
     return (
@@ -336,28 +326,12 @@ class ListCardItem extends PureComponent {
 
                   <div style={{marginBottom: '10px'}}>
                     {
-                      createNewsPost.imageUrlList && createNewsPost.imageUrlList.length ? this.handleRenderImageSlide(createNewsPost.imageUrlList) : null
+                      createNewsPost.imageUrlList && createNewsPost.imageUrlList.length ?
+                          this.handleRenderImageSlide(createNewsPost.imageUrlList) : null
                     }
                   </div>
 
-                  {/*Luot like luot share o day*/}
-                  <div style={{margin: '0 20px'}}>
-                    <a className="amount-like-share" style={{color: '#606770'}}>
-                      <img className={"styleIcon"} src="/icon/thumb-up.svg"/>
-                      <img className={"styleIcon"} src="/icon/heart.svg"/>
-                      {createNewsPost.likeAmount ? createNewsPost.likeAmount : 0}
-                    </a>
-                    <a className="float-right amount-like-share"
-                       style={{marginLeft: '10px',color: '#606770'}}>
-                      {createNewsPost.shareList ? createNewsPost.shareList.length : 0} lượt share
-                    </a>
-                    <a className="float-right amount-like-share"
-                       onClick={()=>this.handleRenderComment(createNewsPost.newsId)}
-                       style={{color: '#606770'}}
-                    >
-                      {createNewsPost.commentList ? createNewsPost.commentList.length : 0} comment
-                    </a>
-                  </div>
+                  <InteractiveInfo newsItem={createNewsPost} handleRenderComment={this.handleRenderComment}/>
 
                   <hr style={{margin: '5px 20px'}}/>
 
@@ -454,29 +428,13 @@ class ListCardItem extends PureComponent {
                                       newsItem={item}/>
 
                           <div style={{marginBottom: '10px'}}>
-                            {item.imageUrlList && item.imageUrlList.length ? this.handleRenderImageSlide(item.imageUrlList) : null}
+                            {item.imageUrlList && item.imageUrlList.length ?
+                                this.handleRenderImageSlide(item.imageUrlList) : null}
                           </div>
 
-                          <div style={{margin: '0 20px'}}>
-                            <a className="amount-like-share" style={{color: '#606770'}}>
-                              <img className={"styleIcon"} src="/icon/thumb-up.svg"/>
-                              <img className={"styleIcon"} src="/icon/heart.svg"/>
-                              {item.likeAmount}
-                            </a>
-                            <a className="float-right amount-like-share"
-                               style={{marginLeft: '10px',color: '#606770'}}>
-                              {item.shareAmount} lượt share
-                            </a>
-                            <a className="float-right amount-like-share"
-                               onClick={()=>this.handleRenderComment(item.newsId)}
-                               style={{color: '#606770'}}
-                            >
-                              {item.commentList.length} comment
-                            </a>
-                          </div>
+                          <InteractiveInfo newsItem={item} handleRenderComment={this.handleRenderComment}/>
 
                           <hr style={{margin: '5px 20px'}}/>
-
                           <div>
                             <ButtonGroup style={{width: '100%', padding: '0 20px'}}>
                               <Button
@@ -499,7 +457,6 @@ class ListCardItem extends PureComponent {
                               </Button>
                             </ButtonGroup>
                           </div>
-
                           <hr/>
                           {
                             item.renderComment ?

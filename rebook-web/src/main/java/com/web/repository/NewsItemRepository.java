@@ -20,6 +20,9 @@ public interface NewsItemRepository extends JpaRepository<NewsItem, Long> {
 
     List<NewsItem> findAllByUser(User user);
 
+    @Query(value = "SELECT * FROM news_item?1 as t WHERE t.id = ?2", nativeQuery = true)
+    Optional<NewsItem> findByIdAndPartition(int partition, Long id);
+
     @Query(value = "SELECT * FROM news_item as t where t.property_address_id = ?1", nativeQuery = true)
     NewsItem findByPropertyAddress(long propertyAddress);
 

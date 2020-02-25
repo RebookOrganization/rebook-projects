@@ -10,6 +10,8 @@ import AppHeader from "../../components/Header/AppHeader";
 import {withRouter} from "react-router-dom";
 import shallowCompare from 'react-addons-shallow-compare';
 import {getCurrentUser} from "../../api/userCallApi";
+import Aside from "../Aside/Aside";
+import PageLeft from "../PageLeft/PageLeft";
 
 let Stomp = require("stompjs/lib/stomp.js").Stomp;
 let stompClient = null;
@@ -18,10 +20,9 @@ let username = null;
 class Messages extends Component{
   constructor(props) {
     super(props);
-
     this.state = {
-      authenticated: this.props.authenticated ? this.props.authenticated : false,
-      currentUser: this.props.currentUser ? this.props.currentUser : null,
+      authenticated: this.props.authenticated,
+      currentUser: this.props.currentUser,
       messages: [],
     }
   }
@@ -33,7 +34,7 @@ class Messages extends Component{
   //     currentUser: currentUser
   //   })
   // }
-  //
+
   // componentWillReceiveProps(nextProps, nextContext) {
   //   if (shallowCompare(this, this.props, nextProps)) {
   //     this.setState({
@@ -214,7 +215,7 @@ class Messages extends Component{
         <div className="app-body" id="app-body">
           <div id="username-page">
             <div className={"username-page-container"}>
-              <h1 className="title h1-mess">Wellcome {name} to chat room!</h1>
+              <h1 className="title h1-mess">Wellcome {name ? name : ''} to chat room!</h1>
               <form id="usernameForm" name="usernameForm">
                 <div className="form-group-message">
                   <input type="text" id="name" value={email || ''} className="form-control-message input-mess" readOnly/>
@@ -226,25 +227,37 @@ class Messages extends Component{
             </div>
           </div>
           <div id="chat-page" className={"hidden"}>
-            <div className={"chat-container"}>
-              <div className="chat-header">
-                <h2>Chat Room</h2>
+            <div className={"row"}>
+              <div className="col col-md-2" style={{padding: '0 30px'}}>
+                <PageLeft currentUser={this.state.currentUser}/>
               </div>
-              <div className={"connecting"}>
-                Connecting...
-              </div>
-              <ul id="messageArea">
-
-              </ul>
-              <form id="messageForm" name="messageForm" nameform="messageForm">
-                <div className="form-group-message">
-                  <div className="input-group clearfix">
-                    <input type="text" id="message" placeholder="Type a message..." autoComplete="off"
-                           className="form-control-message input-mess"/>
-                    <button type="submit" className="button-mess primary">Send</button>
+              <div className={"col col-md-8"} style={{paddingRight:'1px'}}>
+                <div className={"chat-container"}>
+                  <div className="chat-header">
+                    <h2>Chat Room</h2>
                   </div>
+                  <div className={"connecting"}>
+                    Connecting...
+                  </div>
+                  <ul id="messageArea">
+                  </ul>
+                  <form id="messageForm" name="messageForm" nameform="messageForm">
+                    <div className="form-group-message">
+                      <div className="input-group clearfix">
+                        <button style={{border:'none', outline:'none'}}>
+                          <img className={"responsive"} src={"/icon/iconfinder_ins.svg"} style={{width:'36px'}} alt={""}/>
+                        </button>
+                        <input type="text" id="message" placeholder="Type a message..." autoComplete="off"
+                               className="form-control-message input-mess"/>
+                        <button type="submit" className="button-mess primary">Send</button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
-              </form>
+              </div>
+              <div className={"col col-md-2"} style={{padding:'0'}}>
+                <Aside currentUser={this.state.currentUser}/>
+              </div>
             </div>
           </div>
         </div>

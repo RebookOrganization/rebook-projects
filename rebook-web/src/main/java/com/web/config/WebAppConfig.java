@@ -21,6 +21,7 @@ public class WebAppConfig {
   public static String esNewsScrollApiUrl;
   public static String esNewsItemSearchUrl;
   public static String esNewsItemById;
+  public static String knnRecommendUrl;
 
   public String getUploadDir() { return uploadDir; }
 
@@ -46,4 +47,10 @@ public class WebAppConfig {
   public void setEsNewsItemById(String esNewsItemById) {
     WebAppConfig.esNewsItemById = esNewsItemById;
   }
+
+  @Value("${knnRecommendUrl}")
+  public void setKnnRecommendUrl(String knnRecommendUrl) {
+    WebAppConfig.knnRecommendUrl = knnRecommendUrl;
+  }
+
 }

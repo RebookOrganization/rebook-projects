@@ -15,3 +15,14 @@ services:
       KAFKA_CREATE_TOPICS: "advice-topic:2:1"
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
+  kafka-manager:
+    image: sheepkiller/kafka-manager:latest
+    ports:
+      - "9000:9000"
+    links:
+      - zookeeper
+      - kafka
+    environment:
+      ZK_HOSTS: zookeeper:2181
+      APPLICATION_SECRET: rebookvn
+      KM_ARGS: -Djava.net.preferIPv4Stack=true

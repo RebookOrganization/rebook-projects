@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import './_listCardItem.css';
 import '../_home.css';
+import shallowCompare from 'react-addons-shallow-compare';
 
 class NewsDetail extends Component {
   constructor(props) {
@@ -14,8 +15,10 @@ class NewsDetail extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({newsItem: nextProps.newsItem},
-        ()=> console.log("bbbbbbbbb newsDetail: " + this.state.newsItem.newsDetail))
+    if (shallowCompare(this, this.props, nextProps)) {
+      this.setState({newsItem: nextProps.newsItem},
+          ()=> console.log("newsDetail: " + this.state.newsItem.newsDetail))
+    }
   }
 
   handleRenderNewsDetail = (newsId) => {
