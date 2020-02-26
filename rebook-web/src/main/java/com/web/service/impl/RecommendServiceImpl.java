@@ -43,11 +43,12 @@ public class RecommendServiceImpl implements RecommendService {
       logger.info("listRecommend url: {}, builder: {}", url, builder);
 
       knnResponse = callApiUtils.sendGet(builder);
-
       logger.info("listRecommend knnResponse: {}", knnResponse);
+
       KnnRecommendResponse response = GsonUtils.fromJsonString(knnResponse, KnnRecommendResponse.class);
       String data = response.getData();
       String[] dataArray = data.split("\\s*,\\s*");
+
       for (String item : dataArray) {
         String[] news = item.split("_");
         int partition = Integer.parseInt(news[0]);
