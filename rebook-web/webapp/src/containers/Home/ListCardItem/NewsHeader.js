@@ -56,7 +56,7 @@ class NewsHeader extends Component{
                     <i className="far fa-eye-slash"/> Ẩn bài viết
                   </a>
                   <a className="dropdown-item">
-                    <i className="far fa-save"/> Lưu bài viết
+                    <i className="far fa-edit"/> Sửa bài viết
                   </a>
                   <a className="dropdown-item">
                     <i className="far fa-flag"/> Gửi phản hồi

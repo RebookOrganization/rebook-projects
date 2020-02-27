@@ -48,7 +48,7 @@ public class WebAppConfig {
     WebAppConfig.esNewsItemById = esNewsItemById;
   }
 
-  @Value("${knnRecommendUrl}")
+  @Value("${knn.recommendApiUrl}")
   public void setKnnRecommendUrl(String knnRecommendUrl) {
     WebAppConfig.knnRecommendUrl = knnRecommendUrl;
   }

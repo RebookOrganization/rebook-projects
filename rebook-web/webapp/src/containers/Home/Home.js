@@ -37,6 +37,7 @@ import {
 import AppSearch from "../../components/AppSearch/AppSearch";
 import SkeletonLoading from "../../components/Loading/SkeletonLoading";
 import RecommendModal from "../RecommendModal/RecommendModal";
+import {recommendAPI} from "../../api/recommender";
 
 const initOffset = 0;
 
@@ -109,7 +110,8 @@ class Home extends Component {
 
       recommendModal: false,
       loadingRecommend: false,
-      newsRecommend: null
+      newsRecommend: null,
+      listRecommend: []
     };
 
   }
@@ -133,23 +135,50 @@ class Home extends Component {
     })
   };
 
-  toggleModalRecommendDetail = () => {
+  toggleModalRecommendDetail = (item) => {
     this.setState({
       recommendModal: !this.state.recommendModal
     }, () => {
       if (this.state.recommendModal) {
-        this.setState({loadingRecommend: true});
-        getNewsItemById(0).then(res => {
-          console.log("res get News by id:" + JSON.stringify(res));
-          if (parseInt(res.data.returnCode) === 1) {
-            this.setState({newsRecommend: res.data.result})
-          }
-          else {
-            Alert.warning(res.data.returnMessage)
-          }
-        }).finally(()=>this.setState({loadingRecommend: false}))
+        if (item) {
+          this.setState({
+            newsRecommend: item
+          })
+        }
+        else {
+          this.setState({loadingRecommend: true});
+          //old
+          getNewsItemById(0).then(res => {
+            console.log("res get News by id:" + JSON.stringify(res));
+            if (parseInt(res.data.returnCode) === 1) {
+              this.setState({newsRecommend: res.data.result})
+            }
+            else {
+              Alert.warning(res.data.returnMessage)
+            }
+          }).finally(()=>this.setState({loadingRecommend: false}))
+        }
       }
     })
+  };
+
+  handleLoadListRecommend = () => {
+    let prefix = "item201911";
+    let newsId = "2";
+    let include = "201911,201912";
+    this.setState({loadingRecommend: true});
+
+    recommendAPI(prefix, newsId, include).then(res => {
+      console.log("recommendAPI res: ", res);
+      if (res && res.data.length) {
+        this.setState({
+          listRecommend: res.data
+        })
+      }
+      else {
+        Alert.warning("Recommend is updating...")
+      }
+    }).finally(()=>this.setState({loadingRecommend: false}));
   };
 
   handleLoadEnum = () => {
@@ -185,6 +214,8 @@ class Home extends Component {
       Alert.warning("Không thể lấy tất cả tin tức.");
     })
     .finally(() => this.setState({loading: false}));
+
+    this.handleLoadListRecommend();
 
     window.addEventListener("resize", this.resize.bind(this));
     this.resize();
@@ -728,7 +759,8 @@ class Home extends Component {
                   ) : null
                 }
 
-                <RecommendSlider toggleModalRecommendDetail={this.toggleModalRecommendDetail}/>
+                <RecommendSlider toggleModalRecommendDetail={this.toggleModalRecommendDetail}
+                                 listRecommend={this.state.listRecommend}/>
 
                 {
                   this.state.loading ? <SkeletonLoading/>
@@ -741,7 +773,8 @@ class Home extends Component {
               </div>
 
               <div className="col col-md-3" style={{paddingRight: '20px'}}>
-                <PageRight toggleModalRecommendDetail={this.toggleModalRecommendDetail}/>
+                <PageRight toggleModalRecommendDetail={this.toggleModalRecommendDetail}
+                           listRecommend={this.state.listRecommend}/>
               </div>
 
               {
@@ -883,6 +916,7 @@ class Home extends Component {
 
         <RecommendModal recommendModal={this.state.recommendModal}
                         newsRecommend={this.state.newsRecommend}
+                        // listRecommend={this.state.listRecommend}
                         loadingRecommend={this.state.loadingRecommend}
                         toggleModalRecommendDetail={this.toggleModalRecommendDetail}/>
 

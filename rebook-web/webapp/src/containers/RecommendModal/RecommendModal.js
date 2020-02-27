@@ -20,7 +20,8 @@ class RecommendModal extends Component {
     this.state = {
       recommendModal: false,
       loadingRecommend: false,
-      newsRecommend: null
+      newsRecommend: null,
+      // listRecommend: []
     }
   }
 
@@ -28,7 +29,8 @@ class RecommendModal extends Component {
     this.setState({
       recommendModal: this.props.recommendModal,
       loadingRecommend: this.props.loadingRecommend,
-      newsRecommend: this.props.newsRecommend
+      newsRecommend: this.props.newsRecommend,
+      // listRecommend: this.props.listRecommend
     })
   }
 
@@ -36,7 +38,8 @@ class RecommendModal extends Component {
     this.setState({
       recommendModal: nextProps.recommendModal,
       loadingRecommend: nextProps.loadingRecommend,
-      newsRecommend: nextProps.newsRecommend
+      newsRecommend: nextProps.newsRecommend,
+      // listRecommend: nextProps.listRecommend
     })
   }
 

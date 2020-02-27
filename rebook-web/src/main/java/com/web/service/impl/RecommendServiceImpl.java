@@ -10,7 +10,6 @@ import com.web.service.RecommendService;
 import com.web.utils.CallApiUtils;
 import com.web.utils.GsonUtils;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -29,6 +28,11 @@ public class RecommendServiceImpl implements RecommendService {
   @Autowired
   private NewsItemRepository newsItemRepository;
 
+  @Autowired
+  public RecommendServiceImpl(ObjectMapperService objectMapperService) {
+    this.objectMapperService = objectMapperService;
+  }
+
   @Override
   public List<NewsResponseDTO> listRecommend(String prefix, String id, String include) {
     final String knnResponse;
@@ -40,28 +44,30 @@ public class RecommendServiceImpl implements RecommendService {
           .queryParam("id", id)
           .queryParam("include", include);
 
-      logger.info("listRecommend url: {}, builder: {}", url, builder);
+      logger.info("listRecommend url: {}, builder: {}", url, builder.toUriString());
 
       knnResponse = callApiUtils.sendGet(builder);
       logger.info("listRecommend knnResponse: {}", knnResponse);
 
       KnnRecommendResponse response = GsonUtils.fromJsonString(knnResponse, KnnRecommendResponse.class);
       String data = response.getData();
-      String[] dataArray = data.split("\\s*,\\s*");
+      if (!data.equals("")) {
+        String[] dataArray = data.split("\\s*,\\s*");
 
-      for (String item : dataArray) {
-        String[] news = item.split("_");
-        int partition = Integer.parseInt(news[0]);
-        long newsId = Long.parseLong(news[1]);
-        Optional<NewsItem> newsItem = newsItemRepository.findByIdAndPartition(partition, newsId);
-        if (newsItem.isPresent()) {
-          NewsResponseDTO responseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get());
-          responseDTOList.add(responseDTO);
+        for (String item : dataArray) {
+          String[] news = item.split("_");
+          int partition = Integer.parseInt(news[0]);
+          long newsId = Long.parseLong(news[1]);
+          Optional<NewsItem> newsItem = newsItemRepository.findByIdAndPartition(partition, newsId);
+          if (newsItem.isPresent()) {
+            NewsResponseDTO responseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get());
+            responseDTOList.add(responseDTO);
+          }
         }
       }
     }
     catch (Exception ex) {
-      logger.info("listRecommend knnResponse exception - {}", ex.getMessage());
+      logger.info("listRecommend exception - {}", ex.getMessage());
       ex.printStackTrace();
     }
     return responseDTOList;
