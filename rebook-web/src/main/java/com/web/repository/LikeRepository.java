@@ -15,4 +15,8 @@ public interface LikeRepository extends JpaRepository<LikeNews, Long> {
 
   @Query(value = "SELECT * FROM like_news AS t WHERE t.news_item_id = ?1 AND t.is_like = 1", nativeQuery = true)
   List<LikeNews> findLikeNewsByNewsItemId(Long newsItemId);
+
+  @Query(value = "SELECT * FROM like_news AS t WHERE t.is_like=1 AND t.user_id=?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
+  LikeNews findLastLikeByUserId(long userId);
+
 }

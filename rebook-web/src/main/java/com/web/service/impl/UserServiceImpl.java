@@ -12,6 +12,7 @@ import com.web.bean.Response.NewsResponseDTO;
 import com.web.bean.Response.ShareResponse;
 import com.web.bean.Response.UploadFileResponse;
 import com.web.dto.CommentNewsDTO;
+import com.web.dto.NewPostDto;
 import com.web.enumeration.District;
 import com.web.enumeration.ProvinceCity;
 import com.web.model.Comment;
@@ -40,20 +41,16 @@ import com.web.utils.DateTimeUtils;
 import com.web.utils.GsonUtils;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import org.omg.CORBA.DATA_CONVERSION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
@@ -111,83 +108,80 @@ public class UserServiceImpl implements UserService {
       throws IOException {
     logger.info("UserServiceImpl createNewsPost request: {}", GsonUtils.toJsonString(request));
     try {
-      NewsItem newsItem = new NewsItem();
-      newsItem.setTitle(request.getTitle());
-      newsItem.setPostedDate(request.getPub_date());
-      newsItem.setPostedMilisec(DateTimeUtils.convertTimeStampMilisecond(request.getPub_date(), DateTimeUtils.DATE_FORMAT));
-      newsItem.setUser(userRepository.findById(request.getUser_id()).get());
-      newsItem.setUrl(ServletUriComponentsBuilder.fromCurrentContextPath().toUriString());
+      String summary = "";
       try {
         if (request.getDesc().length() > 100) {
-          newsItem.setSummary(request.getDesc().substring(0, 100));
+          summary = request.getDesc().substring(0, 100);
         }
         else {
-          newsItem.setSummary(request.getDesc().substring(0, 50));
+          summary = request.getDesc().substring(0, 50);
         }
       } catch (Exception e) {
         logger.error("Can't set summary for news.");
       }
 
-      newsItemRepository.save(newsItem);
+      int partition = DateTimeUtils.getPartition();
+      long userId = request.getUser_id();
+      long postedMilisec = DateTimeUtils.convertTimeStampMilisecond(request.getPub_date(), DateTimeUtils.DATE_FORMAT);
+      String pubDate = request.getPub_date();
+      String price = request.getPrice();
+      String area = request.getArea();
+      String description = request.getDesc();
+      String room_number = request.getRoom_number();
+      String directHouse = request.getDirect_house();
+      String floorNum = request.getFloor_number();
+      String toiletNum = request.getToilet_number();
+      String interior = request.getInterior();
+      float area_num = convertDataService.convertAreaNum(request.getArea());
+      double price_num = convertDataService.convertPriceNum(request.getPrice(), area_num);
 
-      Set<NewsImageUrl> setImgUrl = new HashSet<>();
+      newsItemRepository.saveToPartition(area, "", description, directHouse, floorNum, "", interior,
+          pubDate, postedMilisec, price, request.getPub_date(), room_number, summary, request.getTitle(), toiletNum, "", "",
+          "", 0L, 0L, 0L, userId, area_num, price_num, partition);
+
+      NewsItem newsItem = newsItemRepository.findLastRow(partition);
+
+      String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/news-item/").path(summary.substring(0, 50).replace(" ", "-") + "/")
+          .path(newsItem.getId().toString()).toUriString();
+      newsItem.setUrl(url);
+
+      Set<NewsImageUrl> imageUrlSet = new HashSet<>();
       List<UploadFileResponse> listUpload = request.getListUpload();
       for (UploadFileResponse upload : listUpload) {
-        NewsImageUrl newsImageUrl = new NewsImageUrl();
-        newsImageUrl.setImageUrl(upload.getFileDownloadUri());
-        newsImageUrl.setImageType(upload.getFileType());
-        newsImageUrl.setImageSize(upload.getSize());
-        newsImageUrl.setNewsItem(newsItem);
-        setImgUrl.add(newsImageUrl);
+        imagesRepository.saveByPartition(upload.getSize(), upload.getFileType(), upload.getFileAsResourceUri(), null, newsItem.getId(), partition);
+        NewsImageUrl newsImageUrl = imagesRepository.findLastRow(partition);
+        imageUrlSet.add(newsImageUrl);
       }
-      imagesRepository.saveAll(setImgUrl);
+      newsItem.setImages(imageUrlSet);
 
-      newsItem.setPubDate(request.getPub_date());
-      newsItem.setPrice(request.getPrice());
-      newsItem.setArea(request.getArea());
-      newsItem.setDescription(request.getDesc());
-      newsItem.setRoom_number(request.getRoom_number());
-      newsItem.setDirect_of_house(request.getDirect_house());
-      newsItem.setFloor_number(request.getFloor_number());
-      newsItem.setToilet_number(request.getToilet_number());
-      newsItem.setInterior(request.getInterior());
-      newsItem.setAreaNum(convertDataService.convertAreaNum(request.getArea()));
-      newsItem.setPriceNum(convertDataService.convertPriceNum(request.getPrice(),
-          newsItem.getAreaNum()));
+      contactOwnerRepository.insertWithPartition(partition, request.getOwnerAddress(), request.getOwnerName(), "", request.getOwnerPhone());
+      ContactOwner contactOwner = contactOwnerRepository.findLastRow(partition);
+      long contactOwnerId = contactOwner.getId();
+      newsItem.setContactOwnerId(contactOwnerId);
 
-      ContactOwner contactOwner = new ContactOwner();
-      contactOwner.setContactName(request.getOwnerName());
-      contactOwner.setPhoneNumber(request.getOwnerPhone());
-      contactOwner.setAddress(request.getOwnerAddress());
-      contactOwnerRepository.save(contactOwner);
-
-      newsItem.setContactOwnerId(contactOwner.getId());
-
-      PropertyAddress propAddress = new PropertyAddress();
-      propAddress.setSummary(request.getProp_address());
-      if (ProvinceCity.fromDisplayValue(propAddress.getSummary()) != null) {
-        propAddress.setProvince(Objects.requireNonNull(ProvinceCity.fromDisplayValue(propAddress.getSummary())).getDisplayValue());
+      String summaryAddress = request.getProp_address();
+      String province = "";
+      String district = "";
+      if (ProvinceCity.fromDisplayValue(request.getProp_address()) != null) {
+        province = Objects.requireNonNull(ProvinceCity.fromDisplayValue(request.getProp_address())).getDisplayValue();
       }
-      if (District.fromDisplayValue(propAddress.getSummary()) != null) {
-        propAddress.setDistrict(Objects.requireNonNull(District.fromDisplayValue(propAddress.getSummary())).getDisplayValue());
+      if (District.fromDisplayValue(request.getProp_address()) != null) {
+        district = Objects.requireNonNull(District.fromDisplayValue(request.getProp_address())).getDisplayValue();
       }
-      propertyAdressRepository.save(propAddress);
+      propertyAdressRepository.saveByPartition(partition, district, province, "", summaryAddress);
+      PropertyAddress propertyAddress = propertyAdressRepository.findLastRow(partition);
+      long propertyAddressId = propertyAddress.getId();
+      newsItem.setPropertyAddressId(propertyAddressId);
 
-      newsItem.setPropertyAddressId(propAddress.getId());
+      propertyProjectRepository.saveByPartition(partition, request.getProject_name(), request.getProject_owner(), request.getProject_size());
+      PropertyProject propertyProject = propertyProjectRepository.findLastRow(partition);
+      long propertyProjectId = propertyProject.getId();
+      newsItem.setPropertyProjectId(propertyProjectId);
 
-      PropertyProject propertyProject = new PropertyProject();
-      propertyProject.setProjectName(request.getProject_name());
-      propertyProject.setProjectSize(request.getProject_size());
-      propertyProject.setProjectOwner(request.getProject_owner());
-      propertyProjectRepository.save(propertyProject);
-
-      newsItem.setPropertyProjectId(propertyProject.getId());
-
-      newsItemRepository.save(newsItem);
+      newsItemRepository.updateNewsPartition(partition, newsItem.getId(), propertyAddressId, contactOwnerId, propertyProjectId, url);
 
       NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem);
-
-      logger.info("UserServiceImpl createNewsPost response: {}", GsonUtils.toJsonString(newsResponseDTO));
+//      logger.info("UserServiceImpl createNewsPost response: {}", GsonUtils.toJsonString(newsResponseDTO));
 
       return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTO);
     } catch (Exception ex) {

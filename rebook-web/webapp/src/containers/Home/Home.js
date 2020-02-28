@@ -163,12 +163,9 @@ class Home extends Component {
   };
 
   handleLoadListRecommend = () => {
-    let prefix = "item201911";
-    let newsId = "2";
-    let include = "201911,201912";
     this.setState({loadingRecommend: true});
-
-    recommendAPI(prefix, newsId, include).then(res => {
+    const {currentUser} = this.state;
+    recommendAPI(currentUser ? currentUser.userId : 2).then(res => {
       console.log("recommendAPI res: ", res);
       if (res && res.data.length) {
         this.setState({
@@ -355,7 +352,7 @@ class Home extends Component {
           project_size: projectSize ? projectSize : ''
         };
 
-        console.log("createNewsPostItem: "+JSON.stringify(requestParams));
+        console.log("createNewsPostItem requestParams: "+JSON.stringify(requestParams));
 
         createNewsPostItem(requestParams).then(res => {
           if (res && parseInt(res.data.returnCode) === 1) {
@@ -363,7 +360,15 @@ class Home extends Component {
             this.setState({
               createNewsPost: res.data.result
             }, () => {
-              console.log("create new post response: " + JSON.stringify(this.state.createNewsPost));
+              const {createNewsPost} = this.state;
+              console.log("new post response: " + JSON.stringify(createNewsPost));
+              // if (newsPostResponse) {
+              //   getNewsByIdAndPartition(newsPostResponse).then(response => {
+              //     this.setState({
+              //       createNewsPost: response.data.result
+              //     })
+              //   })
+              // }
               this.handleCloseAllInput();
               this.setState({summary: ""})
             });
@@ -376,7 +381,6 @@ class Home extends Component {
         }).finally(() =>
             this.setState({loadingPost: false})
         );
-
       }
       else {
         Alert.error("Bạn chưa nhập địa chỉ bất động sản hoặc thông tin chung bất động sản.");

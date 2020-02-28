@@ -200,7 +200,6 @@ class ListCardItem extends PureComponent {
         item.newsDetail ?
           item.textOfReadMore = "Thu gọn" :
             item.textOfReadMore = "Chi tiết";
-        console.log("aaaaaaaaaaaa newsDetail: "+item.newsDetail);
       }
       return item;
     });

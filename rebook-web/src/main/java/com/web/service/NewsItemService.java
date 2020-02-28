@@ -13,5 +13,7 @@ public interface NewsItemService {
 
     CommonResponse esSearchNewsApi (RequestFilterSearchDto request) throws IOException;
 
-    CommonResponse getNewsById (String id) throws IOException;
+    CommonResponse getNewsById(String id) throws IOException;
+
+    CommonResponse getNewsByIdAndPartition(String id, int partition);
 }

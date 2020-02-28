@@ -156,4 +156,20 @@ public class NewsItemServiceImpl implements NewsItemService {
     }
   }
 
+  @Override
+  public CommonResponse getNewsByIdAndPartition(String id, int partition) {
+    try {
+      Optional<NewsItem> newsItem = newsRepository.findByPartitionAndId(partition, Long.parseLong(id));
+      NewsResponseDTO newsResponseDTO = new NewsResponseDTO();
+      if (newsItem.isPresent()) {
+        newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get());
+      }
+      return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTO);
+    }
+    catch (Exception ex) {
+      logger.error("getNewsByIdAndPartition exception: ", ex);
+      return new CommonResponse.Fail("Lấy thông tin bài viết thất bại.");
+    }
+  }
+
 }

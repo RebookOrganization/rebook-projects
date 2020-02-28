@@ -17,9 +17,8 @@ public class RecommendController {
   private RecommendService recommendService;
 
   @GetMapping("/list-news")
-  public ResponseEntity<?> getListRecommend(@RequestParam String prefix,
-      @RequestParam String id, @RequestParam String include) {
-    return new ResponseEntity<>(recommendService.listRecommend(prefix, id, include), HttpStatus.OK);
+  public ResponseEntity<?> getListRecommend(@RequestParam String userId) {
+    return new ResponseEntity<>(recommendService.listRecommend(userId), HttpStatus.OK);
   }
 
 }

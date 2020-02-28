@@ -27,9 +27,9 @@ public class GsonUtils {
     return gson.fromJson(sJson, t);
   }
 
-  public static void main(String[] args) {
-    String data = "{\"callbackUrl\":\"http://localhost:9327/miservice/notify\",\"reqData\":\"{\\\"data\\\":\\\"{\\\\\\\"appid\\\\\\\":133,\\\\\\\"zptransid\\\\\\\":180613000000007,\\\\\\\"apptransid\\\\\\\":\\\\\\\"180613micode1528855028\\\\\\\",\\\\\\\"apptime\\\\\\\":1528855276073,\\\\\\\"appuser\\\\\\\":\\\\\\\"Nguyễn Văn A\\\\\\\",\\\\\\\"item\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"amount\\\\\\\":100000,\\\\\\\"embeddata\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"servertime\\\\\\\":1528855318919,\\\\\\\"channel\\\\\\\":36,\\\\\\\"merchantuserid\\\\\\\":\\\\\\\"6yHuLa-2KZfxc6RXxkQqyg\\\\\\\",\\\\\\\"userfeeamount\\\\\\\":0,\\\\\\\"discountamount\\\\\\\":0,\\\\\\\"bankcode\\\\\\\":\\\\\\\"CC\\\\\\\"}\\\",\\\"mac\\\":\\\"aac8a85abf94e3ca3e3bf448d2993c1f3936518626902e656bac26923ea80d22\\\"}\",\"respData\":\"\"}";
-    HashMap json = GsonUtils.fromJsonString(data, HashMap.class);
-    System.out.println(json.get("reqData"));
-  }
+//  public static void main(String[] args) {
+//    String data = "{\"callbackUrl\":\"http://localhost:9327/miservice/notify\",\"reqData\":\"{\\\"data\\\":\\\"{\\\\\\\"appid\\\\\\\":133,\\\\\\\"zptransid\\\\\\\":180613000000007,\\\\\\\"apptransid\\\\\\\":\\\\\\\"180613micode1528855028\\\\\\\",\\\\\\\"apptime\\\\\\\":1528855276073,\\\\\\\"appuser\\\\\\\":\\\\\\\"Nguyễn Văn A\\\\\\\",\\\\\\\"item\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"amount\\\\\\\":100000,\\\\\\\"embeddata\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"servertime\\\\\\\":1528855318919,\\\\\\\"channel\\\\\\\":36,\\\\\\\"merchantuserid\\\\\\\":\\\\\\\"6yHuLa-2KZfxc6RXxkQqyg\\\\\\\",\\\\\\\"userfeeamount\\\\\\\":0,\\\\\\\"discountamount\\\\\\\":0,\\\\\\\"bankcode\\\\\\\":\\\\\\\"CC\\\\\\\"}\\\",\\\"mac\\\":\\\"aac8a85abf94e3ca3e3bf448d2993c1f3936518626902e656bac26923ea80d22\\\"}\",\"respData\":\"\"}";
+//    HashMap json = GsonUtils.fromJsonString(data, HashMap.class);
+//    System.out.println(json.get("reqData"));
+//  }
 }

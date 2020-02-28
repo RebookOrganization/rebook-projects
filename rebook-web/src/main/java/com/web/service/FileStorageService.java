@@ -97,7 +97,12 @@ public class FileStorageService {
         .path(fileName)
         .toUriString();
 
-    return new UploadFileResponse(username, fileName, fileDownloadUri,
+    String fileAsResourceUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+        .path("/api/getImage/")
+        .path(fileName)
+        .toUriString();
+
+    return new UploadFileResponse(username, fileName, fileDownloadUri, fileAsResourceUri,
         file.getContentType(), file.getSize());
   }
 

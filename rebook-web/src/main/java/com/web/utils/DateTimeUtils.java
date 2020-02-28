@@ -66,10 +66,23 @@ public class DateTimeUtils {
   public static Integer getPartition() {
     Calendar now = Calendar.getInstance();
     String year = String.valueOf(now.get(Calendar.YEAR));
-    String month = String.format("%02d", now.get(Calendar.MONTH) +1);
+    String month = String.format("%02d", now.get(Calendar.MONTH) + 1);
     Integer partition = Integer.parseInt(year + month);
     logger.info("getPartition: {}", partition);
     return partition;
+  }
+
+  public static Integer getPreviousPartition() {
+    Calendar now = Calendar.getInstance();
+    int currentYear = now.get(Calendar.YEAR);
+    String year = String.valueOf(currentYear);
+    int currentMonth = now.get(Calendar.MONTH) + 1;
+    String month = String.format("%02d", currentMonth - 1);
+    if (currentMonth == 1) {
+      year = String.valueOf(currentYear - 1);
+      return Integer.parseInt(year + "12");
+    }
+    return Integer.parseInt(year + month);
   }
 
   public static Long getCurrentDateMilisec() {

@@ -5,23 +5,19 @@ public class UploadFileResponse {
   private String username;
   private String fileName;
   private String fileDownloadUri;
+  private String fileAsResourceUri;
   private String fileType;
   private long size;
 
   public UploadFileResponse() {
   }
 
-  public UploadFileResponse(String username, String fileName, String fileDownloadUri, String fileType, long size) {
+  public UploadFileResponse(String username, String fileName, String fileDownloadUri,
+      String fileAsResourceUri, String fileType, long size) {
     this.username = username;
     this.fileName = fileName;
     this.fileDownloadUri = fileDownloadUri;
-    this.fileType = fileType;
-    this.size = size;
-  }
-
-  public UploadFileResponse(String fileName, String fileDownloadUri, String fileType, long size) {
-    this.fileName = fileName;
-    this.fileDownloadUri = fileDownloadUri;
+    this.fileAsResourceUri = fileAsResourceUri;
     this.fileType = fileType;
     this.size = size;
   }
@@ -45,4 +41,8 @@ public class UploadFileResponse {
   public long getSize() { return size; }
 
   public void setSize(long size) { this.size = size; }
+
+  public String getFileAsResourceUri() { return fileAsResourceUri; }
+
+  public void setFileAsResourceUri(String fileAsResourceUri) { this.fileAsResourceUri = fileAsResourceUri; }
 }

@@ -48,6 +48,12 @@ public class NewsController {
         return newsItemService.getNewsById(id);
     }
 
+    @GetMapping("/news-by-partition")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getNewsByIdAndPartition(@RequestParam String id, @RequestParam int partition) {
+        return new ResponseEntity<>(newsItemService.getNewsByIdAndPartition(id, partition), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/search-by-address")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public CommonResponse searchNewsByAddress(String address) throws Exception {

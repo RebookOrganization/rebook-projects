@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface RecommendService {
 
-  List<NewsResponseDTO> listRecommend(String prefix, String id, String include);
+  List<NewsResponseDTO> listRecommend(String userId);
 
 }

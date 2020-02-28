@@ -65,3 +65,7 @@ export function elasticSearchNews(request) {
 export function updateUserProfile(request) {
   return httpPost("/api/user/update-profile", request);
 }
+
+export function getNewsByIdAndPartition(createNewsPost) {
+  return httpGet(API_NEWS + "/news-by-partition?id=" + createNewsPost.newsId + "&partition=" + createNewsPost.partition)
+}
