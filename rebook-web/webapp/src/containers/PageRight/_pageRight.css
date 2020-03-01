@@ -13,7 +13,7 @@
 .sticky-page-right {
   position: fixed;
   bottom: 150px;
-  width: 23%;
+  width: 20%;
   /*width: min-content;*/
   /*min-width: 365px;*/
   z-index: 100;

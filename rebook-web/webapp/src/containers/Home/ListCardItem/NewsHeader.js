@@ -2,11 +2,29 @@ import React, {Component} from "react";
 import './_listCardItem.css';
 import '../_home.css';
 import {CardTitle} from "reactstrap";
+import shallowCompare from 'react-addons-shallow-compare';
 
-class NewsHeader extends Component{
+class NewsHeader extends Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      newsItem: this.props.newsItem
+    }
+  }
+
+  componentWillMount() {
+    const {newsItem} = this.props;
+    this.setState({
+      newsItem: newsItem
+    })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (shallowCompare(this, this.props, nextProps)) {
+      this.setState({
+        newsItem: nextProps.newsItem
+      })
+    }
   }
 
   handleHidePost = (newsId) => {
@@ -16,7 +34,7 @@ class NewsHeader extends Component{
   };
 
   render() {
-    const {newsItem} = this.props;
+    const {newsItem} = this.state;
     return (
         <CardTitle>
           <div className="row"

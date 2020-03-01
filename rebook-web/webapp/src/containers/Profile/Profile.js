@@ -210,9 +210,9 @@ class Profile extends Component {
         </div>
         <div className="app-body">
           <div className="profile-container">
-            <div className="container-fluid" style={{paddingLeft:"40px"}}>
+            <div className="container-fluid" style={{width:'90%', maxWidth: '1700px'}}>
               <div className="row">
-                <div className="col col-md-2">
+                <div className="col col-md-2" style={{padding:'0 20px'}}>
                   <div className="sticky-top profile-info" style={{marginBottom:'20px',
                     zIndex:'10'}}>
                     <div className="profile-avatar" style={{textAlign:'center'}}>
@@ -243,6 +243,12 @@ class Profile extends Component {
                     <div className="list-group list-group-mine" style={{marginBottom: '15px'}}>
                       <NavLink tag={"a"} className="list-group-item" to={"/home"}>
                         <img src="/icon/icons8-news.png" alt={""}/> Bảng tin
+                        <img src="/icon/menu-5.svg" style={{float:'right'}} alt={""}/>
+                      </NavLink>
+                      <NavLink tag={"a"} className="list-group-item" to={"/message"}>
+                        {/*<NavLink to={"/message"}>*/}
+                        <img src="/icon/icons8-message_group.png" alt={""}/> Messenger
+                        {/*</NavLink>*/}
                         <img src="/icon/menu-5.svg" style={{float:'right'}} alt={""}/>
                       </NavLink>
                       <a className="list-group-item" href="#">
@@ -350,13 +356,8 @@ class Profile extends Component {
                   </div>
                 </div>
 
-                {
-                  !this.state.hideNav ?
-                      <div className="col col-md-2">
-                        <Aside/>
-                      </div> : null
-                }
               </div>
+
             </div>
 
             <Modal isOpen={this.state.modalEditProfile}
@@ -441,6 +442,13 @@ class Profile extends Component {
                 </Row>
               </ModalBody>
             </Modal>
+
+            {
+              !this.state.hideNav ?
+                  <div style={{padding:'0', position:'fixed', right:'0', width:'260px'}}>
+                    <Aside/>
+                  </div> : null
+            }
           </div>
         </div>
         <div className="app-footer"/>

@@ -1,11 +1,6 @@
 import React, {Component} from 'react';
 import '../Home/_home.css';
-import { Card, CardBody, CardImg, CardText, Collapse } from "reactstrap";
-import Row from "reactstrap/es/Row";
-import Col from "reactstrap/es/Col";
-import Alert from "react-s-alert";
-import {searchNewsByAddress, searchNewsByUser} from "../../api/userCallApi";
-import LaddaButton, {EXPAND_LEFT} from "react-ladda";
+import { Card, CardBody, CardImg, CardText } from "reactstrap";
 import 'ladda/dist/ladda-themeless.min.css';
 import "./_pageRight.css";
 
@@ -87,7 +82,7 @@ class PageRight extends Component {
                         }
                         <CardImg top width="100%"
                                  src={item.imageUrlList.length ? item.imageUrlList[0].imageUrl.replace("/resize/200x200", "")
-                                     : 'https://www.ngoisaoso.vn/uploads/news/2014/02/19/thiet-ke-web-bat-dong-san-2.jpg'}
+                                     : 'https://image.theleader.vn/upload/ngocson/2018/1/9/phoi-canh-cua-chung-cu-hinode-city.png'}
                                  alt="Card image cap"/>
                         <CardBody>
                           <CardText>{item.descriptionNews ? item.descriptionNews.substring(0,50) + "..." : "Recommend for you"}</CardText>

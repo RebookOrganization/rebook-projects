@@ -16,8 +16,7 @@ class InteractiveInfo extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (shallowCompare(this, this.props, nextProps)) {
-      this.setState({newsItem: nextProps.newsItem},
-          ()=> console.log("InteractiveInfo: " + this.state.newsItem.newsDetail))
+      this.setState({newsItem: nextProps.newsItem})
     }
   }
 

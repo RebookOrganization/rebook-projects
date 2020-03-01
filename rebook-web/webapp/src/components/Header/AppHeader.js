@@ -54,7 +54,7 @@ class AppHeader extends Component {
 
     for (let i = 0; i < this.state.items; i++) {
       items.push(
-        <React.Fragment>
+        <React.Fragment key={i}>
           <a className="dropdown-item">
             <div style={styleChat}>
               <div className="btn-user">
@@ -95,7 +95,7 @@ class AppHeader extends Component {
                   <input type="text"
                          className="form-control"
                          placeholder="Tìm kiếm"
-                         style={{fontSize:'14px',height:'34px'}}
+                         style={{fontSize:'16px',height:'34px'}}
                          onClick={(e)=>this.toggleModalSearch(e)}
                          aria-label="Tìm kiếm"
                          aria-describedby="basic-addon2"

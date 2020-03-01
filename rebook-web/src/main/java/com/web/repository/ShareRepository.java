@@ -15,6 +15,6 @@ public interface ShareRepository extends JpaRepository<ShareNews, Long> {
   @Query(value = "SELECT * FROM share_news AS t WHERE t.news_item_id=?1 AND t.user_id=?2", nativeQuery = true)
   ShareNews findByNewItemIdAndUserId(Long newsId, Long userId);
 
-  @Query(value = "SELECT * FROM share_news WHERE user_id = ?1 ORDER BY id LIMIT 1", nativeQuery = true)
+  @Query(value = "SELECT * FROM share_news WHERE user_id = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
   ShareNews findLastShareByUserId(long userId);
 }

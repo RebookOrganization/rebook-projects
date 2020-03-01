@@ -135,6 +135,19 @@ class Home extends Component {
     })
   };
 
+  onKeyDownTextArea = (e) => {
+    console.log("e textarea: ", e);
+    if (e.key === "Enter") {
+      let textarea = document.getElementById("news-summary");
+      setTimeout(function(){
+        textarea.style.cssText = 'height:auto; padding:0';
+        // for box-sizing other than "content-box" use:
+        // el.style.cssText = '-moz-box-sizing:content-box';
+        textarea.style.cssText = 'height:' + textarea.scrollHeight + 'px';
+      },0);
+    }
+  };
+
   toggleModalRecommendDetail = (item) => {
     this.setState({
       recommendModal: !this.state.recommendModal
@@ -211,7 +224,6 @@ class Home extends Component {
       Alert.warning("Không thể lấy tất cả tin tức.");
     })
     .finally(() => this.setState({loading: false}));
-
     this.handleLoadListRecommend();
 
     window.addEventListener("resize", this.resize.bind(this));
@@ -362,13 +374,6 @@ class Home extends Component {
             }, () => {
               const {createNewsPost} = this.state;
               console.log("new post response: " + JSON.stringify(createNewsPost));
-              // if (newsPostResponse) {
-              //   getNewsByIdAndPartition(newsPostResponse).then(response => {
-              //     this.setState({
-              //       createNewsPost: response.data.result
-              //     })
-              //   })
-              // }
               this.handleCloseAllInput();
               this.setState({summary: ""})
             });
@@ -642,8 +647,9 @@ class Home extends Component {
         </div>
         <div className="app-body" id="app-body">
           <div className="container-fluid"
-               style={{paddingLeft: "40px", marginTop: "15px"}}>
+               style={{width: '90%', marginTop: "15px", maxWidth: '1700px'}}>
             <div className="row" id="scroll">
+              {/*<div className="col col-md-1"/>*/}
               <div className="col col-md-2" style={{paddingRight: '10px'}}>
                 <PageLeft currentUser={currentUser}/>
               </div>
@@ -658,7 +664,7 @@ class Home extends Component {
                       </strong>
                     </CardHeader>
                       <CardBody style={{padding: '10px'}}>
-                        <div style={{display: 'flex', alignItems: 'center'}}>
+                        <div style={{display: 'flex', alignItems: 'center', marginBottom: '20px'}}>
                           <a className="btn-user-in-create">
                             <img
                                 src={currentUser && currentUser.imageUrl ?
@@ -667,20 +673,12 @@ class Home extends Component {
                                 className="rounded-circle icon-user-in-create"
                                 alt="Username"/>
                           </a>
-                          <Input className='border-none-outline' type='textarea'
-                                 name="summary" id={"news-summary"}
-                                 onClick={this.toggleCollapse}
-                                 style={{
-                                   height: '50px',
-                                   textIdent: '32px',
-                                   color: '#aaa',
-                                   fontSize: '16px'
-                                 }}
-                                 onChange={this.handleChangeInput}
-                                 placeholder={currentUser ? (currentUser.name
-                                     + ', thông tin bất động sản của bạn là gì?')
-                                     : 'Thông tin bất động sản của bạn là gì?'}
-                          />
+                          <textarea rows="1" name="summary" id="news-summary"
+                                    onClick={this.toggleCollapse}
+                                    onChange={this.handleChangeInput}
+                                    placeholder={currentUser ? (currentUser.name
+                                        + ', thông tin bất động sản của bạn là gì?') : 'Thông tin bất động sản của bạn là gì?'}
+                                    onKeyDown={(e)=> this.onKeyDownTextArea(e)}/>
                         </div>
                         <hr/>
                         <button className="button-pill"
@@ -781,17 +779,17 @@ class Home extends Component {
                            listRecommend={this.state.listRecommend}/>
               </div>
 
-              {
-                !this.state.hideNav ?
-                    <div className="col col-md-2" style={{padding:'0'}}>
-                      <Aside currentUser={currentUser}/>
-                    </div>
-                    : null
-              }
-
             </div>
-
           </div>
+
+          {
+            !this.state.hideNav ?
+                <div style={{padding:'0', position:'fixed', right:'0', width:'260px'}}>
+                  <Aside currentUser={currentUser}/>
+                </div>
+                : null
+          }
+
         </div>
         <div className="app-footer"/>
 
@@ -807,26 +805,16 @@ class Home extends Component {
           <ModalBody style={{padding: '10px'}}>
             <div style={{display: 'flex', alignItems: 'center'}}>
               <a className="btn-user-in-create">
-                <img
-                    src={currentUser && currentUser.imageUrl ?
-                        currentUser.imageUrl
-                        : '/icon/default.jpg'}
-                    className="rounded-circle icon-user-in-create"
-                    alt="Username"/>
+                <img src={currentUser && currentUser.imageUrl ? currentUser.imageUrl : '/icon/default.jpg'}
+                     className="rounded-circle icon-user-in-create"
+                     alt="Username"/>
               </a>
-              <Input className='border-none-outline' type='textarea'
-                     name="summary"
-                     style={{
-                       height: '50px',
-                       textIdent: '32px',
-                       color: '#aaa',
-                       fontSize: '16px'
-                     }}
-                     onChange={this.handleChangeInput}
-                     placeholder={currentUser ? (currentUser.name
-                         + ', thông tin bất động sản của bạn là gì?')
-                         : 'Thông tin bất động sản của bạn là gì?'}
-              />
+              <textarea rows="1" name="summary" id="news-summary"
+                        onClick={this.toggleCollapse}
+                        onChange={this.handleChangeInput}
+                        placeholder={currentUser ? (currentUser.name
+                            + ', thông tin bất động sản của bạn là gì?') : 'Thông tin bất động sản của bạn là gì?'}
+                        onKeyDown={(e)=> this.onKeyDownTextArea(e)}/>
             </div>
 
             <hr/>

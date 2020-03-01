@@ -206,6 +206,7 @@ class Messages extends Component{
 
   render() {
     const { name, email } = this.state.currentUser;
+    let height = window.outerHeight;
     return (
       <div className="app">
         <div className="app-top-box sticky-top">
@@ -227,37 +228,39 @@ class Messages extends Component{
             </div>
           </div>
           <div id="chat-page" className={"hidden"}>
-            <div className={"row"}>
-              <div className="col col-md-2" style={{padding: '0 30px'}}>
-                <PageLeft currentUser={this.state.currentUser}/>
-              </div>
-              <div className={"col col-md-8"} style={{paddingRight:'1px'}}>
-                <div className={"chat-container"}>
-                  <div className="chat-header">
-                    <h2>Chat Room</h2>
-                  </div>
-                  <div className={"connecting"}>
-                    Connecting...
-                  </div>
-                  <ul id="messageArea">
-                  </ul>
-                  <form id="messageForm" name="messageForm" nameform="messageForm">
-                    <div className="form-group-message">
-                      <div className="input-group clearfix">
-                        <button style={{border:'none', outline:'none'}}>
-                          <img className={"responsive"} src={"/icon/iconfinder_ins.svg"} style={{width:'36px'}} alt={""}/>
-                        </button>
-                        <input type="text" id="message" placeholder="Type a message..." autoComplete="off"
-                               className="form-control-message input-mess"/>
-                        <button type="submit" className="button-mess primary">Send</button>
-                      </div>
+            <div className="container-fluid" style={{width:'90%', maxWidth: '1700px'}}>
+              <div className={"row"}>
+                <div className="col col-md-2" style={{padding: '0 30px'}}>
+                  <PageLeft currentUser={this.state.currentUser}/>
+                </div>
+                <div className={"col col-md-8"} style={{maxHeight: height + 'px'}}>
+                  <div className={"chat-container"}>
+                    <div className="chat-header">
+                      <h2>Chat Room</h2>
                     </div>
-                  </form>
+                    <div className={"connecting"}>
+                      Connecting...
+                    </div>
+                    <ul id="messageArea">
+                    </ul>
+                    <form id="messageForm" name="messageForm" nameform="messageForm">
+                      <div className="form-group-message">
+                        <div className="input-group clearfix">
+                          <button style={{border:'none', outline:'none'}}>
+                            <img className={"responsive"} src={"/icon/iconfinder_ins.svg"} style={{width:'36px'}} alt={""}/>
+                          </button>
+                          <input type="text" id="message" placeholder="Type a message..." autoComplete="off"
+                                 className="form-control-message input-mess"/>
+                          <button type="submit" className="button-mess primary">Send</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
-              <div className={"col col-md-2"} style={{padding:'0'}}>
-                <Aside currentUser={this.state.currentUser}/>
-              </div>
+            </div>
+            <div style={{padding:'0', position:'fixed', right:'0', width:'260px'}}>
+              <Aside currentUser={this.state.currentUser}/>
             </div>
           </div>
         </div>

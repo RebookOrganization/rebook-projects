@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {Button, Card, CardTitle, Input, Row} from "reactstrap";
+import {Badge, Button, Card, CardText, CardTitle, Input, Row} from "reactstrap";
 import ButtonGroup from "reactstrap/es/ButtonGroup";
 import shallowCompare from 'react-addons-shallow-compare';
 import ImageGallery from 'react-image-gallery';
@@ -20,6 +20,7 @@ import SkeletonLoading from "../../../components/Loading/SkeletonLoading";
 import NewsHeader from "./NewsHeader";
 import NewsDetail from "./NewsDetail";
 import InteractiveInfo from "./InteractiveInfo";
+import Skeleton from "react-loading-skeleton";
 
 class ListCardItem extends PureComponent {
   constructor(props) {
@@ -47,7 +48,7 @@ class ListCardItem extends PureComponent {
       newItem.hidden = false;
       newItem.newsDetail = false;
       newItem.textOfReadMore = "Chi tiết";
-      newItem.renderComment = false;
+      newItem.renderComment = true;
       newItem.activeLike = false;
       if (item.likeNewsList && item.likeNewsList.length) {
         item.likeNewsList.map(i => {
@@ -113,7 +114,7 @@ class ListCardItem extends PureComponent {
         newItem.hidden = false;
         newItem.newsDetail = false;
         newItem.textOfReadMore = "Chi tiết";
-        newItem.renderComment = false;
+        newItem.renderComment = true;
         newItem.activeLike = false;
         if (item.likeNewsList && item.likeNewsList.length) {
           item.likeNewsList.map(i => {
@@ -173,7 +174,7 @@ class ListCardItem extends PureComponent {
   }
 
   loadMoreNews = () => {
-    if (this.state.newsItem === 200) {
+    if (this.state.newsItem === 400) {
       this.setState({ hasMoreItems: false});
     }
     else {
@@ -182,14 +183,20 @@ class ListCardItem extends PureComponent {
           newsItem: this.state.newsItem + 20
         }, () => {
           getAllNewsItem(this.state.newsItem).then(res => {
+            const {allNewsItem} = this.state;
+            let newList = res.data.result ? res.data.result.map(item => {
+              item.hidden = false;
+              item.renderComment = true;
+              return item;
+            }) : [];
             this.setState({
-              allNewsItem: this.state.allNewsItem.concat(res.data.result)
-            })
+              allNewsItem: allNewsItem.concat(newList)
+            },()=>console.log("allNewsItem length: ", this.state.allNewsItem.length))
           }).catch(() => {
             Alert.warning("Không thể lấy thêm tin tức.");
           })
         });
-      }, 3000);
+      }, 10000);
     }
   };
 
@@ -308,17 +315,26 @@ class ListCardItem extends PureComponent {
 
   render() {
     const {allNewsItem, currentUser, createNewsPost} = this.state;
-    const loader = <SkeletonLoading/>;
+    // let loader = <SkeletonLoading/>;
 
     return (
       <InfiniteScroll pageStart={0}
                       loadMore={this.loadMoreNews}
                       hasMore={this.state.hasMoreItems}
-                      loader={loader}>
-        <React.Fragment>
+                      loader={
+                        <div key={0}>
+                          <Card style={{padding:'15px'}}>
+                            <div style={{marginBottom: '15px'}}>
+                              <Skeleton circle={true} height={50} width={50} />
+                            </div>
+                            <Skeleton count={5}/>
+                          </Card>
+                        </div>
+                      }>
+        {/*<React.Fragment>*/}
           {
             createNewsPost ?
-                <Card className="card">
+                <Card className="card" key={createNewsPost.newsId}>
                   <NewsHeader handleHidePost={this.handleHidePost} newsItem={createNewsPost}/>
                   <NewsDetail handleRenderNewsDetail={this.handleRenderNewsDetail}
                               newsItem={createNewsPost}/>
@@ -339,21 +355,21 @@ class ListCardItem extends PureComponent {
                       <Button
                           className="border-none-outline btn-like-share-comment"
                           style={createNewsPost.activeLike ?
-                              {backgroundColor:'#20a8d8', color:'white'} : {}}
+                              {color:'#20a8d8', margin:'0 5px'} : {}}
                           onClick={() => this.handleLikePost(createNewsPost.newsId)}>
                         <img className={"styleIcon"} src="/icon/thumb-up.svg" alt={""}/> Thích
                       </Button>
                       <Button
                           className="border-none-outline btn-like-share-comment"
                           style={createNewsPost.renderComment ?
-                              {backgroundColor:'#20a8d8', color:'white'} : {}}
+                              {color:'#20a8d8', margin:'0 5px'} : {}}
                           onClick={() => this.handleRenderComment(createNewsPost.newsId)}>
                         <img className={"styleIcon"} src="/icon/a-chat.svg" alt={""}/> Bình luận
                       </Button>
                       <Button
                           className="border-none-outline btn-like-share-comment"
                           style={createNewsPost.activeShare ?
-                              {backgroundColor:'#20a8d8', color:'white'} : {}}
+                              {color:'#20a8d8', margin:'0 5px'} : {}}
                           onClick={() => this.handleSharePost(createNewsPost.newsId)}>
                         <img className={"styleIcon"} src="/icon/share-right.svg" alt={""}/> Chia sẻ
                       </Button>
@@ -367,19 +383,21 @@ class ListCardItem extends PureComponent {
                           {
                             createNewsPost.commentList ? createNewsPost.commentList.map((i, index) => {
                               return (
-                                  <Row style={{padding:'0 20px'}}>
+                                  <Row style={{padding:'0 20px'}} key={index}>
                                     <div className="input-comment" style={{paddingBottom:'10px'}}>
                                       <a className="btn-user">
                                         <img src={i.userImageUrl ? i.userImageUrl : '/icon/icons8-checked_user_male.png'}
                                              className="rounded-circle icon-user"
                                              alt="Username"/>
                                       </a>{' '}
-                                      <p style={{borderRadius: '30px', padding: '10px',
+                                      <CardText style={{padding: '10px', color: 'black', textAlign: 'left',
                                         backgroundColor: '#f2f3f5',textIdent:'32px',fontSize:'16px',marginBottom:'0'}} key={index}>
-                                        <p style={{fontSize:'16px',fontWeight:'500', color:'#4267B2', marginBottom:'5px'}}>{i.userName ? i.userName : "UnknownUser"}</p>
+                                        <p style={{fontSize:'16px',fontWeight:'500', color:'#4267B2', marginBottom:'10px'}}>{i.userName ? i.userName : "UnknownUser"}</p>
                                         {i.content}
-                                        <p style={{fontSize:'14px',fontWeight:'400', color:'#4267B2', marginBottom:'0'}}>{i.commentTime ? i.commentTime : "now"}</p>
-                                      </p>
+                                        <p style={{fontSize:'14px',fontWeight:'400', color:'#4267B2', marginBottom:'0', marginTop: '10px'}}>
+                                          {i.commentTime ? i.commentTime : "now"}
+                                        </p>
+                                      </CardText>
                                     </div>
                                   </Row>
                               )
@@ -438,19 +456,19 @@ class ListCardItem extends PureComponent {
                             <ButtonGroup style={{width: '100%', padding: '0 20px'}}>
                               <Button
                                   className="border-none-outline btn-like-share-comment"
-                                  style={item.activeLike ? {backgroundColor:'#20a8d8', color:'white', margin:'0 5px'} : {}}
+                                  style={item.activeLike ? {color:'#20a8d8', margin:'0 5px'} : {}}
                                   onClick={() => this.handleLikePost(item.newsId)}>
                                 <img className={"styleIcon"} src="/icon/thumb-up.svg" alt={""}/> Thích
                               </Button>
                               <Button
                                   className="border-none-outline btn-like-share-comment"
-                                  style={item.renderComment ? {backgroundColor:'#20a8d8', color:'white', margin:'0 5px'} : {}}
+                                  style={item.renderComment ? {color:'#20a8d8', margin:'0 5px'} : {}}
                                   onClick={() => this.handleRenderComment(item.newsId)}>
                                 <img className={"styleIcon"} src="/icon/a-chat.svg" alt={""}/> Bình luận
                               </Button>
                               <Button
                                   className="border-none-outline btn-like-share-comment"
-                                  style={item.activeShare ? {backgroundColor:'#20a8d8', color:'white', margin:'0 5px'} : {}}
+                                  style={item.activeShare ? {color:'#20a8d8', margin:'0 5px'} : {}}
                                   onClick={() => this.handleSharePost(item.newsId)}>
                                 <img className={"styleIcon"} src="/icon/share-right.svg" alt={""}/> Chia sẻ
                               </Button>
@@ -463,19 +481,21 @@ class ListCardItem extends PureComponent {
                                   {
                                     item.commentList ? item.commentList.map((i, index) => {
                                       return (
-                                          <Row style={{padding:'0 20px'}}>
+                                          <Row style={{padding:'0 20px'}} key={index}>
                                             <div className="input-comment" style={{paddingBottom:'10px'}}>
                                               <a className="btn-user">
                                                 <img src={i.userImageUrl ? i.userImageUrl : '/icon/icons8-checked_user_male.png'}
                                                      className="rounded-circle icon-user"
                                                      alt="Username"/>
                                               </a>{' '}
-                                              <p style={{borderRadius: '30px', padding: '10px',
+                                              <Badge style={{padding: '10px', color: 'black', textAlign: 'left',
                                                 backgroundColor: '#f2f3f5',textIdent:'32px',fontSize:'16px',marginBottom:'0'}} key={index}>
-                                                <p style={{fontSize:'16px',fontWeight:'500', color:'#4267B2', marginBottom:'5px'}}>{i.userName ? i.userName : "UnknownUser"}</p>
+                                                <p style={{fontSize:'16px',fontWeight:'500', color:'#4267B2', marginBottom:'10px'}}>{i.userName ? i.userName : "UnknownUser"}</p>
                                                 {i.content}
-                                                <p style={{fontSize:'14px',fontWeight:'400', color:'#4267B2', marginBottom:'0'}}>{i.commentTime ? i.commentTime : "now"}</p>
-                                              </p>
+                                                <p style={{fontSize:'14px',fontWeight:'400', color:'#4267B2', marginBottom:'0', marginTop:'10px'}}>
+                                                  {i.commentTime ? i.commentTime : "now"}
+                                                </p>
+                                              </Badge>
                                             </div>
                                           </Row>
                                       )
@@ -513,7 +533,7 @@ class ListCardItem extends PureComponent {
                   )
                 }) : null
           }
-        </React.Fragment>
+        {/*</React.Fragment>*/}
       </InfiniteScroll>
     )
   }

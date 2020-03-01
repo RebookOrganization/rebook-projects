@@ -1,6 +1,5 @@
 package com.web.service.impl;
 
-import com.web.auth.UserPrincipal;
 import com.web.bean.Response.KnnRecommendResponse;
 import com.web.bean.Response.NewsResponseDTO;
 import com.web.config.WebAppConfig;
