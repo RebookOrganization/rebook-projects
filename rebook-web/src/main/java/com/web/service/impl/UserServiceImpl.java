@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
 
       newsItemRepository.updateNewsPartition(partition, newsItem.getId(), propertyAddressId, contactOwnerId, propertyProjectId, url);
 
-      NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem);
+      NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem, partition);
 //      logger.info("UserServiceImpl createNewsPost response: {}", GsonUtils.toJsonString(newsResponseDTO));
 
       return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTO);
@@ -335,8 +335,6 @@ public class UserServiceImpl implements UserService {
             newsResponseDTO.setTitleNews(newsItem.getTitle());
             newsResponseDTO.setImageUser(newsItem.getUser().getImageUrl());
             newsResponseDTO.setSummaryNews(newsItem.getSummary());
-
-
             newsResponseDTO.setPubDate(newsItem.getPostedDate());
             newsResponseDTO.setPrice(newsItem.getPrice());
             newsResponseDTO.setArea(newsItem.getArea());

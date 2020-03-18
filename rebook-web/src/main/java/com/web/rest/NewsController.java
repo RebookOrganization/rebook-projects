@@ -106,4 +106,9 @@ public class NewsController {
         return apiService.stringSimilar(request.getS1(), request.getS2());
     }
 
+    @PostMapping("/search-news")
+    public CommonResponse searchInMySql(@RequestBody RequestFilterSearchDto request) {
+        return newsItemService.searchNewsInMySQL(request);
+    }
+
 }

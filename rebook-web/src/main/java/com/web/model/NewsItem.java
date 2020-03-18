@@ -29,12 +29,9 @@ public class NewsItem implements Serializable {
     private Double priceNum;
     private String area;
     private Float areaNum;
-
-    @Column(name = "posted_date")
     private String postedDate;
     private Long postedMilisec;
     private String trans_type;
-
     private String description;
     private Long propertyAddressId;
     private Long propertyProjectId;
@@ -47,8 +44,6 @@ public class NewsItem implements Serializable {
     private String balcony;
     private String wardin;
     private String interior;
-
-    @Column(name = "pub_date")
     private String pubDate;
 
     public Long getId() { return id; }
@@ -162,4 +157,5 @@ public class NewsItem implements Serializable {
     public void setAreaNum(Float areaNum) {
         this.areaNum = areaNum;
     }
+
 }

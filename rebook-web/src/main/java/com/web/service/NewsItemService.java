@@ -16,4 +16,6 @@ public interface NewsItemService {
     CommonResponse getNewsById(String id) throws IOException;
 
     CommonResponse getNewsByIdAndPartition(String id, int partition);
+
+    CommonResponse searchNewsInMySQL(RequestFilterSearchDto request);
 }

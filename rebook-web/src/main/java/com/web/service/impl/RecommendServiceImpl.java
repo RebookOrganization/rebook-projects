@@ -101,7 +101,7 @@ public class RecommendServiceImpl implements RecommendService {
           long id = Long.parseLong(news[1]);
           Optional<NewsItem> newsItem = newsItemRepository.findByPartitionAndId(partition, id);
           if (newsItem.isPresent()) {
-            NewsResponseDTO responseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get());
+            NewsResponseDTO responseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get(), partition);
             responseDTOList.add(responseDTO);
           }
         }

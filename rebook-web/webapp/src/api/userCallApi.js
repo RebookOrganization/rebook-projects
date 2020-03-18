@@ -62,6 +62,10 @@ export function elasticSearchNews(request) {
   return httpPost(API_NEWS + "/es-search", request);
 }
 
+export function searchNewsItem(request) {
+  return httpPost(API_NEWS + "/search-news", request);
+}
+
 export function updateUserProfile(request) {
   return httpPost("/api/user/update-profile", request);
 }

@@ -3,10 +3,10 @@ package com.web.dto;
 public class RequestFilterSearchDto {
 
   private String content;
-  private String priceFrom;
-  private String priceTo;
-  private String areaFrom;
-  private String areaTo;
+  private int priceFrom;
+  private int priceTo;
+  private int areaFrom;
+  private int areaTo;
   private String district;
   private String provinceCity;
   private String transType;
@@ -16,21 +16,37 @@ public class RequestFilterSearchDto {
 
   public void setContent(String content) { this.content = content; }
 
-  public String getPriceFrom() { return priceFrom; }
+  public int getPriceFrom() {
+    return priceFrom;
+  }
 
-  public void setPriceFrom(String priceFrom) { this.priceFrom = priceFrom; }
+  public void setPriceFrom(int priceFrom) {
+    this.priceFrom = priceFrom;
+  }
 
-  public String getPriceTo() { return priceTo; }
+  public int getPriceTo() {
+    return priceTo;
+  }
 
-  public void setPriceTo(String priceTo) { this.priceTo = priceTo; }
+  public void setPriceTo(int priceTo) {
+    this.priceTo = priceTo;
+  }
 
-  public String getAreaFrom() { return areaFrom; }
+  public int getAreaFrom() {
+    return areaFrom;
+  }
 
-  public void setAreaFrom(String areaFrom) { this.areaFrom = areaFrom; }
+  public void setAreaFrom(int areaFrom) {
+    this.areaFrom = areaFrom;
+  }
 
-  public String getAreaTo() { return areaTo; }
+  public int getAreaTo() {
+    return areaTo;
+  }
 
-  public void setAreaTo(String areaTo) { this.areaTo = areaTo; }
+  public void setAreaTo(int areaTo) {
+    this.areaTo = areaTo;
+  }
 
   public String getDistrict() { return district; }
 

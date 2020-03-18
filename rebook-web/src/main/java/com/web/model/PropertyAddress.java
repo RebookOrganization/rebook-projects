@@ -11,10 +11,6 @@ public class PropertyAddress implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-//    @OneToMany(mappedBy = "propertyAddress", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    private Set<NewsItem> newsItems;
-
     private String street;
     private String district;
     private String province;
@@ -23,14 +19,6 @@ public class PropertyAddress implements Serializable {
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
-
-//    public Set<NewsItem> getNewsItems() {
-//        return newsItems;
-//    }
-//
-//    public void setNewsItems(Set<NewsItem> newsItems) {
-//        this.newsItems = newsItems;
-//    }
 
     public String getStreet() { return street; }
 

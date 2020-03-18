@@ -15,6 +15,14 @@ public interface PropertyAdressRepository extends JpaRepository<PropertyAddress,
   @Query(value = "SELECT * FROM property_address as t WHERE t.summary LIKE %?1% ", nativeQuery = true)
   List<PropertyAddress> findAllBySummary(String address);
 
+  @Query(value = "SELECT * FROM property_address?1 as t WHERE t.summary LIKE %?2% and "
+      + "t.province LIKE %?3% and t.district LIKE %?4%", nativeQuery = true)
+  List<PropertyAddress> findAllBySummaryInPartition(int partition, String content, String province, String district);
+
+  @Query(value = "SELECT id FROM property_address?1 as t WHERE t.summary LIKE %?2% and "
+      + "t.province LIKE %?3% and t.district LIKE %?4%", nativeQuery = true)
+  List<Long> findAllIdBySummaryInPartition(int partition, String content, String province, String district);
+
   @Query(value = "SELECT * FROM property_address?1 as t WHERE t.summary LIKE %?2% ", nativeQuery = true)
   List<PropertyAddress> findAllBySummaryPartition(int partition, String summary);
 

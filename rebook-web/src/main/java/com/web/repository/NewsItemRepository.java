@@ -26,6 +26,9 @@ public interface NewsItemRepository extends JpaRepository<NewsItem, Long> {
     @Query(value = "SELECT * FROM news_item as t where t.property_address_id = ?1", nativeQuery = true)
     NewsItem findByPropertyAddress(long propertyAddress);
 
+    @Query(value = "SELECT * FROM news_item?1 WHERE property_address_id IN (?2)", nativeQuery = true)
+    List<NewsItem> findAllByAddressIdAndPartition(int partition, List<Long> addressIdList);
+
     @Query(value = "SELECT * FROM news_item as t where t.posted_milisec > ?1 and t.posted_milisec <= ?2", nativeQuery = true)
     List<NewsItem> findAllByPostedDate(long dateFrom, long dateTo);
 
@@ -52,4 +55,9 @@ public interface NewsItemRepository extends JpaRepository<NewsItem, Long> {
     @Query(value = "UPDATE news_item?1 SET property_address_id=?3, contact_owner_id=?4, property_project_id=?5, url=?6 WHERE id=?2", nativeQuery = true)
     void updateNewsPartition(int partition, long newsId, long addressId, long contactId, long projectId, String url);
 
+    @Query(value = "SELECT * FROM news_item?1 AS t WHERE t.price_num >= ?2 AND t.price_num <= ?3", nativeQuery = true)
+    List<NewsItem> findAllByPriceNum(int partition, int priceFrom, int priceTo);
+
+    @Query(value = "SELECT * FROM news_item?1 AS t WHERE t.area_num >= ?2 AND t.area_num <= ?3", nativeQuery = true)
+    List<NewsItem> findAllByAreaNum(int partition, int areaFrom, int areaTo);
 }

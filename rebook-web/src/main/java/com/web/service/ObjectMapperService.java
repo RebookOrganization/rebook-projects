@@ -50,9 +50,9 @@ public class ObjectMapperService {
   @Autowired
   private UserRepository userRepository;
 
-  private static Integer currentPartition = DateTimeUtils.getPartition();
+//  private static Integer currentPartition = DateTimeUtils.getPartition();
 
-  public NewsResponseDTO mapNewsToNewsResponseDTO(NewsItem newsItem) {
+  public NewsResponseDTO mapNewsToNewsResponseDTO(NewsItem newsItem, int partition) {
     NewsResponseDTO newsResponseDTO = new NewsResponseDTO();
     newsResponseDTO.setImageUser(newsItem.getUser().getImageUrl());
     newsResponseDTO.setUsername(newsItem.getUser().getName());
@@ -71,7 +71,7 @@ public class ObjectMapperService {
     newsResponseDTO.setArea(newsItem.getArea());
 
     if (newsItem.getPropertyAddressId() != null) {
-      Optional<PropertyAddress> propertyAddress = propertyAdressRepository.findById(currentPartition,
+      Optional<PropertyAddress> propertyAddress = propertyAdressRepository.findById(partition,
           newsItem.getPropertyAddressId());
       propertyAddress.ifPresent(address -> newsResponseDTO.setAddress_prop(address.getSummary()));
     }
@@ -81,7 +81,7 @@ public class ObjectMapperService {
     newsResponseDTO.setUserId(newsItem.getUser().getId());
 
     if (newsItem.getContactOwnerId() != null) {
-      Optional<ContactOwner> contactOwner = contactOwnerRepository.findById(currentPartition,
+      Optional<ContactOwner> contactOwner = contactOwnerRepository.findById(partition,
           newsItem.getContactOwnerId());
       contactOwner.ifPresent(contact -> {
         newsResponseDTO.setContactEmail(contact.getEmail());
@@ -92,7 +92,7 @@ public class ObjectMapperService {
     }
 
     if (newsItem.getPropertyProjectId() != null) {
-      Optional<PropertyProject> propertyProject = propertyProjectRepository.findById(currentPartition,
+      Optional<PropertyProject> propertyProject = propertyProjectRepository.findById(partition,
           newsItem.getPropertyProjectId());
       propertyProject.ifPresent(project -> {
         newsResponseDTO.setProjectOwner(project.getProjectOwner());

@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import LaddaButton, {EXPAND_LEFT} from "react-ladda";
 import {Col, Modal, ModalBody, ModalHeader, NavLink, Row} from "reactstrap";
 import Select from 'react-select';
-import {elasticSearchNews,} from "../../api/userCallApi";
+import {elasticSearchNews, searchNewsItem,} from "../../api/userCallApi";
 import shallowCompare from 'react-addons-shallow-compare';
 import Alert from 'react-s-alert';
 import InputRange from 'react-input-range';
@@ -21,16 +21,6 @@ Geocode.setLanguage("en");
 
 const defaultZoom = 10;
 const defaultCenter = {lat: 10.8230989, lng: 106.6296638};
-// const locations = [
-//   {
-//     lat: 10.8230989,
-//     lng: 106.6296638,
-//     label: 'H',
-//     draggable: false,
-//     title: 'Hồ Chí Minh City',
-//     www: ''
-//   },
-// ];
 
 class MarkerList extends Component {
   constructor(props) {
@@ -39,7 +29,8 @@ class MarkerList extends Component {
   }
 
   render() {
-    console.log("MarkerList locations: "+JSON.stringify(this.props.locations));
+    // console.log(
+    //     "MarkerList locations: " + JSON.stringify(this.props.locations));
     const {locations} = this.props;
     return locations.map((location, index) => {
           return (
@@ -64,13 +55,16 @@ class MarkerWithInfoWindow extends Component {
       isOpen: !this.state.isOpen
     });
   }
+
   render() {
     const {location} = this.props;
     return (
-        <Marker onClick={this.toggle} position={location} title={location.title} label={location.label}>
+        <Marker onClick={this.toggle} position={location} title={location.title}
+                label={location.label}>
           {this.state.isOpen &&
           <InfoWindow onCloseClick={this.toggle}>
-            <NavLink href={location.www} target="_blank">{location.title}</NavLink>
+            <NavLink href={location.www}
+                     target="_blank">{location.title}</NavLink>
           </InfoWindow>}
         </Marker>
     )
@@ -78,7 +72,7 @@ class MarkerWithInfoWindow extends Component {
 }
 
 const GoogleMapsComponent = withScriptjs(withGoogleMap((props) => {
-  console.log("props GoogleMapsComponent: "+JSON.stringify(props));
+      // console.log("props GoogleMapsComponent: " + JSON.stringify(props));
       return (
           <GoogleMap zoom={props.zoom} center={props.center}>
             {<MarkerList locations={props.locations}/>}
@@ -106,9 +100,9 @@ class AppSearch extends React.PureComponent {
       optionSaleType: null,
       selectedSaleType: 0,
       optionPrice: null,
-      selectedPrice: 0,
+      selectedPrice: {value: 0, label: "Thoả Thuận", from: 0, to: 0},
       optionArea: null,
-      selectedArea: 0,
+      selectedArea: {value: 0, label: "Chưa xác định", from: 0, to: 0},
       optionDirectHouse: null,
       selectedDirectHouse: 0,
       resultSearch: null,
@@ -117,7 +111,9 @@ class AppSearch extends React.PureComponent {
       isRenderDistrict: false,
       listMarker: [],
       center: {lat: 10.8230989, lng: 106.6296638},
-      zoom: 10
+      zoom: 10,
+      enableArea: true,
+      enablePrice: true,
     }
   }
 
@@ -132,8 +128,10 @@ class AppSearch extends React.PureComponent {
   };
 
   componentWillMount() {
-    let {isSearch, optionProvince, optionDistrict, optionRentType,
-      optionSaleType, optionPrice, optionArea, optionDirectHouse} = this.props;
+    let {
+      isSearch, optionProvince, optionDistrict, optionRentType,
+      optionSaleType, optionPrice, optionArea, optionDirectHouse
+    } = this.props;
     this.setState({
       isSearch: isSearch,
       optionProvince: optionProvince,
@@ -147,7 +145,7 @@ class AppSearch extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(shallowCompare(this, this.props, nextProps)) {
+    if (shallowCompare(this, this.props, nextProps)) {
       this.setState({
         isSearch: nextProps.isSearch,
         optionProvince: nextProps.optionProvince,
@@ -162,36 +160,37 @@ class AppSearch extends React.PureComponent {
   }
 
   handleSearchByFiler = () => {
-    const {selectedProvince, selectedDistrict, selectedRentType, inputSearch,
-      selectedDirectHouse, areaDistance, priceDistance} = this.state;
+    const {
+      selectedProvince, selectedDistrict, selectedRentType, inputSearch,
+      selectedDirectHouse, areaDistance, priceDistance, selectedArea, selectedPrice
+    } = this.state;
     this.setState({loading: true});
 
     const request = {
       content: inputSearch ? inputSearch : "",
-      priceFrom: priceDistance ? priceDistance.min : "",
-      priceTo: priceDistance ? priceDistance.max : "",
-      areaFrom: areaDistance ? areaDistance.min : "",
-      areaTo: areaDistance ? areaDistance.max : "",
+      priceFrom: selectedPrice ? selectedPrice.from : 0,
+      priceTo: selectedPrice ? selectedPrice.to : 0,
+      areaFrom: selectedArea ? selectedArea.from : 0,
+      areaTo: selectedArea ? selectedArea.to : 0,
       district: selectedDistrict ? selectedDistrict.label : "",
       provinceCity: selectedProvince ? selectedProvince.label : "",
       transType: selectedRentType ? selectedRentType.label : "",
       directHouse: selectedDirectHouse ? selectedDirectHouse.label : "",
     };
 
-    elasticSearchNews(request).then(res => {
+    searchNewsItem(request).then(res => {
       if (res.data && res.data.result.length) {
         this.setState({
           resultSearch: res.data.result,
           loading: false
         }, () => this.props.callBackFromAppSearch(this.state.resultSearch,
             this.state.loading))
-      }
-      else {
-        Alert.warning("Tìm kiếm không có kết quả");
+      } else {
+        Alert.info("Không tìm thấy bất động sản phù hợp");
       }
     })
-    .catch(()=>Alert.warning("Xảy ra lỗi khi tìm kiếm"))
-    .finally(()=>{
+    .catch(() => Alert.warning("Xảy ra lỗi khi tìm kiếm"))
+    .finally(() => {
       this.setState({loading: false});
       this.toggleModalSearch();
     })
@@ -202,7 +201,10 @@ class AppSearch extends React.PureComponent {
     Geocode.fromAddress(location).then(res => {
       const data = res.results;
       let listMarker = data ? data.map(item => {
-        center = {lat: item.geometry.location.lat, lng: item.geometry.location.lng};
+        center = {
+          lat: item.geometry.location.lat,
+          lng: item.geometry.location.lng
+        };
         return {
           lat: item.geometry.location.lat,
           lng: item.geometry.location.lng,
@@ -221,7 +223,10 @@ class AppSearch extends React.PureComponent {
   };
 
   render() {
-    const {optionProvince, optionDistrict, selectedDistrict, optionDirectHouse, selectedDirectHouse} = this.state;
+    const {
+      optionProvince, optionDistrict, selectedDistrict, optionDirectHouse, selectedDirectHouse,
+      optionPrice, optionArea, selectedArea, selectedPrice
+    } = this.state;
 
     let province = [];
     optionProvince ? Object.keys(optionProvince).map(item => {
@@ -247,118 +252,221 @@ class AppSearch extends React.PureComponent {
       })
     }) : null;
 
+    let area = [];
+    optionArea ? optionArea.map(item => {
+      area.push({
+        value: item.value,
+        label: item.displayValue,
+        from: item.from,
+        to: item.to
+      })
+    }) : null;
+
+    let price = [];
+    optionPrice ? optionPrice.map(item => {
+      price.push({
+        value: item.value,
+        label: item.displayValue,
+        from: item.from,
+        to: item.to
+      })
+    }) : null;
+
     return (
         <React.Fragment>
           <Modal isOpen={this.state.isSearch}
-                 toggle={()=>this.toggleModalSearch()}
-                 className={'modal-lg modal-lg-custom modal-info' + this.props.className}
-                 style={{maxWidth: '85%'}}
+                 toggle={() => this.toggleModalSearch()}
+                 className={'modal-lg modal-lg-custom modal-info'
+                 + this.props.className}
+                 style={{maxWidth: '80%'}}
           >
-            <ModalHeader toggle={()=>this.toggleModalSearch()}>
+            <ModalHeader toggle={() => this.toggleModalSearch()}>
               <img src="/icon/icons8-search-2.png" alt={""}/> Công cụ tìm kiếm
             </ModalHeader>
-            <ModalBody style={{padding:'0'}}>
+            <ModalBody style={{padding: '0'}}>
               <Row>
-                <Col xs={12} sm={6}>
-                  <div style={{margin:'15px 0 15px 15px'}}>
-                  <div className="search-box" style={{marginBottom:"5px"}}>
-                    <span className="fa fa-search"/>
-                    <input id="inputSearch" placeholder="Nhập địa điểm, vd: Sunrise City"
-                           style={{textIdent:'32px',backgroundColor: '#f2f3f5',outline:'none'}}
-                           value={this.state.inputSearch}
-                           onBlur={()=>this.handleAddMarker(this.state.inputSearch)}
-                           onChange={(e) => this.setState(
-                               {inputSearch: e.target.value})}
-                    />
-                  </div>
-                  <hr/>
-                  <Row>
-                    <Col md={6}>
-                      <h5>Tỉnh/Thành phố</h5>
-                      <Select value={this.state.selectedProvince}
-                              onChange={(e)=> this.setState({selectedProvince: e},
-                                  ()=>{
-                                    if (this.state.selectedProvince) {
-                                      if (parseInt(this.state.selectedProvince.value) === 1) {
-                                        this.setState({isRenderDistrict: true})
-                                      }
-                                      else {
-                                        this.setState({isRenderDistrict: false})
-                                      }
-                                    }
-                                  })}
-                              options={province}
-                              isSearchable={true}
-                              isClearable={true}
-                              style={{fontSize:'16px'}}
+                <Col xs={12} sm={5}>
+                  <div style={{margin: '15px 0 15px 15px'}}>
+                    <div className="search-box" style={{marginBottom: "5px"}}>
+                      <span className="fa fa-search"/>
+                      <input id="inputSearch"
+                             placeholder="Nhập địa điểm, vd: Sunrise City"
+                             style={{
+                               textIdent: '32px',
+                               backgroundColor: '#f2f3f5',
+                               outline: 'none'
+                             }}
+                             value={this.state.inputSearch}
+                             onBlur={() => this.handleAddMarker(
+                                 this.state.inputSearch)}
+                             onChange={(e) => this.setState(
+                                 {inputSearch: e.target.value})}
                       />
-                    </Col>
-                    {
-                      this.state.isRenderDistrict ?
-                          <Col md={6}>
-                            <h5>Quận/Huyện: </h5>
-                            <Select value={selectedDistrict}
-                                    onChange={(e)=> this.setState({selectedDistrict: e})}
-                                    options={district}
-                                    isSearchable={true}
-                                    isClearable={true}
-                            />
-                          </Col>
-                          : null
-                    }
-                  </Row>
-                  <hr/>
-                  <Row>
-                    <Col md={6}>
-                      <h5>Hướng nhà: </h5>
-                      <Select value={selectedDirectHouse}
-                              onChange={(e)=> this.setState({selectedDirectHouse: e})}
-                              options={directHouse}
-                              isSearchable={true}
-                              isClearable={true}
-                      />
-                    </Col>
-                  </Row>
-                  <hr/>
-                  <Row style={{paddingTop: "20px"}}>
-                    <Col xs={12} sm={12}>
-                      <h5>Diện tích đơn vị: m²</h5>
-                      {/*<Slider marks={marksArea} step={null} onChange={this.onChangeArea} defaultValue={100} />*/}
-                      <div style={{margin:'40px 10px'}}>
-                        <InputRange
-                            maxValue={5000}
-                            minValue={0}
-                            value={this.state.areaDistance}
-                            onChange={value => this.setState({ areaDistance: value })} />
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row style={{paddingTop: "20px"}}>
-                    <Col xs={12} sm={12}>
-                      <h5>Giá đơn vị: triệu </h5>
-                      {/*<Slider marks={marksPrice} step={null} onChange={this.onChangePrice} defaultValue={100} />*/}
-                      <div style={{margin:'40px 10px'}}>
-                        <InputRange
-                            maxValue={50000}
-                            minValue={0}
-                            value={this.state.priceDistance}
-                            onChange={value => this.setState({ priceDistance: value })} />
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row style={{padding:'90px 15px 0',justifyContent:'center'}}>
-                    <LaddaButton
-                        className="btn btn-info btn-ladda"
-                        loading={this.state.loading}
-                        onClick={() => this.handleSearchByFiler()}
-                        data-style={EXPAND_LEFT}
-                        style={{backgroundColor: '#008FE5', color: 'white',border:'none',height:'40px',lineHeight:'0'}}>
-                      <i className="fas fa-search"/> Tìm kiếm
-                    </LaddaButton>
-                  </Row>
+                    </div>
+                    <hr/>
+                    <Row>
+                      <Col md={12}>
+                        <h5>Tỉnh/Thành phố</h5>
+                        <Select value={this.state.selectedProvince}
+                                onChange={(e) => this.setState(
+                                    {selectedProvince: e},
+                                    () => {
+                                      if (this.state.selectedProvince) {
+                                        if (parseInt(
+                                            this.state.selectedProvince.value)
+                                            === 1) {
+                                          this.setState(
+                                              {isRenderDistrict: true})
+                                        } else {
+                                          this.setState(
+                                              {isRenderDistrict: false})
+                                        }
+                                      }
+                                    })}
+                                options={province}
+                                isSearchable={true}
+                                isClearable={true}
+                                style={{fontSize: '16px'}}
+                        />
+                      </Col>
+                    </Row>
+                    <hr/>
+                    <Row>
+                      {
+                        this.state.isRenderDistrict ?
+                            <Col md={12}>
+                              <h5>Quận/Huyện: </h5>
+                              <Select value={selectedDistrict}
+                                      onChange={(e) => this.setState(
+                                          {selectedDistrict: e})}
+                                      options={district}
+                                      isSearchable={true}
+                                      isClearable={true}
+                              />
+                            </Col>
+                            : null
+                      }
+                    </Row>
+                    <hr/>
+                    <Row>
+                      <Col md={12}>
+                        <h5>Hướng nhà: </h5>
+                        <Select value={selectedDirectHouse}
+                                onChange={(e) => this.setState(
+                                    {selectedDirectHouse: e})}
+                                options={directHouse}
+                                isSearchable={true}
+                                isClearable={true}
+                        />
+                      </Col>
+                    </Row>
+                    <hr/>
+                    <Row>
+                      {
+                        this.state.enablePrice ?
+                            <Col md={12}>
+                              <h5>Giá cả: </h5>
+                              <Select value={selectedPrice}
+                                      onChange={(e) => this.setState(
+                                          {selectedPrice: e},() => {
+                                            if (this.state.selectedPrice) {
+                                              if (parseInt(this.state.selectedPrice.value) !== 0)  {
+                                                this.setState({enableArea: false})
+                                              }
+                                              else {
+                                                this.setState({enableArea: true})
+                                              }
+                                            }
+                                            else {
+                                              this.setState({enableArea: true})
+                                            }
+                                          })}
+                                      options={price}
+                                      isSearchable={true}
+                                      isClearable={true}
+                              />
+                            </Col> : null
+                      }
+                    </Row>
+                    <hr/>
+                    <Row>
+                      {
+                        this.state.enableArea ?
+                            <Col md={12}>
+                              <h5>Diện tích: </h5>
+                              <Select value={selectedArea}
+                                      onChange={(e) => this.setState(
+                                          {selectedArea: e}, () => {
+                                            if (this.state.selectedArea) {
+                                              if (parseInt(this.state.selectedArea.value) !== 0) {
+                                                this.setState({enablePrice: false})
+                                              }
+                                              else {
+                                                this.setState({enablePrice: true})
+                                              }
+                                            }
+                                            else {
+                                              this.setState({enablePrice: true})
+                                            }
+                                          })}
+                                      options={area}
+                                      isSearchable={true}
+                                      isClearable={true}
+                              />
+                            </Col> : null
+                      }
+                    </Row>
+
+                    {/*<hr/>*/}
+                    {/*<Row style={{paddingTop: "20px"}}>*/}
+                    {/*  <Col xs={12} sm={12}>*/}
+                    {/*    <h5>Diện tích đơn vị: m²</h5>*/}
+                    {/*    */}
+                    {/*    /!*<Slider marks={marksArea} step={null} onChange={this.onChangeArea} defaultValue={100} />*!/*/}
+                    {/*    <div style={{margin:'40px 10px'}}>*/}
+                    {/*      <InputRange*/}
+                    {/*          maxValue={5000}*/}
+                    {/*          minValue={0}*/}
+                    {/*          value={this.state.areaDistance}*/}
+                    {/*          onChange={value => this.setState({ areaDistance: value })} />*/}
+                    {/*    </div>*/}
+                    {/*  </Col>*/}
+                    {/*</Row>*/}
+                    {/*<Row style={{paddingTop: "20px"}}>*/}
+                    {/*  <Col xs={12} sm={12}>*/}
+                    {/*    <h5>Giá đơn vị: triệu </h5>*/}
+                    {/*    /!*<Slider marks={marksPrice} step={null} onChange={this.onChangePrice} defaultValue={100} />*!/*/}
+                    {/*    <div style={{margin:'40px 10px'}}>*/}
+                    {/*      <InputRange*/}
+                    {/*          maxValue={50000}*/}
+                    {/*          minValue={0}*/}
+                    {/*          value={this.state.priceDistance}*/}
+                    {/*          onChange={value => this.setState({ priceDistance: value })} />*/}
+                    {/*    </div>*/}
+                    {/*  </Col>*/}
+                    {/*</Row>*/}
+                    <Row style={{
+                      padding: '130px 15px 0',
+                      justifyContent: 'center'
+                    }}>
+                      <LaddaButton
+                          className="btn btn-info btn-ladda"
+                          loading={this.state.loading}
+                          onClick={() => this.handleSearchByFiler()}
+                          data-style={EXPAND_LEFT}
+                          style={{
+                            backgroundColor: '#008FE5',
+                            color: 'white',
+                            border: 'none',
+                            height: '40px',
+                            lineHeight: '0'
+                          }}>
+                        <i className="fas fa-search"/> Tìm kiếm
+                      </LaddaButton>
+                    </Row>
                   </div>
                 </Col>
-                <Col xs={12} sm={6}>
+                <Col xs={12} sm={7}>
                   <GoogleMapsComponent
                       key="map"
                       googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyBkoOTnG-hF9GLjQj7TUIlKJjQtCUfswDc"

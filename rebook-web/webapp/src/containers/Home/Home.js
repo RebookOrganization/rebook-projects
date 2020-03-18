@@ -179,15 +179,14 @@ class Home extends Component {
     this.setState({loadingRecommend: true});
     const {currentUser} = this.state;
     recommendAPI(currentUser ? currentUser.userId : 2).then(res => {
-      console.log("recommendAPI res: ", res);
       if (res && res.data.length) {
         this.setState({
           listRecommend: res.data
         })
       }
-      else {
-        Alert.warning("Recommend is updating...")
-      }
+      // else {
+      //   Alert.info("Cập nhật thông tin khuyến nghị..")
+      // }
     }).finally(()=>this.setState({loadingRecommend: false}));
   };
 

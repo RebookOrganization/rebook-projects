@@ -13,6 +13,8 @@ import com.web.service.NewsItemService;
 import com.web.service.ObjectMapperService;
 import com.web.utils.DateTimeUtils;
 import com.web.utils.GenerateRandom;
+import com.web.utils.GsonUtils;
+import com.web.utils.StringUtils;
 import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -40,6 +42,9 @@ public class NewsItemServiceImpl implements NewsItemService {
 
   @Autowired
   CacheDataService cacheDataService;
+
+  @Autowired
+  private PropertyAdressRepository propertyAdressRepository;
 
   private int returnCode = 1;
   private String returnMessage = "success";
@@ -70,14 +75,14 @@ public class NewsItemServiceImpl implements NewsItemService {
           for (Map.Entry<String, NewsItem> entry : newsMap.entrySet()) {
             NewsItem newsItem = entry.getValue();
             if (newsItem != null) {
-              newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem));
+              newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem, currentPartition));
             }
           }
         }
         else {
           List<NewsItem> newsItemList = newsRepository.findNewsByPartition(currentPartition);
           for (NewsItem newsItem : newsItemList) {
-            newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem));
+            newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem, currentPartition));
           }
         }
       }
@@ -100,7 +105,7 @@ public class NewsItemServiceImpl implements NewsItemService {
       if (user.isPresent()) {
         newsItemList = newsRepository.findAllByUser(user.get());
         for (NewsItem newsItem : newsItemList) {
-          newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem));
+          newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem, currentPartition));
         }
       }
       return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTOList);
@@ -118,9 +123,9 @@ public class NewsItemServiceImpl implements NewsItemService {
       //save log of user search
       UserSearchLog userSearchLog = new UserSearchLog();
       userSearchLog.setAddress(request.getContent());
-      userSearchLog.setArea(request.getAreaTo());
-      userSearchLog.setContent(request.getContent());
-      userSearchLog.setPrice(request.getPriceTo());
+      userSearchLog.setArea(String.valueOf(request.getAreaTo()));
+      userSearchLog.setContent(String.valueOf(request.getContent()));
+      userSearchLog.setPrice(String.valueOf(request.getPriceTo()));
       userSearchLog.setCity(request.getProvinceCity());
       userSearchLogRepository.save(userSearchLog);
 
@@ -144,7 +149,7 @@ public class NewsItemServiceImpl implements NewsItemService {
       if (newsResponseDTO == null) {
         Optional<NewsItem> newsItem = newsRepository.findById(Long.parseLong(String.valueOf(randomId)));
         if (newsItem.isPresent()) {
-          newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get());
+          newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get(), currentPartition);
         }
       }
 
@@ -162,7 +167,7 @@ public class NewsItemServiceImpl implements NewsItemService {
       Optional<NewsItem> newsItem = newsRepository.findByPartitionAndId(partition, Long.parseLong(id));
       NewsResponseDTO newsResponseDTO = new NewsResponseDTO();
       if (newsItem.isPresent()) {
-        newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get());
+        newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem.get(), partition);
       }
       return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTO);
     }
@@ -170,6 +175,91 @@ public class NewsItemServiceImpl implements NewsItemService {
       logger.error("getNewsByIdAndPartition exception: ", ex);
       return new CommonResponse.Fail("Lấy thông tin bài viết thất bại.");
     }
+  }
+
+  @Override
+  public CommonResponse searchNewsInMySQL(RequestFilterSearchDto request) {
+    try {
+      List<NewsResponseDTO> newsResponseDTOList = queryNewsItem(request, currentPartition);
+
+      int previousPartition = DateTimeUtils.getPreviousPartition();
+      try {
+        if (newsResponseDTOList.size() <= 10) {
+          List<NewsResponseDTO> newsDTOPrePartition = queryNewsItem(request, previousPartition);
+          newsResponseDTOList.addAll(newsDTOPrePartition);
+        }
+      }
+      catch (Exception e) {
+        logger.error("searchNewsInMySQL in previous partition exception: ", e);
+      }
+
+      logger.info("searchNewsInMySQL result: {}", newsResponseDTOList);
+      return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTOList.size(), newsResponseDTOList);
+    }
+    catch (Exception ex) {
+      logger.error("searchNewsInMySQL exception: ", ex);
+      return new CommonResponse.Fail("Lấy thông tin bài viết thất bại.");
+    }
+
+  }
+
+  private List<NewsResponseDTO> queryNewsItem(RequestFilterSearchDto request, int partition) {
+    List<NewsResponseDTO> newsResponseDTOList = new ArrayList<>();
+    int priceFrom = request.getPriceFrom();
+    int priceTo = request.getPriceTo();
+    int areaFrom = request.getAreaFrom();
+    int areaTo = request.getAreaTo();
+    String district = request.getDistrict();
+    String province = request.getProvinceCity();
+    String content = request.getContent();
+    String directHouse = request.getDirectHouse();
+
+    // Find with Address in partition
+    List<Long> addressIDList = propertyAdressRepository.findAllIdBySummaryInPartition(partition, content, province, district);
+    logger.info("queryNewsItem addressIDList: {}", addressIDList);
+
+    if (!addressIDList.isEmpty()) {
+      List<NewsItem> newsItemList = newsRepository.findAllByAddressIdAndPartition(partition, addressIDList);
+      for (NewsItem newsItem : newsItemList) {
+        float areaNum = newsItem.getAreaNum();
+        double priceNum = newsItem.getPriceNum();
+        String directOfHouse = newsItem.getDirect_of_house();
+
+        if (priceNum >= priceFrom && priceNum <= priceTo) {
+          NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem, partition);
+          newsResponseDTOList.add(newsResponseDTO);
+        }
+
+        if (areaNum >= areaFrom && areaNum <= areaTo) {
+          NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem, partition);
+          newsResponseDTOList.add(newsResponseDTO);
+        }
+
+        if (directOfHouse != null && !directHouse.equals("") && StringUtils.like(directOfHouse, directHouse)) {
+          NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem, partition);
+          newsResponseDTOList.add(newsResponseDTO);
+        }
+      }
+    }
+    else {
+      if (priceTo != 0) {
+        List<NewsItem> listByPrice = newsRepository.findAllByPriceNum(partition, priceFrom, priceTo);
+        for (NewsItem newsItem : listByPrice) {
+          NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem, partition);
+          newsResponseDTOList.add(newsResponseDTO);
+        }
+      }
+
+      if (areaTo != 0) {
+        List<NewsItem> listByArea = newsRepository.findAllByAreaNum(partition, areaFrom, areaTo);
+        for (NewsItem newsItem : listByArea) {
+          NewsResponseDTO newsResponseDTO = objectMapperService.mapNewsToNewsResponseDTO(newsItem, partition);
+          newsResponseDTOList.add(newsResponseDTO);
+        }
+      }
+    }
+
+    return newsResponseDTOList;
   }
 
 }

@@ -4,8 +4,8 @@ MAINTAINER Thanh Le
 
 # cache dependency libs to 1 image layer
 COPY pom.xml ./
-COPY crawl-service/pom.xml ./crawl-service/pom.xml
-COPY rebook-web/pom.xml ./rebook-web/pom.xml
+COPY ./crawl-service/pom.xml ./crawl-service/pom.xml
+COPY ./rebook-web/pom.xml ./rebook-web/pom.xml
 
 RUN mvn --fail-never dependency:go-offline
 

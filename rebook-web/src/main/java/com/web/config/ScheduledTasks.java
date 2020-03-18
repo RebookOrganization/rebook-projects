@@ -17,7 +17,7 @@ public class ScheduledTasks {
   @Autowired
   private ProducerService producerService;
 
-  @Scheduled(fixedRate = 3600000)
+  @Scheduled(fixedRate = 180000)
   public void scheduleTaskWithFixedRate() {
     logger.info("Fixed Rate Batdongsan.com.vn :: Execution Time - {}",
         dateTimeFormatter.format(LocalDateTime.now()));
@@ -25,7 +25,7 @@ public class ScheduledTasks {
 
   }
 
-  @Scheduled(fixedRate = 3600000)
+  @Scheduled(fixedRate = 180000)
   public void scheduleCrawlerDiaOcOnline() {
     logger.info("Fixed Rate DiaOcOnline.vn :: Execution Time - {}",
         dateTimeFormatter.format(LocalDateTime.now()));
