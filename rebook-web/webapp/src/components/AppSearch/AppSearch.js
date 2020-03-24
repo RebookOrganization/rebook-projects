@@ -416,35 +416,6 @@ class AppSearch extends React.PureComponent {
                             </Col> : null
                       }
                     </Row>
-
-                    {/*<hr/>*/}
-                    {/*<Row style={{paddingTop: "20px"}}>*/}
-                    {/*  <Col xs={12} sm={12}>*/}
-                    {/*    <h5>Diện tích đơn vị: m²</h5>*/}
-                    {/*    */}
-                    {/*    /!*<Slider marks={marksArea} step={null} onChange={this.onChangeArea} defaultValue={100} />*!/*/}
-                    {/*    <div style={{margin:'40px 10px'}}>*/}
-                    {/*      <InputRange*/}
-                    {/*          maxValue={5000}*/}
-                    {/*          minValue={0}*/}
-                    {/*          value={this.state.areaDistance}*/}
-                    {/*          onChange={value => this.setState({ areaDistance: value })} />*/}
-                    {/*    </div>*/}
-                    {/*  </Col>*/}
-                    {/*</Row>*/}
-                    {/*<Row style={{paddingTop: "20px"}}>*/}
-                    {/*  <Col xs={12} sm={12}>*/}
-                    {/*    <h5>Giá đơn vị: triệu </h5>*/}
-                    {/*    /!*<Slider marks={marksPrice} step={null} onChange={this.onChangePrice} defaultValue={100} />*!/*/}
-                    {/*    <div style={{margin:'40px 10px'}}>*/}
-                    {/*      <InputRange*/}
-                    {/*          maxValue={50000}*/}
-                    {/*          minValue={0}*/}
-                    {/*          value={this.state.priceDistance}*/}
-                    {/*          onChange={value => this.setState({ priceDistance: value })} />*/}
-                    {/*    </div>*/}
-                    {/*  </Col>*/}
-                    {/*</Row>*/}
                     <Row style={{
                       padding: '130px 15px 0',
                       justifyContent: 'center'

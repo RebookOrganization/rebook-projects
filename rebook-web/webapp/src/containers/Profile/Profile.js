@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import './_profile.css';
+import './styles.css';
 import Card from "reactstrap/es/Card";
 import {
   Button,
@@ -8,10 +9,13 @@ import {
   CardTitle, Col,
   Input, Modal, ModalBody, ModalHeader, Row,
 } from "reactstrap";
-import ButtonGroup from "reactstrap/es/ButtonGroup";
 import '../Home/_home.css';
 import Aside from "../Aside/Aside";
-import {getAllNewsByUser, updateUserProfile} from "../../api/userCallApi";
+import {
+  getAllNewsByUser, getCurrentUser, updateBackground,
+  updateUserProfile,
+  uploadImage, uploadMultiImages
+} from "../../api/userCallApi";
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
@@ -22,12 +26,18 @@ import "react-image-gallery/styles/scss/image-gallery.scss";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ReactAvatarEditor from 'react-avatar-editor';
 import { withCookies } from 'react-cookie';
-import LoadingIndicator from "../../components/Loading/LoadingIndicator";
 import AppHeader from "../../components/Header/AppHeader";
 import {NavLink, withRouter} from "react-router-dom";
 import ListCardItem from "../Home/ListCardItem/ListCardItem";
 import SkeletonLoading from "../../components/Loading/SkeletonLoading";
 import LaddaButton, {EXPAND_LEFT} from "react-ladda";
+import Select from "react-select";
+import ImageUploader from 'react-images-upload';
+
+const GenderOptions = [
+  {value: 0, label: "Nam"},
+  {value: 1, label: "Nữ"}
+];
 
 class Profile extends Component {
   constructor(props) {
@@ -48,9 +58,7 @@ class Profile extends Component {
       activeShare: false,
       isLike: false,
       isShare: false,
-
       modalEditProfile: false,
-
       image: this.props.currentUser ? this.props.currentUser.imageUrl : '/icon/default.jpg',
       allowZoomOut: false,
       position: { x: 0.5, y: 0.5 },
@@ -61,31 +69,47 @@ class Profile extends Component {
       width: 300,
       height: 300,
       hideNav: false,
-
       displayName: "",
       displayPhone: "",
       displayBirthDate: "",
-      displayGender: "",
-      loadingUpdate: false
-    }
+      displayGender: {value:0, label:"Nam"},
+      loadingUpdate: false,
+      modalUpdateBackground: false,
+      backgroundImage: []
+    };
+
+    this.onDrop = this.onDrop.bind(this);
+  }
+
+  toggleModalUpdateBackground = () => {
+    this.setState({
+      modalUpdateBackground: !this.state.modalUpdateBackground
+    })
+  };
+
+  onDrop(backgroundImage) {
+    this.setState({backgroundImage: [].concat(backgroundImage)})
   }
 
   componentWillMount() {
-    const {currentUser} = this.props;
-    this.setState({loading: true});
-    if (currentUser) {
-      this.setState({
-        currentUser: currentUser,
-        loading: false
-      })
+    if (this.props.location.state) {
+      const {currentUser} = this.props.location.state;
+      this.setState({loading: true});
+      if (currentUser) {
+        this.setState({
+          currentUser: currentUser,
+          loading: false
+        })
+      }
     }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (shallowCompare(this, this.props, nextProps)) {
-      this.setState({
-        currentUser: nextProps.currentUser,
-      }, ()=>console.log("currentUser: "+JSON.stringify(this.state.currentUser)))
+    else {
+      getCurrentUser().then(res => {
+        this.setState({
+          currentUser: res.data,
+        });
+      }).catch(() => {
+        Alert.warning("Lấy thông tin user thất bại.")
+      });
     }
   }
 
@@ -98,7 +122,6 @@ class Profile extends Component {
     this.handleGetAllNewByUser();
 
     window.addEventListener('scroll', this.handleScroll);
-    //
     window.addEventListener("resize", this.resize.bind(this));
     this.resize();
   }
@@ -131,7 +154,7 @@ class Profile extends Component {
         if (res && parseInt(res.returnCode) !== 0) {
           this.setState({
             newsByUser: res.data.result
-          })
+          }, ()=>console.log("newsByUser: ", this.state.newsByUser))
         }
         else {
           Alert.warning("   ");
@@ -141,21 +164,6 @@ class Profile extends Component {
       }).finally(()=>{
         this.setState({loading: false})
       })
-    }
-  };
-
-  handleRenderImageSlide = (imageList) => {
-    if (imageList) {
-      let images = [];
-      imageList.map(i => {
-        images.push({
-          original: i.imageUrl.replace("/resize/200x200", ""),
-          thumbnail: i.imageUrl,
-        })
-      });
-      return (
-          <ImageGallery items={images}/>
-      )
     }
   };
 
@@ -180,28 +188,76 @@ class Profile extends Component {
 
   handleUpdateUserProfile = () => {
     this.setState({loadingUpdate: true});
-    const request = {
-      userId: this.state.currentUser,
-      imageUrl: this.state.image,
-      name: this.state.displayName,
-      phoneNumber: this.state.displayPhone,
-      birthDate: this.state.displayBirthDate,
-      gender: this.state.displayGender
-    };
 
-    updateUserProfile(request).then(res => {
-      Alert.success("Cập nhật thành công. " + JSON.stringify(res))
-    }).catch(err => console.log(err))
-    .finally(()=>this.setState({loadingUpdate: false}))
+    const {currentUser, displayName, displayPhone, displayBirthDate, displayGender} = this.state;
+    let formData = new FormData();
+    formData.append('file', this.state.image);
+
+    uploadImage(formData).then(res => {
+      if (res && res.data) {
+        console.log("displayGender: ", displayGender);
+        const request = {
+          userId: currentUser.userId,
+          imageUrl: res.data ? res.data.fileAsResourceUri : currentUser.imageUrl,
+          name: displayName ? displayName : currentUser.name,
+          phoneNumber: displayPhone ? displayPhone : currentUser.phoneNumber,
+          birthDate: displayBirthDate ? displayBirthDate : currentUser.birthDate,
+          gender: displayGender ? displayGender.label : currentUser.gender
+        };
+        updateUserProfile(request).then(response => {
+          console.log("update user profile return code: ", response.data.returnCode);
+          if (parseInt(response.data.returnCode) === 1) {
+            Alert.success("Cập nhật thành công.");
+            this.setState({
+              currentUser: response.data.result
+            })
+          }
+          else {
+            Alert.warning("Cập nhật không thành công. Vui lòng thử lại.");
+          }
+        }).catch(err => console.log(err))
+        .finally(()=>this.setState({
+          loadingUpdate: false,
+          modalEditProfile: false
+        }))
+      }
+    });
+  };
+
+  handleUpdateBackground = () => {
+    this.setState({loadingUpdate: true});
+    const {backgroundImage, currentUser} = this.state;
+    let formData = new FormData();
+    formData.append('files', backgroundImage[0]);
+
+    uploadMultiImages(formData).then(res => {
+      if(res && res.data) {
+        console.log("handleUpdateBackground res: ", res.data);
+        const request = {
+          userId: currentUser.userId,
+          backgroundImage: res.data[0].fileAsResourceUri
+        };
+        updateBackground(request).then(response => {
+          if (parseInt(response.data.returnCode) === 1) {
+            Alert.success("Cập nhật hình nền thành công");
+            this.setState({currentUser: response.data.result}, ()=> {
+              console.log("currentUser handleUpdateBackground: ", this.state.currentUser)
+            })
+          }
+          else {
+            Alert.success("Cập nhật hình nền không thành công");
+          }
+        }).catch(err=>console.log(err))
+        .finally(()=>this.setState({
+          loadingUpdate: false,
+          modalUpdateBackground: false
+        }))
+      }
+    })
   };
 
   render() {
     const {currentUser, newsByUser} = this.state;
-
-    // if (this.state.loading) {
-    //   return <LoadingIndicator/>;
-    // }
-
     return (
       <div className="app">
         <div className="app-top-box sticky-top">
@@ -232,7 +288,7 @@ class Profile extends Component {
                             className={"pull-right"}
                             style={{margin:'10px'}}
                     >
-                      <i className="fa fa-plus"/> Edit
+                      <i className="fa fa-plus"/> Chỉnh sửa
                     </button>
                     <div className="profile-name" style={{marginBottom:'30px', textAlign:'center'}}>
                       <h2>{currentUser.name}</h2>
@@ -268,17 +324,18 @@ class Profile extends Component {
                       <Card style={{border:'none', maxHeight:'370px', marginBottom:'0'}}>
                         <img className={"responsive"}
                              style={{maxWidth:'100%', minHeight:'100%', objectFit:'cover'}}
-                             src="https://images.pexels.com/photos/237018/pexels-photo-237018.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" alt={""}/>
+                             src={currentUser && currentUser.backgroundImage && currentUser.backgroundImage.length
+                                 ? currentUser.backgroundImage
+                                 : 'https://images.pexels.com/photos/237018/pexels-photo-237018.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'} alt={""}/>
                       </Card>
                       {/*<div className={"row"}>*/}
                       <Card id={"navbar"} style={{marginTop:'-1px', borderRadius: "0"}}>
                         <CardBody style={{padding:'15px'}}>
-                          <button style={{marginRight:'20px'}}
-                                  onClick={()=>this.toggleModalEditProfile()}
-                          >
+                          <button style={{float:'right'}}
+                                  onClick={()=>this.toggleModalUpdateBackground()}>
                             <i className="fa fa-plus"/> Cập nhật hình nền
                           </button>
-                          <button style={{marginRight:'20px'}}>
+                          <button style={{marginRight:'20px', float:'right'}}>
                             <i className="fa fa-plus"/> Bạn bè
                           </button>
                           <button style={{marginRight:'20px'}}>
@@ -310,31 +367,25 @@ class Profile extends Component {
                                 <h6>Họ tên: </h6>
                               </Col>
                               <Col xs={12} sm={7} style={{textAlign:"end"}}>
-                                <p style={{color:"blue"}}>{currentUser.name}</p>
+                                <p style={{color:"blue", fontSize:'16px', fontWeight:'500'}}>{currentUser.name}</p>
                               </Col>
                             </Row>
                             <Row style={{marginTop:"5px", marginBottom:"5px"}}>
                               <Col xs={12} sm={5}><h6>Ngày sinh: </h6></Col>
                               <Col xs={12} sm={7} style={{textAlign:"end"}}>
-                                <p style={{color:"blue"}}>{currentUser.birthDate}</p>
+                                <p style={{color:"blue", fontSize:'16px', fontWeight:'500'}}>{currentUser.birthday}</p>
                               </Col>
                             </Row>
                             <Row style={{marginTop:"5px", marginBottom:"5px"}}>
                               <Col xs={12} sm={5}><h6>Giới tính: </h6></Col>
                               <Col xs={12} sm={7} style={{textAlign:"end"}}>
-                                <p style={{color:"blue"}}>{currentUser.gender}</p>
+                                <p style={{color:"blue", fontSize:'16px', fontWeight:'500'}}>{currentUser.gender}</p>
                               </Col>
                             </Row>
                             <Row style={{marginTop:"5px", marginBottom:"5px"}}>
                               <Col xs={12} sm={5}><h6>Số điện thoại: </h6></Col>
                               <Col xs={12} sm={7} style={{textAlign:"end"}}>
-                                <p style={{color:"blue"}}>{currentUser.phone}</p>
-                              </Col>
-                            </Row>
-                            <Row style={{marginTop:"5px", marginBottom:"5px"}}>
-                              <Col xs={12} sm={5}><h6>Địa chỉ: </h6></Col>
-                              <Col xs={12} sm={7} style={{textAlign:"end"}}>
-                                <p style={{color:"blue"}}>{"null"}</p>
+                                <p style={{color:"blue", fontSize:'16px', fontWeight:'500'}}>{currentUser.phone}</p>
                               </Col>
                             </Row>
                           </CardBody>
@@ -362,8 +413,7 @@ class Profile extends Component {
 
             <Modal isOpen={this.state.modalEditProfile}
                    toggle={()=>this.toggleModalEditProfile()}
-                   className={'modal-lg modal-lg-custom' + this.props.className}
-            >
+                   className={'modal-lg modal-lg-custom' + this.props.className}>
               <ModalHeader toggle={()=>this.toggleModalEditProfile()}>
                 Cập nhật ảnh đại diện
               </ModalHeader>
@@ -384,7 +434,7 @@ class Profile extends Component {
                       />
                     </div>
                     <br />
-                    <h6>New File:</h6>
+                    <h6>New Avatar:</h6>
                     <Input name="newImage" type="file" onChange={this.handleNewImage} />
                     <br />
                     <h6>Zoom:</h6>
@@ -401,30 +451,32 @@ class Profile extends Component {
                   <Col xs={12} sm={6}>
                     <br/>
                     <h6>Tên hiển thị:</h6>
-                    <Input type={"text"} placeholder={"Tên hiển thị"}
-                           style={{marginBottom: "10px"}}
-                           value={currentUser.name ? currentUser.name : ""}
+                    <Input type={"text"} placeholder={currentUser.name ? currentUser.name : "Tên hiển thị"}
+                           style={{marginBottom: "10px", fontSize:'16px', fontWeight:"300"}}
+                           // value={currentUser.name ? currentUser.name : ""}
                            onChange={(e)=>this.setState({displayName: e.target.value})}
                     />
                     <br/>
                     <h6>Giới tính:</h6>
-                    <Input type={"text"} placeholder={"Giới tính"}
-                           style={{marginBottom: "10px"}}
-                           value={currentUser.gender ? currentUser.gender : ""}
-                           onChange={(e)=>this.setState({displayGender: e.target.value})}
-                    />
+                    <Select value={this.state.displayGender}
+                            style={{fontSize:'16px', fontWeight:"300"}}
+                            onChange={(e) => this.setState(
+                                {displayGender: e})}
+                            options={GenderOptions}
+                            isSearchable={true}
+                            isClearable={true}/>
                     <br/>
                     <h6>Ngày sinh:</h6>
-                    <Input type={"text"} placeholder={"Ngày sinh"}
-                           style={{marginBottom: "10px"}}
-                           value={currentUser.birthDate ? currentUser.birthDate : ""}
+                    <Input type={"text"} placeholder={currentUser.birthDate ? currentUser.birthDate : "Ngày sinh"}
+                           style={{marginBottom: "10px", fontSize:'16px', fontWeight:"300"}}
+                           // value={currentUser.birthDate ? currentUser.birthDate : ""}
                            onChange={(e)=>this.setState({displayBirthDate: e.target.value})}
                     />
                     <br/>
                     <h6>Số điện thoại:</h6>
-                    <Input type={"text"} placeholder={"Số điện thoại"}
-                           style={{marginBottom: "10px"}}
-                           value={currentUser.phoneNumber ? currentUser.phoneNumber : ""}
+                    <Input type={"text"} placeholder={currentUser.phoneNumber ? currentUser.phoneNumber : "Số điện thoại"}
+                           style={{marginBottom: "10px", fontSize:'16px', fontWeight:"300"}}
+                           // value={currentUser.phoneNumber ? currentUser.phoneNumber : ""}
                            onChange={(e)=>this.setState({displayPhone: e.target.value})}
                     />
                   </Col>
@@ -440,6 +492,39 @@ class Profile extends Component {
                     <i className="fas fa-search"/> Cập nhật
                   </LaddaButton>
                 </Row>
+              </ModalBody>
+            </Modal>
+
+            <Modal isOpen={this.state.modalUpdateBackground}
+                   toggle={()=>this.toggleModalUpdateBackground()}
+                   className={'modal-lg modal-lg-custom' + this.props.className}>
+              <ModalBody>
+                <div style={{ marginRight: "15px" }}>
+                  <ImageUploader
+                      withIcon={false}
+                      withPreview={true}
+                      label=""
+                      buttonText="Upload Images"
+                      onChange={this.onDrop}
+                      imgExtension={[".jpg", ".gif", ".png", ".gif", ".svg"]}
+                      maxFileSize={10485760}
+                      fileSizeError=" file size is too big"
+                      singleImage={true}
+                  />
+                </div>
+                <LaddaButton
+                    className="btn btn-info btn-ladda"
+                    loading={this.state.loadingUpdate}
+                    onClick={() => this.handleUpdateBackground()}
+                    data-style={EXPAND_LEFT}
+                    style={{backgroundColor: '#008FE5', color: 'white',border:'none',height:'40px',lineHeight:'0',
+                      float:'right', marginTop: "20px", marginLeft: '20px'}}>
+                  <i className="fas fa-search"/> Cập nhật
+                </LaddaButton>
+                <Button className={"pull-right"}
+                        style={{backgroundColor: '#aaa', color: 'white', border:'none',height:'40px',
+                          lineHeight:'0', float:'right', marginTop: "20px"}}
+                        onClick={()=>this.toggleModalUpdateBackground()}>Đóng</Button>
               </ModalBody>
             </Modal>
 

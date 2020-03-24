@@ -16,7 +16,7 @@ public class LikeNews implements Serializable {
 
     @Column(name = "news_item_id")
     private Long newsItemId;
-
+//    private int partition;
     @Column(name = "is_like")
     private boolean isLike;
 
@@ -31,6 +31,10 @@ public class LikeNews implements Serializable {
     public Long getNewsItemId() { return newsItemId; }
 
     public void setNewsItemId(Long newsItemId) { this.newsItemId = newsItemId; }
+
+//    public int getPartition() { return partition; }
+//
+//    public void setPartition(int partition) { this.partition = partition; }
 
     public boolean isLike() { return isLike; }
 

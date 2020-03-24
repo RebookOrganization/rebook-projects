@@ -13,7 +13,6 @@ import com.web.service.NewsItemService;
 import com.web.service.ObjectMapperService;
 import com.web.utils.DateTimeUtils;
 import com.web.utils.GenerateRandom;
-import com.web.utils.GsonUtils;
 import com.web.utils.StringUtils;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +41,9 @@ public class NewsItemServiceImpl implements NewsItemService {
 
   @Autowired
   CacheDataService cacheDataService;
+
+  @Autowired
+  private ShareRepository shareRepository;
 
   @Autowired
   private PropertyAdressRepository propertyAdressRepository;
@@ -103,12 +105,29 @@ public class NewsItemServiceImpl implements NewsItemService {
       List<NewsResponseDTO> newsResponseDTOList = new ArrayList<>();
       Optional<User> user = userRepository.findById(userID);
       if (user.isPresent()) {
-        newsItemList = newsRepository.findAllByUser(user.get());
+        //find newsItem in partition
+        newsItemList = newsRepository.findAllByUserAndPartition(currentPartition, userID);
+
+        //find newsItem user had shared
+//        List<ShareNews> shareNewsList= shareRepository.findAllByUserId(userID);
+//        for (ShareNews shareNews: shareNewsList) {
+//          Optional<NewsItem> newsItem = newsRepository.findByPartitionAndId(currentPartition, shareNews.getNewItemId());
+//          if (newsItem.isPresent()) {
+//            newsItemList.add(newsItem.get());
+//          }
+//          else {
+//            Optional<NewsItem> newsItem1 = newsRepository.findById(shareNews.getNewItemId());
+//            newsItem1.ifPresent(newsItemList::add);
+//          }
+//        }
+
+        newsItemList.addAll(newsRepository.findAllByUser(user.get()));
         for (NewsItem newsItem : newsItemList) {
           newsResponseDTOList.add(objectMapperService.mapNewsToNewsResponseDTO(newsItem, currentPartition));
         }
       }
-      return new CommonResponse<>(this.returnCode, this.returnMessage, newsResponseDTOList);
+      return new CommonResponse<>(this.returnCode, this.returnMessage,
+          newsResponseDTOList.size(), newsResponseDTOList);
     }
     catch (Exception ex) {
       ex.printStackTrace();
@@ -127,6 +146,7 @@ public class NewsItemServiceImpl implements NewsItemService {
       userSearchLog.setContent(String.valueOf(request.getContent()));
       userSearchLog.setPrice(String.valueOf(request.getPriceTo()));
       userSearchLog.setCity(request.getProvinceCity());
+      userSearchLog.setSearchDate(DateTimeUtils.getCurrentDate());
       userSearchLogRepository.save(userSearchLog);
 
       List<NewsResponseDTO> newsResponseDTOList = apiService.esSearchNewsApi(request);
@@ -184,7 +204,7 @@ public class NewsItemServiceImpl implements NewsItemService {
 
       int previousPartition = DateTimeUtils.getPreviousPartition();
       try {
-        if (newsResponseDTOList.size() <= 10) {
+        if (newsResponseDTOList.size() <= 15) {
           List<NewsResponseDTO> newsDTOPrePartition = queryNewsItem(request, previousPartition);
           newsResponseDTOList.addAll(newsDTOPrePartition);
         }

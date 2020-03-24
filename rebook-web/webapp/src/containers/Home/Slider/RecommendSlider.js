@@ -65,7 +65,7 @@ class RecommendSlider extends Component {
                                          style={{height: '115px'}}
                                          src={item.imageUrlList.length ? item.imageUrlList[0].imageUrl.replace("/resize/200x200", "") : '/icon/default.jpg'}
                                          alt="Card image cap"/>
-                                <CardBody>
+                                <CardBody style={{padding:'15px'}}>
                                   <CardText><strong>{item.descriptionNews ? item.descriptionNews.substring(0, 30) + "..." : "Recommend for you"}</strong></CardText>
                                   <Button color={"info"} style={{width:'100%', border:'1px solid #666'}}
                                           onClick={()=>this.toggleModalRecommendDetail(item)}

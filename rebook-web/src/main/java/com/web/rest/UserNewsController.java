@@ -1,5 +1,6 @@
 package com.web.rest;
 
+import com.web.bean.Request.UpdateBackgroundRequest;
 import com.web.bean.Request.UpdateUserProfileRequest;
 import com.web.service.UserService;
 import com.web.service.impl.UserServiceImpl;
@@ -33,4 +34,9 @@ public class UserNewsController {
     return new ResponseEntity<>(userService.updateUserProfile(request), HttpStatus.OK);
   }
 
+  @PostMapping("/update-background")
+  @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+  public ResponseEntity<?> updateBackgroundImage(@RequestBody UpdateBackgroundRequest request) {
+    return new ResponseEntity<>(userService.updateBackgroundImage(request), HttpStatus.OK);
+  }
 }

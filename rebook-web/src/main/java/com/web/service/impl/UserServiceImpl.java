@@ -4,6 +4,7 @@ import com.web.bean.Request.CommentRequest;
 import com.web.bean.Request.LikeRequest;
 import com.web.bean.Request.PostNewsRequest;
 import com.web.bean.Request.ShareRequest;
+import com.web.bean.Request.UpdateBackgroundRequest;
 import com.web.bean.Request.UpdateUserProfileRequest;
 import com.web.bean.Response.CommonResponse;
 import com.web.bean.Response.CommonResponse.Fail;
@@ -13,6 +14,7 @@ import com.web.bean.Response.ShareResponse;
 import com.web.bean.Response.UploadFileResponse;
 import com.web.dto.CommentNewsDTO;
 import com.web.dto.NewPostDto;
+import com.web.dto.UserResponseDTO;
 import com.web.enumeration.District;
 import com.web.enumeration.ProvinceCity;
 import com.web.model.Comment;
@@ -94,7 +96,6 @@ public class UserServiceImpl implements UserService {
   private int returnCode = 1;
   private String returnMessage = "success";
   private static Integer currentPartition = DateTimeUtils.getPartition();
-
   private ObjectMapperService objectMapperService;
 
   @Autowired
@@ -145,14 +146,14 @@ public class UserServiceImpl implements UserService {
           .path(newsItem.getId().toString()).toUriString();
       newsItem.setUrl(url);
 
-      Set<NewsImageUrl> imageUrlSet = new HashSet<>();
+//      Set<NewsImageUrl> imageUrlSet = new HashSet<>();
       List<UploadFileResponse> listUpload = request.getListUpload();
       for (UploadFileResponse upload : listUpload) {
         imagesRepository.saveByPartition(upload.getSize(), upload.getFileType(), upload.getFileAsResourceUri(), null, newsItem.getId(), partition);
-        NewsImageUrl newsImageUrl = imagesRepository.findLastRow(partition);
-        imageUrlSet.add(newsImageUrl);
+//        NewsImageUrl newsImageUrl = imagesRepository.findLastRow(partition);
+//        imageUrlSet.add(newsImageUrl);
       }
-      newsItem.setImages(imageUrlSet);
+//      newsItem.setImages(imageUrlSet);
 
       contactOwnerRepository.insertWithPartition(partition, request.getOwnerAddress(), request.getOwnerName(), "", request.getOwnerPhone());
       ContactOwner contactOwner = contactOwnerRepository.findLastRow(partition);
@@ -191,7 +192,6 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  @Transactional
   public CommonResponse likeNewsFeed(LikeRequest request) throws IOException {
     try {
       LikeNews likeNews = likeRepository.findByNewsItemIdAndUserId(request.getUserId(), request.getNewsItemId());
@@ -226,14 +226,14 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  @Transactional
   public CommonResponse commentNewsFeed(CommentRequest request) throws IOException {
     try {
       Comment comment = new Comment();
       comment.setUserId(request.getUserId());
       comment.setNewItemId(request.getNewsItemId());
       comment.setContent(request.getComment());
-
+//      comment.setTimeComment(DateTimeUtils.getCurDateWithMilisec());
+//      comment.setPartition(currentPartition);
       commentRepository.save(comment);
 
       List<CommentNewsDTO> commentNewsDTOList = new ArrayList<>();
@@ -261,8 +261,8 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  @Transactional
   public CommonResponse shareNewsFeed(ShareRequest request) throws IOException {
+    logger.info("ShareRequest request: {}", request.toString());
     try {
       ShareNews shareNewsItem = shareRepository.findByNewItemIdAndUserId(request.getNewsItemId(), request.getUserId());
       if (shareNewsItem != null) {
@@ -279,7 +279,12 @@ public class UserServiceImpl implements UserService {
         ShareNews shareNews = new ShareNews();
         shareNews.setUserId(request.getUserId());
         shareNews.setNewItemId(request.getNewsItemId());
-        shareNews.setShare(request.isShare());
+        if (request.getShare() == 1) {
+          shareNews.setShare(true);
+        }
+        else {
+          shareNews.setShare(false);
+        }
         shareRepository.save(shareNews);
 
         List<ShareNews> listShareNews = shareRepository.findByNewItemId(request.getNewsItemId());
@@ -331,9 +336,9 @@ public class UserServiceImpl implements UserService {
           if(newsItem != null) {
             NewsResponseDTO newsResponseDTO = new NewsResponseDTO();
             newsResponseDTO.setNewsId(newsItem.getId());
-            newsResponseDTO.setUsername(newsItem.getUser().getName());
+//            newsResponseDTO.setUsername(newsItem.getUser().getName());
             newsResponseDTO.setTitleNews(newsItem.getTitle());
-            newsResponseDTO.setImageUser(newsItem.getUser().getImageUrl());
+//            newsResponseDTO.setImageUser(newsItem.getUser().getImageUrl());
             newsResponseDTO.setSummaryNews(newsItem.getSummary());
             newsResponseDTO.setPubDate(newsItem.getPostedDate());
             newsResponseDTO.setPrice(newsItem.getPrice());
@@ -365,8 +370,8 @@ public class UserServiceImpl implements UserService {
               newsResponseDTO.setProjectName(propertyProject.get().getProjectName());
             }
 
-            newsResponseDTO.setImageUrlList(newsItem.getImages());
-            newsResponseDTO.setUserId(newsItem.getUser().getId());
+//            newsResponseDTO.setImageUrlList(newsItem.getImages());
+//            newsResponseDTO.setUserId(newsItem.getUser().getId());
 
 //            List<Comment> commentList = commentRepository.findByNewItemId(newsItem.getId());
 //            newsResponseDTO.setCommentList(commentList);
@@ -406,21 +411,45 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public CommonResponse updateUserProfile(UpdateUserProfileRequest request) throws Exception {
+    logger.info("UpdateUserProfileRequest request: {}", request.toString());
     try {
       String name = request.getName();
       String imageUrl = request.getImageUrl();
-      if (!name.isEmpty() && !imageUrl.isEmpty()) {
-        userRepository.updateUserProfile(request.getUserId(), name, imageUrl, request.getPhoneNumber(),
-            request.getBirthDate(), request.getGender());
-        return new CommonResponse<>(1, "Cập nhật thông tin thành công.", null);
-      }
+      userRepository.updateUserProfile(request.getUserId(), name, imageUrl, request.getPhoneNumber(),
+          request.getBirthDate(), request.getGender());
 
-      return new CommonResponse.Fail("Cập nhật thông tin tài khoản không thành công.");
+      UserResponseDTO userResponseDTO = new UserResponseDTO();
+      Optional<User> user = userRepository.findById(request.getUserId());
+      logger.info("updateUserProfile user: {}", user.toString());
+
+      user.ifPresent(userResponseDTO::mappingFromEntity);
+      return new CommonResponse<>(1, "Cập nhật thông tin thành công.", userResponseDTO);
     }
     catch (Exception ex) {
       logger.error("UserServiceImpl updateUserProfile exception: ", ex);
       return new CommonResponse.Fail("Cập nhật thông tin tài khoản không thành công.");
+    }
+  }
+
+  @Override
+  @Transactional
+  public CommonResponse updateBackgroundImage(UpdateBackgroundRequest request) {
+    try {
+      long userId = request.getUserId();
+      userRepository.updateBackgroundImage(userId, request.getBackgroundImage());
+
+      UserResponseDTO userResponseDTO = new UserResponseDTO();
+      Optional<User> user = userRepository.findById(userId);
+      logger.info("updateUserProfile user: {}", user.toString());
+
+      user.ifPresent(userResponseDTO::mappingFromEntity);
+      return new CommonResponse<>(1, "Cập nhật hình nền thành công.", userResponseDTO);
+    }
+    catch (Exception ex) {
+      logger.error("UserServiceImpl updateBackgroundImage exception: ", ex);
+      return new CommonResponse.Fail("Cập nhật hình nền không thành công.");
     }
   }
 }

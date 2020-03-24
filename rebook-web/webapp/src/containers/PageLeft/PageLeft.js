@@ -23,7 +23,12 @@ class PageLeft extends Component{
     return (
         <div className="sticky-top sticky-offset">
           <div className="list-group list-group-mine" style={{marginBottom: '15px'}}>
-            <NavLink tag={"a"} className="list-group-item" to={"/profile"}>
+            <NavLink tag={"a"} className="list-group-item"
+                     to={{
+                       pathname: "/profile",
+                       state: {currentUser},
+                       search: currentUser ? "?userid=" + currentUser.userId + "&name=" + currentUser.name : ""
+                     }}>
               <img src={currentUser && currentUser.imageUrl ?
                   currentUser.imageUrl
                       : '/icon/default.jpg'}

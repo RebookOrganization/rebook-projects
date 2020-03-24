@@ -30,9 +30,10 @@ public class HomeController {
     userResponseDTO.setEmail(user.getEmail());
     userResponseDTO.setImageUrl(user.getImageUrl());
     userResponseDTO.setPhone(user.getPhoneNumber());
-    userResponseDTO.setBirthday(user.getGender());
+    userResponseDTO.setBirthday(user.getBirthDate());
     userResponseDTO.setGender(user.getGender());
     userResponseDTO.setRoles(user.getRoles());
+    userResponseDTO.setBackgroundImage(user.getBackgroundImage());
 
     return userResponseDTO;
   }

@@ -17,6 +17,8 @@ public class ShareNews implements Serializable {
     @Column(name = "news_item_id")
     private Long newItemId;
 
+//    private int partition;
+
     private boolean isShare;
     private Date shareTime;
 
@@ -31,6 +33,14 @@ public class ShareNews implements Serializable {
     public Long getNewItemId() { return newItemId; }
 
     public void setNewItemId(Long newItemId) { this.newItemId = newItemId; }
+
+//    public int getPartition() {
+//        return partition;
+//    }
+//
+//    public void setPartition(int partition) {
+//        this.partition = partition;
+//    }
 
     public boolean isShare() { return isShare; }
 

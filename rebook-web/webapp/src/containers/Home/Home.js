@@ -184,9 +184,6 @@ class Home extends Component {
           listRecommend: res.data
         })
       }
-      // else {
-      //   Alert.info("Cập nhật thông tin khuyến nghị..")
-      // }
     }).finally(()=>this.setState({loadingRecommend: false}));
   };
 
@@ -214,6 +211,9 @@ class Home extends Component {
   };
 
   componentDidMount() {
+    console.log("currentUser home: ", this.state.currentUser);
+    console.log("this.props.location.state: ", this.props.location.search);
+
     this.setState({loading: true});
     getAllNewsItem(initOffset).then(res => {
       this.setState({
@@ -374,7 +374,10 @@ class Home extends Component {
               const {createNewsPost} = this.state;
               console.log("new post response: " + JSON.stringify(createNewsPost));
               this.handleCloseAllInput();
-              this.setState({summary: ""})
+              this.setState({
+                // allNewsItem: this.state.allNewsItem.unshift(createNewsPost),
+                summary: ""
+              })
             });
           } else {
             Alert.warning("Không có phản hồi. Vui lòng thử lại.")
@@ -606,6 +609,11 @@ class Home extends Component {
       moreButton =
           <div>
             <button className="button-pill"
+                    onClick={() => this.handleRenderInputProject()}>
+              <img src="/icon/icons8-project.png" alt={""}/> Dự án
+            </button>
+            {' '}
+            <button className="button-pill"
                     onClick={() => this.handleRenderFurnitureInput()}>
               <img src={"/icon/icons8-interior.png"}/> Nội thất
             </button>
@@ -694,11 +702,6 @@ class Home extends Component {
                         <button className="button-pill"
                                 onClick={() => this.handleRenderInputAreaAndPrice()}>
                           <img src="/icon/icons8-price_tag_euro.png" alt={""}/> Diện tích, giá
-                        </button>
-                        {' '}
-                        <button className="button-pill"
-                                onClick={() => this.handleRenderInputProject()}>
-                          <img src="/icon/icons8-project.png" alt={""}/> Dự án
                         </button>
                         {' '}
                         <button className="button-pill"

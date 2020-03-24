@@ -1,52 +1,41 @@
 package com.web.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
 @Table(name = "user", uniqueConstraints =
     {@UniqueConstraint(columnNames = "email")})
 public class User {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
   @Column(nullable = false)
   private String name;
-
   @Email
   @Column(nullable = false)
   private String email;
-
   private boolean emailVerified;
-
   @JsonIgnore
   private String password;
-
   @Enumerated(EnumType.STRING)
   private AuthProvider provider;
-
   @Column(name = "provider_id")
   private String providerId;
-
   @Column(name = "image_url")
   private String imageUrl;
 
+  private String backgroundImage;
+
   @Column(name = "phone_number")
   private String phoneNumber;
-
   @Column(name = "birth_date")
   private String birthDate;
-
   @Column(length = 25)
   private String gender;
-
   @ManyToMany
   @JsonIgnore
   private Set<Role> roles;
@@ -56,7 +45,6 @@ public class User {
 
   @Temporal(TemporalType.TIMESTAMP)
   private Date lastLogin;
-
   private String ipLogin;
 
   public Long getId() {
@@ -115,6 +103,14 @@ public class User {
     this.imageUrl = imageUrl;
   }
 
+  public String getBackgroundImage() {
+    return backgroundImage;
+  }
+
+  public void setBackgroundImage(String backgroundImage) {
+    this.backgroundImage = backgroundImage;
+  }
+
   public String getPhoneNumber() {
     return phoneNumber;
   }
@@ -147,13 +143,9 @@ public class User {
     this.roles = roles;
   }
 
-  public Set<NewsItem> getNewsItems() {
-    return newsItems;
-  }
+  public Set<NewsItem> getNewsItems() { return newsItems; }
 
-  public void setNewsItems(Set<NewsItem> newsItems) {
-    this.newsItems = newsItems;
-  }
+  public void setNewsItems(Set<NewsItem> newsItems) { this.newsItems = newsItems; }
 
   public Date getLastLogin() { return lastLogin; }
 
@@ -166,4 +158,21 @@ public class User {
   public boolean isEmailVerified() { return emailVerified; }
 
   public void setEmailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
+
+  @Override
+  public String toString() {
+    return "User{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", email='" + email + '\'' +
+        ", provider=" + provider +
+        ", providerId='" + providerId + '\'' +
+        ", imageUrl='" + imageUrl + '\'' +
+        ", phoneNumber='" + phoneNumber + '\'' +
+        ", birthDate='" + birthDate + '\'' +
+        ", gender='" + gender + '\'' +
+        ", roles=" + roles +
+        ", newsItems=" + newsItems +
+        '}';
+  }
 }

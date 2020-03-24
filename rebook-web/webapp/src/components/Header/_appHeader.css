@@ -32,10 +32,12 @@
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
+    padding-left: 70px;
 }
 
 .app-options {
     /*float: right;*/
+    padding-right: 75px;
 }
 
 .app-nav {

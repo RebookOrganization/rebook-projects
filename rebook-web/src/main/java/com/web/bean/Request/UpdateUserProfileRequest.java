@@ -1,7 +1,7 @@
 package com.web.bean.Request;
 
 public class UpdateUserProfileRequest {
-  private long userId;
+  private Long userId;
   private String name;
   private String imageUrl;
   private String phoneNumber;
@@ -11,9 +11,9 @@ public class UpdateUserProfileRequest {
   public UpdateUserProfileRequest() {
   }
 
-  public long getUserId() { return userId; }
+  public Long getUserId() { return userId; }
 
-  public void setUserId(long userId) { this.userId = userId; }
+  public void setUserId(Long userId) { this.userId = userId; }
 
   public String getName() { return name; }
 
@@ -34,4 +34,16 @@ public class UpdateUserProfileRequest {
   public String getGender() { return gender; }
 
   public void setGender(String gender) { this.gender = gender; }
+
+  @Override
+  public String toString() {
+    return "UpdateUserProfileRequest{" +
+        "userId=" + userId +
+        ", name='" + name + '\'' +
+        ", imageUrl='" + imageUrl + '\'' +
+        ", phoneNumber='" + phoneNumber + '\'' +
+        ", birthDate='" + birthDate + '\'' +
+        ", gender='" + gender + '\'' +
+        '}';
+  }
 }

@@ -31,8 +31,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("update User u set u.password = :password where u.id = :id")
     void updatePassword(@Param("password") String password, @Param("id") Long id);
 
+    @Modifying(clearAutomatically = true)
+    @Query("update User u set u.name = :name , u.imageUrl = :image_url, u.phoneNumber=:phone_number, "
+        + "u.birthDate = :birth_date, u.gender = :gender where u.id = :id")
+    void updateUserProfile(@Param("id") Long id, @Param("name") String name, @Param("image_url") String imageUrl,
+        @Param("phone_number") String phoneNum, @Param("birth_date") String birthDate, @Param("gender") String gender);
+
     @Modifying
-    @Query("update User u set u.name= ?2, u.imageUrl = ?3, u.phoneNumber = ?4, "
-        + "u.birthDate = ?5, u.gender = ?6 where u.id = ?1")
-    void updateUserProfile(Long id, String name, String imageUrl, String phoneNum, String birthDate, String gender);
+    @Query("update User u set u.backgroundImage = :background_image where u.id = :user_id")
+    void updateBackgroundImage(@Param("user_id") Long userId, @Param("background_image") String backgroundImage);
 }

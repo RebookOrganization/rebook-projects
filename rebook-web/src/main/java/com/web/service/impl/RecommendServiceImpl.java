@@ -79,6 +79,7 @@ public class RecommendServiceImpl implements RecommendService {
           }
         }
       }
+      logger.info("listRecommend newsId to recommend: {}", newsId);
 
       final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
           .queryParam("prefix", "item" + currentPartition)

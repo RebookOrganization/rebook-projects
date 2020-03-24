@@ -17,14 +17,9 @@ public class NewsItem implements Serializable {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
-
     private String title;
     private String url;
     private String summary;
-
-    @OneToMany(mappedBy = "newsItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<NewsImageUrl> images;
-
     private String price;
     private Double priceNum;
     private String area;
@@ -54,6 +49,14 @@ public class NewsItem implements Serializable {
 
     public void setUser(User user) { this.user = user; }
 
+//    public long getUserID() {
+//        return userID;
+//    }
+//
+//    public void setUserID(long userID) {
+//        this.userID = userID;
+//    }
+
     public String getTitle() { return title; }
 
     public void setTitle(String title) { this.title = title; }
@@ -66,9 +69,9 @@ public class NewsItem implements Serializable {
 
     public void setSummary(String summary) { this.summary = summary; }
 
-    public Set<NewsImageUrl> getImages() { return images; }
-
-    public void setImages(Set<NewsImageUrl> images) { this.images = images; }
+//    public Set<NewsImageUrl> getImages() { return images; }
+//
+//    public void setImages(Set<NewsImageUrl> images) { this.images = images; }
 
     public String getPrice() { return price; }
 

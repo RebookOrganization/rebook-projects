@@ -53,10 +53,12 @@ class RecommendModal extends Component {
     if (imageList) {
       let images = [];
       imageList.map(i => {
-        images.push({
-          original: i.imageUrl.replace("/resize/200x200", ""),
-          thumbnail: i.imageUrl,
-        })
+        if (i.imageUrl) {
+          images.push({
+            original: i.imageUrl.replace("/resize/200x200", ""),
+            thumbnail: i.imageUrl,
+          })
+        }
       });
       return (
           <ImageGallery items={images}/>
@@ -136,14 +138,15 @@ class RecommendModal extends Component {
                     </CardTitle>
 
                     <Row>
-                      <Col xs={12} sm={7}>
-                        <div style={{marginBottom: '10px'}}>
-                          {
-                            newsRecommend.imageUrlList && newsRecommend.imageUrlList.length ? this.handleRenderImageSlide(newsRecommend.imageUrlList) : null
-                          }
-                        </div>
-                      </Col>
-                      <Col xs={12} sm={5}>
+                      {
+                        newsRecommend.imageUrlList && newsRecommend.imageUrlList.length ?
+                            <Col xs={12} sm={7}>
+                              <div style={{marginBottom: '10px'}}>
+                                {this.handleRenderImageSlide(newsRecommend.imageUrlList)}
+                              </div>
+                            </Col> : null
+                      }
+                      <Col xs={12} sm={newsRecommend.imageUrlList && newsRecommend.imageUrlList.length ? 5 : 12}>
                         <div className="row"
                              style={{display: 'flex', alignItems: 'center', marginLeft: '15px', marginRight: '15px'}}>
                           <p className={"styleTitle"}>
@@ -199,7 +202,6 @@ class RecommendModal extends Component {
                         </div>
                       </Col>
                     </Row>
-
                   </div>
                   : null
             }

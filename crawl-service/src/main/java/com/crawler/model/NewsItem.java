@@ -22,8 +22,8 @@ public class NewsItem implements Serializable {
     private String url;
     private String summary;
 
-    @OneToMany(mappedBy = "newsItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<NewsImageUrl> images;
+//    @OneToMany(mappedBy = "newsItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    private Set<NewsImageUrl> images;
 
     private String price;
     private Double priceNum;
@@ -71,9 +71,9 @@ public class NewsItem implements Serializable {
 
     public void setSummary(String summary) { this.summary = summary; }
 
-    public Set<NewsImageUrl> getImages() { return images; }
-
-    public void setImages(Set<NewsImageUrl> images) { this.images = images; }
+//    public Set<NewsImageUrl> getImages() { return images; }
+//
+//    public void setImages(Set<NewsImageUrl> images) { this.images = images; }
 
     public String getPrice() { return price; }
 

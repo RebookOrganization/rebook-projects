@@ -20,6 +20,10 @@ export function uploadMultiImages(formData) {
   return httpUploadFile("api/uploadMultipleFiles", formData);
 }
 
+export function uploadImage(formData) {
+  return httpUploadFile("api/uploadFile", formData);
+}
+
 export function createNewsPostItem(requestParam) {
   return httpPost(API_NEWS + "/create-post", requestParam);
 }
@@ -67,9 +71,13 @@ export function searchNewsItem(request) {
 }
 
 export function updateUserProfile(request) {
-  return httpPost("/api/user/update-profile", request);
+  return httpPost("api/user/update-profile", request);
 }
 
 export function getNewsByIdAndPartition(createNewsPost) {
   return httpGet(API_NEWS + "/news-by-partition?id=" + createNewsPost.newsId + "&partition=" + createNewsPost.partition)
+}
+
+export function updateBackground(request) {
+  return httpPost("api/user/update-background", request);
 }

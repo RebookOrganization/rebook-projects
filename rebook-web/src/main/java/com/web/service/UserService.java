@@ -4,6 +4,7 @@ import com.web.bean.Request.CommentRequest;
 import com.web.bean.Request.LikeRequest;
 import com.web.bean.Request.PostNewsRequest;
 import com.web.bean.Request.ShareRequest;
+import com.web.bean.Request.UpdateBackgroundRequest;
 import com.web.bean.Request.UpdateUserProfileRequest;
 import com.web.bean.Response.CommonResponse;
 import com.web.model.User;
@@ -27,4 +28,5 @@ public interface UserService {
 
   CommonResponse updateUserProfile(UpdateUserProfileRequest request) throws Exception;
 
+  CommonResponse updateBackgroundImage(UpdateBackgroundRequest request);
 }

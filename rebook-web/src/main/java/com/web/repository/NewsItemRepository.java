@@ -20,6 +20,9 @@ public interface NewsItemRepository extends JpaRepository<NewsItem, Long> {
 
     List<NewsItem> findAllByUser(User user);
 
+    @Query(value = "SELECT * FROM news_item?1 WHERE user_id = ?2 ORDER BY id DESC", nativeQuery = true)
+    List<NewsItem> findAllByUserAndPartition(int partition, Long userID);
+
     @Query(value = "SELECT * FROM news_item?1 WHERE id = ?2", nativeQuery = true)
     Optional<NewsItem> findByPartitionAndId(int partition, long id);
 

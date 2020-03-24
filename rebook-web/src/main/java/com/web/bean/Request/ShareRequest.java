@@ -4,7 +4,7 @@ public class ShareRequest {
 
   private Long userId;
   private Long newsItemId;
-  private boolean isShare;
+  private int share;
 
   public Long getUserId() { return userId; }
 
@@ -14,7 +14,16 @@ public class ShareRequest {
 
   public void setNewsItemId(Long newsItemId) { this.newsItemId = newsItemId; }
 
-  public boolean isShare() { return isShare; }
+  public int getShare() { return share; }
 
-  public void setShare(boolean share) { isShare = share; }
+  public void setShare(int share) { this.share = share; }
+
+  @Override
+  public String toString() {
+    return "ShareRequest{" +
+        "userId=" + userId +
+        ", newsItemId=" + newsItemId +
+        ", isShare=" + share +
+        '}';
+  }
 }

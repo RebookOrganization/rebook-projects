@@ -1,5 +1,6 @@
 package com.web.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +23,7 @@ public class Role {
   private String name;
 
   @ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
+  @JsonIgnore
   private Set<User> users;
 
   public Role() { }

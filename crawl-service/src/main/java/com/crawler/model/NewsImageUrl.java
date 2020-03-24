@@ -13,15 +13,13 @@ public class NewsImageUrl implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "news_item_id")
-    @JsonIgnore
-    private NewsItem newsItem;
-
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "news_item_id")
+//    @JsonIgnore
+//    private NewsItem newsItem;
+    private long newsItemId;
     private String imageUrl;
-
     private String imageType;
-
     private Long imageSize;
 
     @Lob
@@ -31,9 +29,18 @@ public class NewsImageUrl implements Serializable {
 
     public void setId(Long id) { this.id = id; }
 
-    public NewsItem getNewsItem() { return newsItem; }
+//    public NewsItem getNewsItem() { return newsItem; }
+//
+//    public void setNewsItem(NewsItem newsItem) { this.newsItem = newsItem; }
 
-    public void setNewsItem(NewsItem newsItem) { this.newsItem = newsItem; }
+
+    public long getNewsItemId() {
+        return newsItemId;
+    }
+
+    public void setNewsItemId(long newsItemId) {
+        this.newsItemId = newsItemId;
+    }
 
     public String getImageUrl() { return imageUrl; }
 

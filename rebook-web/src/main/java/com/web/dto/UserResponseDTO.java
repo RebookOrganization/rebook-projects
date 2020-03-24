@@ -1,7 +1,9 @@
 package com.web.dto;
 
 import com.web.model.Role;
+import com.web.model.User;
 import java.util.Set;
+import javax.jws.soap.SOAPBinding.Use;
 
 public class UserResponseDTO {
 
@@ -13,22 +15,9 @@ public class UserResponseDTO {
   private String birthday;
   private String gender;
   private Set<Role> roles;
+  private String backgroundImage;
 
-  public UserResponseDTO() {
-  }
-
-  public UserResponseDTO(Long userId, String name, String email, String imageUrl,
-      String phone, String birthday, String gender,
-      Set<Role> roles) {
-    this.userId = userId;
-    this.name = name;
-    this.email = email;
-    this.imageUrl = imageUrl;
-    this.phone = phone;
-    this.birthday = birthday;
-    this.gender = gender;
-    this.roles = roles;
-  }
+  public UserResponseDTO() { }
 
   public Long getUserId() { return userId; }
 
@@ -61,4 +50,25 @@ public class UserResponseDTO {
   public Set<Role> getRoles() { return roles; }
 
   public void setRoles(Set<Role> roles) { this.roles = roles; }
+
+  public String getBackgroundImage() {
+    return backgroundImage;
+  }
+
+  public void setBackgroundImage(String backgroundImage) {
+    this.backgroundImage = backgroundImage;
+  }
+
+  public void mappingFromEntity(User user) {
+    this.userId = user.getId();
+    this.name = user.getName();
+    this.imageUrl = user.getImageUrl();
+    this.email = user.getEmail();
+    this.birthday = user.getBirthDate();
+    this.gender = user.getGender();
+    this.phone = user.getPhoneNumber();
+    this.roles = user.getRoles();
+    this.backgroundImage = user.getBackgroundImage();
+  }
+
 }

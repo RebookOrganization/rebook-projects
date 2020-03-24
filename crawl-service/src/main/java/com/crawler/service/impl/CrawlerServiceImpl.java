@@ -270,7 +270,7 @@ public class CrawlerServiceImpl implements CrawlerService {
                   int imgsSize = productDetail.getElementById("thumbs").getElementsByTag("img").size();
                   for (int j = 0; j < imgsSize; j++) {
                     NewsImageUrl newsImageUrl = new NewsImageUrl();
-                    newsImageUrl.setNewsItem(newsItem1);
+                    newsImageUrl.setNewsItemId(newsItem1.getId());
                     newsImageUrl.setImageUrl(productDetail.getElementById("thumbs").getElementsByTag("img").get(j)
                         .attr("src"));
                     imagesRepository.saveByPartition(newsImageUrl.getImageSize(), newsImageUrl.getImageType(),
@@ -422,7 +422,7 @@ public class CrawlerServiceImpl implements CrawlerService {
                 for (Element slideLarge : slideLarges) {
                   NewsImageUrl newsImageUrl = new NewsImageUrl();
                   newsImageUrl.setImageUrl(slideLarge.getElementsByTag("img").attr("src"));
-                  newsImageUrl.setNewsItem(newsItem1);
+                  newsImageUrl.setNewsItemId(newsItem1.getId());
                   imagesRepository.saveByPartition(newsImageUrl.getImageSize(), newsImageUrl.getImageType(),
                       newsImageUrl.getImageUrl(), newsImageUrl.getPicByte(), newsItem1.getId(), currentPartition);
                 }
@@ -431,7 +431,7 @@ public class CrawlerServiceImpl implements CrawlerService {
                 if (flexslider.getElementsByTag("img") != null) {
                   NewsImageUrl newsImageUrl = new NewsImageUrl();
                   newsImageUrl.setImageUrl(flexslider.getElementsByTag("img").attr("src"));
-                  newsImageUrl.setNewsItem(newsItem1);
+                  newsImageUrl.setNewsItemId(newsItem1.getId());
                   imagesRepository.saveByPartition(newsImageUrl.getImageSize(), newsImageUrl.getImageType(),
                       newsImageUrl.getImageUrl(), newsImageUrl.getPicByte(), newsItem1.getId(), currentPartition);
                 }

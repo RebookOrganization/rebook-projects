@@ -53,9 +53,14 @@ class App extends Component {
               <Route exact path={"/index"}
                      render={() => <Redirect to={"/home"}/>}/>
               <Route exact path={"/"}
-                     render={()=> (<Redirect to={"/home"}/>)}/>
-              <Route exact path="/home"
-                     name="Home"
+                     render={()=> (<Redirect to={{
+                       pathname: "/home",
+                       state: {
+                         currentUser: this.state.currentUser,
+                         authenticated: this.state.authenticated
+                       }
+                     }}/>)}/>
+              <Route exact path="/home" name="Home"
                      render={() => <Home
                          authenticated={this.state.authenticated}
                          currentUser={this.state.currentUser}/>
